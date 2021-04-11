@@ -127,11 +127,14 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 
 Lista tokenów:
 
-"num", "string", "Turtle", "print" "None"
-"fun", "if", "else", "while", "return",  
+identifier - token zawierający identyfikator, który może wskazywać na jakąś zmienną, czy też funkcję
+constValue - token bezpośrednio przeliczany na jakąś wartość  
+"fun", "if", "else", "while",  
 "{", "}", "(", ")", '"'  
 "+", "-", "*",  "/",  
 "||", "&&", "==",  "!=", "<", "<=", ">", ">=", "."
+
+Funkcje wbudowane takie jak `print` nie będą tokenami, podobnie jak nazwy typów wbudowanych, bedą one rozpoznawane jako identyfikatory.
 
 ## Testy
 
