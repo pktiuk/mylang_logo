@@ -1,7 +1,5 @@
 # TKOM - Język zbliżony do logo z elementami obiektowymi
 
-**Paweł Kotiuk 292898**
-
 ## Opis projektu
 
 Stworzenie własnego interpretera języka koncepcyjnie zbliżonego do Logo, lecz z mechanizmami obiektowymi w kontekście żółwia. Ma on pozwalać min na tworzenie wielu instancji żółwia na ekranie.  
@@ -42,7 +40,7 @@ Okno główne będzie najpewniej podzielone na 3 główne części:
 
 - wizualizacja - będzie ono pokazywało utworzony obrazel
 - konsola - miejsce, gdzie będą wypisywane komunikaty oraz wiadomości
-- pole tekstowe - miejsce gdzie będzie wpisywany kod
+- pole tekstowe - miejsce gdzie będzie wpisywany kod. W tym miejscu użytkownik będzie także informowany o wszelkich problemach i wyjątkach
 
 ## Składania
 
@@ -68,9 +66,11 @@ fun draw_square(len)
 }// Na ekranie pojawi się nowy żółw, narysuje kwadrat i po tym powinien zniknąć
 
 print("Obrysowane pole ")
+
 pole=draw_square(10);
 
 msg = ""
+
 if(pole > 10 && pole <200)
 {
   print("jest wieksze od 10 i mniejsze od 200")
@@ -78,7 +78,10 @@ if(pole > 10 && pole <200)
 {
   print("jest inne niz przewidywane")
 }
+
 ```
+
+W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsze od 200`.
 
 ## Gramatyka
 
@@ -112,11 +115,12 @@ if(pole > 10 && pole <200)
 **constValue** = `number | string;`  
 **string** = `'"' {letter | naturalNumber | specialSign } '"';`  
 **number** = `naturalNumber [ ".", digit, {digit}];`  
-**letter** = `"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;`  
 **naturalNumber** = `"0" | (nonZeroDigit, {digit});`  
-**specialSign** = `"_" | "-" ;`  
+
+**letter** = `"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;`  
 **nonZeroDigit** = `"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;`  
 **digit** = `"0" | nonZeroDigit;`  
+**specialSign** = `"_" | "-" ;`  
 
 ## Tokeny
 
@@ -127,3 +131,7 @@ Lista tokenów:
 "{", "}", "(", ")", '"'  
 "+", "-", "*",  "/",  
 "||", "&&", "==",  "!=", "<", "<=", ">", ">=", "."
+
+## Testy
+
+Testy poszczególnych elementów analizatora będą realizowane za pomocą prostych testów jednostkowych stworzonych z pomocą narzędzia pytest.
