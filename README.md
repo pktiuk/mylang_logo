@@ -1,5 +1,6 @@
 # TKOM - Język zbliżony do logo z elementami obiektowymi
 
+**Paweł Kotiuk 292898**
 ## Opis projektu
 
 Stworzenie własnego interpretera języka koncepcyjnie zbliżonego do Logo, lecz z mechanizmami obiektowymi w kontekście żółwia. Ma on pozwalać min na tworzenie wielu instancji żółwia na ekranie.  
@@ -111,7 +112,7 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **logicSign** = `"||" | "&&";`  
 **compSign** = `"==" | "!=" | "<" | "<=" | ">" | ">=";`  
 
-**identifier** = `letter, {naturalNumber , letter, specialSign};`  
+**identifier** = `letter, {naturalNumber | letter | specialSign};`  
 **constValue** = `number | string;`  
 **string** = `'"' {letter | naturalNumber | specialSign } '"';`  
 **number** = `naturalNumber [ ".", digit, {digit}];`  
@@ -134,4 +135,4 @@ Lista tokenów:
 
 ## Testy
 
-Testy poszczególnych elementów analizatora będą realizowane za pomocą prostych testów jednostkowych stworzonych z pomocą narzędzia pytest.
+Testy poszczególnych elementów analizatora będą realizowane za pomocą prostych testów jednostkowych stworzonych z pomocą narzędzia pytest.  
