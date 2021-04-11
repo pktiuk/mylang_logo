@@ -1,8 +1,10 @@
-# TKOM - Obiektowy język zbliżony do logo
+# TKOM - Język zbliżony do logo z elementami obiektowymi
+
+**Paweł Kotiuk 292898**
 
 ## Opis projektu
 
-Stworzenie własnego interpretera języka koncepcyjnie zbliżonego do Logo, lecz z mechanizmami obiektowymi.  
+Stworzenie własnego interpretera języka koncepcyjnie zbliżonego do Logo, lecz z mechanizmami obiektowymi w kontekście żółwia. Ma on pozwalać min na tworzenie wielu instancji żółwia na ekranie.  
 Język Logo znany w Polsce także jako Logomocja. Jest on prostym językiem programowania skierowanym głównie do uczniów szkół. Pozwala on w sposób wizualny zapoznać się uczniom z programowaniem. W tym wypadku aspekt ten realizowany poprzez pozwolenie użytkownikowi na sterowanie kursorem (żółwiem) rysującym po planszy za pomocą odpowiednich komend.
 
 ## Funkcjonalność
@@ -16,6 +18,8 @@ Cechy samego języka:
   - string
   - turtle - jest to obiekt reprezentujący wskaźnik (domyślnie będący żółwiem), którym kierować może użytkownik
   - bool
+  - None
+- dynamiczne typowanie zmiennych
 - Wykonywanie wyrażeń arytmetycznych działający zgodnie z ogólnie przyjętą dot. konwencją kolejności operatorów.
 - Wykonywanie wyrażeń logicznych działający zgodnie z ogólnie przyjętą dot. konwencją kolejności operatorów.
 - Możliwe istnienie wielu instancji żółwia jednocześnie
@@ -59,43 +63,67 @@ fun draw_square(len)
     t.rt(90)
     i=i+1
   }
-}// Na ekranie pojawi się nowy żółw, narysuje nowy kwadrat i po tym powinien zniknąć
+  pole = len*len
+  return(pole)
+}// Na ekranie pojawi się nowy żółw, narysuje kwadrat i po tym powinien zniknąć
 
-draw_square(10);
+print("Obrysowane pole ")
+pole=draw_square(10);
+
+msg = ""
+if(pole > 10 && pole <200)
+{
+  print("jest wieksze od 10 i mniejsze od 200")
+}else
+{
+  print("jest inne niz przewidywane")
+}
 ```
 
 ## Gramatyka
 
 **program**  =  `{ statement | definition };`  
-**definition** = `classDefinition | functionDefinition | variableDefinition;`  
-**classDefinition**   = `"class", identifier, "{", { variableDefinition | functionDefinition }, "}";`  
-**functionDefinition** =  `"fun" identifier, "(", [ {identifier, identifier, ","}, identifier, identifier ], ")", "{", {statement}, "}" ;`  
-**variableDefinition** = `identifier, identifier, [ = expression ] ;`  
-**statement** = ` [ ifStatement | whileStatement | expression | valueAssignment ] ; `  
-**ifStatement** = `"if", "(", expression, ")", "{", {statement}, "}" ;`  
-**whileStatement** = `"while", "(", expression, ")", "{", {statement}, "}" ;`  
+**definition** = `functionDefinition | variableDefinition;`  
+**functionDefinition** =  `"fun" identifier, "(", [ {identifier, ","}, identifier ], ")", "{", {statement}, "}" ;`  
+**variableDefinition** = `identifier,  "=", expression ;`  
+**statement** = ` ifStatement | whileStatement | expression | valueAssignment; `  
+**ifStatement** = `"if", "(", logicalExpression, ")", "{", {statement}, "}" [ "else" "{", {statement}, "}" ] ;`  
+**whileStatement** = `"while", "(", logicalExpression, ")", "{", {statement}, "}" ;`  
 
 **valueAssignment** = `identifier, "=", expression;`  
-**expression** = `( "(", expression, ")" ) | (identifier, {operator}) | number | string;`  
+**expression** = `logicalExpression | mathExpression;`  
+**logicalExpression** = `andCondition, {"||", andCondition};`  
+**andCondition** = `andCondition, "&&", andCondition {"&&", andCondition} | mathExpression, compSign, mathExpression | value | "(" logicalExpression ")";`  
+**mathExpression** = `mathExpression, addOperator, {addOperator} | factor, {multOperator};`  
+**factor** = `value | "(" mathExpression ")";`  
+**value** = `identifier, {functionOperator | fieldOperator } | constValue`  
 
-**operator** = `mathOperator | logicOperator | functionOperator | fieldOperator;`  
-**mathOperator** = `mathSign, expression;`  
-**mathSign** = `"+" | "-" | "*" | "/";`  
-**logicOperator** = `logicSign, expression;`  
-**logicSign** = `"==" | "!=" | "<" | "<=" | ">" | ">=" | "||" | "&&";`  
+**addOperator** = `addSign, mathExpression;`  
+**multOperator** = `multSign, factor;`  
 **functionOperator** = `"(" [ {expression, ","}, expression ], ")";`  
 **fieldOperator** = `".", identifier;`  
 
-**identifier** = `letter, {number , letter, specialSign};`  
+**addSign** = `"+" | "-" ;`  
+**multSign** = `"*" | "/";`  
+**logicSign** = `"||" | "&&";`  
+**compSign** = `"==" | "!=" | "<" | "<=" | ">" | ">=";`  
+
+**identifier** = `letter, {naturalNumber , letter, specialSign};`  
+**constValue** = `number | string;`  
+**string** = `'"' {letter | naturalNumber | specialSign } '"';`  
+**number** = `naturalNumber [ ".", digit, {digit}];`  
+**letter** = `"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;`  
+**naturalNumber** = `"0" | (nonZeroDigit, {digit});`  
 **specialSign** = `"_" | "-" ;`  
-**letter** = `"A" .. "Z" | "a" .. "z";`  
-**number** = `"0" | (("1" .. "9"), {"0" .. "9"});`  
-**string** = `'"' {letter | number | specialSign } '"';`
+**nonZeroDigit** = `"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;`  
+**digit** = `"0" | nonZeroDigit;`  
 
-## Słowa kluczowe
+## Tokeny
 
-Lista słów kluczowych:
+Lista tokenów:
 
-Turtle  
-if while return fun  
-print
+"num", "string", "Turtle", "print" "None"
+"fun", "if", "else", "while", "return",  
+"{", "}", "(", ")", '"'  
+"+", "-", "*",  "/",  
+"||", "&&", "==",  "!=", "<", "<=", ">", ">=", "."
