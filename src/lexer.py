@@ -11,7 +11,14 @@ class TextBuffer:
         if self.counter <= len(self.msg):
             return self.msg[self.counter - 1]
         else:
-            return "/n"
+
+
+class UnexpectedCharacterError(BaseException):
+    pass
+
+
+class ParseError(BaseException):
+    pass
 
 
 class Lexer():
@@ -22,6 +29,7 @@ class Lexer():
         "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     ]
+    NUMBERS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     WHITESPACE_ELEMENTS = ["\n", " "]
 
     # Tokens consisting of only one token which cannot be parts of other tokens
@@ -47,11 +55,25 @@ class Lexer():
         "!=": Token(TokenType.COMP_OPERATOR, "!="),
     }
 
+    RESTRICTED_IDENTIFIERS = {
+        "fun": Token(TokenType.FUN, "fun"),
+        "while": Token(TokenType.WHILE, "while"),
+        "if": Token(TokenType.IF, "if"),
+        "else": Token(TokenType.ELSE, "else"),
+    }
+
     def __init__(self, logger=ConsoleLogger, source=None):
         self.source = source
         self.logger = logger
         self.output = None
         self.buffered_char = "\n"
+
+    def run():
+        '''
+        while(queque not empty)
+            parse #with handling errors
+        '''
+        pass
 
     def get_token(self) -> Token:
         if self.buffered_char is None:
@@ -84,10 +106,52 @@ class Lexer():
         if token_string[0] == '"':
             return self._parse_defined_string(token_string)
 
+        if token_string[0] in self.LETTERS:
+            return self._parse_identifier(token_string)
+
+        if token_string[0].isdigit() and token_string[0] != "0":
+            return self._parse_number(token_string)
+
+        if token_string[0] not in self.LETTERS and not token_string[0].isdigit(
+        ):
+            raise UnexpectedCharacterError(
+                "Unknown token, unexpected first character: ${token_string[0]}"
+            )
+
     def _parse_defined_string(self, token_string):
 
         while (self.buffered_char != '"'):
             self.buffered_char = self.source.get_char()
             token_string += self.buffered_char
         # TODO error handling and add quote escaping
+        self.buffered_char = None
+        return Token(token_string, TokenType.CONST)
+
+    def _parse_identifier(self, token_string):
+
+        while self.buffered_char in self.LETTERS + ["_"] + self.NUMBERS:
+            token_string += self.buffered_char
+            self.buffered_char = self.source.get_char()
+
+        if token_string in self.RESTRICTED_IDENTIFIERS.keys():
+            return self.RESTRICTED_IDENTIFIERS[token_string]
+
+        return Token(token_string, TokenType.IDENTIFIER)
+
+    def _parse_number(self, token_string):
+        # parsing first part of number (before dot)
+        while (self.buffered_char.isdigit()):
+            self.buffered_char = self.source.get_char()
+            token_string += self.buffered_char
+
+        if (self.buffered_char == "."):
+            token_string += self.buffered_char
+            self.buffered_char = self.source.get_char()
+            if not self.buffered_char.isdigit():
+                raise UnexpectedCharacterError(
+                    "Unexpected character while parsing number: ${token_string}"
+                )
+            while (self.buffered_char.isdigit()):
+                self.buffered_char = self.source.get_char()
+                token_string += self.buffered_char
         return Token(token_string, TokenType.CONST)

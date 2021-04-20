@@ -59,7 +59,6 @@ class TokenType(Enum):
     COMP_OPERATOR = auto()
     CONST = auto()
     IDENTIFIER = auto()
-    QUOTATION_MARK = auto()
 
 
 class Location:
