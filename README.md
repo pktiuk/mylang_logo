@@ -98,15 +98,15 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **valueAssignment** = `identifier, "=", expression;`  
 **expression** = `logicalExpression | mathExpression;`  
 **logicalExpression** = `andCondition, {"||", andCondition};`  
-**andCondition** = `andCondition, {"&&", andCondition} | mathExpression, compSign, mathExpression | "(" logicalExpression ")";`  
+**andCondition** = `relation, {"&&", relation};`  
+**relation** = `mathExpression, compSign, mathExpression | "(" logicalExpression ")"`;  
 **mathExpression** = `mathExpression, {addOperator} | factor, {multOperator};`  
 **factor** = `value | "(" mathExpression ")";`  
-**value** = `identifier, {functionOperator | fieldOperator } | constValue`  
+**value** = `[ "!" | "-" ], identifier, {functionOperator } | constValue`  
 
 **addOperator** = `addSign, mathExpression;`  
 **multOperator** = `multSign, factor;`  
-**functionOperator** = `"(" [ {expression, ","}, expression ], ")";`  
-**fieldOperator** = `".", identifier;`  
+**functionOperator** = `"(" [ expression, {",", expression} ], ")";`  
 
 **addSign** = `"+" | "-" ;`  
 **multSign** = `"*" | "/";`  
@@ -132,7 +132,7 @@ identifier - token zawierający identyfikator, który może wskazywać na jaką�
 constValue - token bezpośrednio przeliczany na jakąś wartość  
 "fun", "if", "else", "while",  
 "{", "}", "(", ")", '"'  
-"+", "-", "*",  "/",  
+"+", "-", "*",  "/", "!"  
 "||", "&&", "==",  "!=", "<", "<=", ">", ">=", "."
 
 Funkcje wbudowane takie jak `print` nie będą tokenami, podobnie jak nazwy typów wbudowanych, bedą one rozpoznawane jako identyfikatory.
