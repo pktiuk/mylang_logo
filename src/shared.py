@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from dataclasses import dataclass
 
 
 class Logger(object):
@@ -67,11 +68,16 @@ class Location:
         self.char_number = char_number
 
 
+@dataclass
 class Token(object):
+    value: str
+    symbol_type: TokenType
+    location: Location
+
     def __init__(self,
                  token_type: TokenType,
                  input_string: str,
                  location: Location = None):
         self.value = input_string
-        self.type = token_type
+        self.symbol_type = token_type
         self.location = location
