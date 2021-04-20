@@ -1,18 +1,6 @@
 from shared import ConsoleLogger, Token, TokenType
 
 
-class TextBuffer:
-    def __init__(self, msg: str):
-        self.msg = msg
-        self.counter = 0
-
-    def get_char(self):
-        self.counter += 1
-        if self.counter <= len(self.msg):
-            return self.msg[self.counter - 1]
-        else:
-
-
 class UnexpectedCharacterError(BaseException):
     pass
 
