@@ -39,7 +39,7 @@ Projekt zostanie napisany w języku python, zaś samo GUI będzie stworzone z wy
 
 Okno główne będzie najpewniej podzielone na 3 główne części:
 
-- wizualizacja - będzie ono pokazywało utworzony obrazel
+- wizualizacja - będzie ono pokazywało utworzony obrazek
 - konsola - miejsce, gdzie będą wypisywane komunikaty oraz wiadomości
 - pole tekstowe - miejsce gdzie będzie wpisywany kod. W tym miejscu użytkownik będzie także informowany o wszelkich problemach i wyjątkach
 
@@ -88,17 +88,18 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 
 **program**  =  `{ statement | definition };`  
 **definition** = `functionDefinition | variableDefinition;`  
-**functionDefinition** =  `"fun" identifier, "(", [ {identifier, ","}, identifier ], ")", "{", {statement}, "}" ;`  
+**functionDefinition** =  `"fun" identifier, "(", [ identifier, {",", identifier} ], ")", block;`  
 **variableDefinition** = `identifier,  "=", expression ;`  
 **statement** = ` ifStatement | whileStatement | expression | valueAssignment; `  
-**ifStatement** = `"if", "(", logicalExpression, ")", "{", {statement}, "}" [ "else" "{", {statement}, "}" ] ;`  
-**whileStatement** = `"while", "(", logicalExpression, ")", "{", {statement}, "}" ;`  
+**ifStatement** = `"if", "(", logicalExpression, ")", block[ "else" block] ;`  
+**whileStatement** = `"while", "(", logicalExpression, ")", block;`  
+**block** = `"{", {statement}, "}" ;`  
 
 **valueAssignment** = `identifier, "=", expression;`  
 **expression** = `logicalExpression | mathExpression;`  
 **logicalExpression** = `andCondition, {"||", andCondition};`  
-**andCondition** = `andCondition, "&&", andCondition {"&&", andCondition} | mathExpression, compSign, mathExpression | value | "(" logicalExpression ")";`  
-**mathExpression** = `mathExpression, addOperator, {addOperator} | factor, {multOperator};`  
+**andCondition** = `andCondition, {"&&", andCondition} | mathExpression, compSign, mathExpression | "(" logicalExpression ")";`  
+**mathExpression** = `mathExpression, {addOperator} | factor, {multOperator};`  
 **factor** = `value | "(" mathExpression ")";`  
 **value** = `identifier, {functionOperator | fieldOperator } | constValue`  
 
@@ -121,13 +122,13 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **letter** = `"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;`  
 **nonZeroDigit** = `"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;`  
 **digit** = `"0" | nonZeroDigit;`  
-**specialSign** = `"_" | "-" ;`  
+**specialSign** = `"_";`  
 
 ## Tokeny
 
 Lista tokenów:
 
-identifier - token zawierający identyfikator, który może wskazywać na jakąś zmienną, czy też funkcję
+identifier - token zawierający identyfikator, który może wskazywać na jakąś zmienną, czy też funkcję  
 constValue - token bezpośrednio przeliczany na jakąś wartość  
 "fun", "if", "else", "while",  
 "{", "}", "(", ")", '"'  
