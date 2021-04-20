@@ -8,7 +8,7 @@ class TextBuffer:
 
     def get_char(self):
         self.counter += 1
-        if self.counter < len(self.msg):
+        if self.counter <= len(self.msg):
             return self.msg[self.counter - 1]
         else:
             return "/n"
@@ -80,3 +80,14 @@ class Lexer():
             return Token(TokenType.COMP_OPERATOR, ">")
         elif token_string[0] == "!":
             return Token(TokenType.UNARY_OPERATOR, "!")
+
+        if token_string[0] == '"':
+            return self._parse_defined_string(token_string)
+
+    def _parse_defined_string(self, token_string):
+
+        while (self.buffered_char != '"'):
+            self.buffered_char = self.source.get_char()
+            token_string += self.buffered_char
+        # TODO error handling and add quote escaping
+        return Token(token_string, TokenType.CONST)
