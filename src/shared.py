@@ -42,7 +42,6 @@ class ConsoleLogger(Logger):
 
 class TokenType(Enum):
     EOF = auto()
-    EOL = auto()
     FUN = auto()
     IF = auto()
     ELSE = auto()
@@ -59,6 +58,7 @@ class TokenType(Enum):
     COMP_OPERATOR = auto()
     CONST = auto()
     IDENTIFIER = auto()
+    QUOTATION_MARK = auto()
 
 
 class Location:
