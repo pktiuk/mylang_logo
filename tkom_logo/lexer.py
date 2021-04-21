@@ -103,8 +103,8 @@ class Lexer():
         if token_string[0] not in self.LETTERS and not token_string[0].isdigit(
         ):
             raise UnexpectedCharacterError(
-                "Unknown token, unexpected first character: ${token_string[0]}"
-            )
+                "Unknown token, unexpected first character: " +
+                token_string[0])
 
     def _parse_defined_string(self, token_string):
 
@@ -130,16 +130,22 @@ class Lexer():
         # parsing first part of number (before dot)
         while (self.buffered_char.isdigit()):
             self.buffered_char = self.source.get_char()
-            token_string += self.buffered_char
+            if self.buffered_char.isdigit():
+                token_string += self.buffered_char
 
         if (self.buffered_char == "."):
             token_string += self.buffered_char
             self.buffered_char = self.source.get_char()
             if not self.buffered_char.isdigit():
                 raise UnexpectedCharacterError(
-                    "Unexpected character while parsing number: ${token_string}"
-                )
+                    "Unexpected character while parsing number: " +
+                    token_string)
             while (self.buffered_char.isdigit()):
-                self.buffered_char = self.source.get_char()
                 token_string += self.buffered_char
+                self.buffered_char = self.source.get_char()
+
+        if not token_string[-1].isdigit():
+            raise UnexpectedCharacterError(
+                "Not number at the end of const number: " + token_string)
+
         return Token(TokenType.CONST, token_string)
