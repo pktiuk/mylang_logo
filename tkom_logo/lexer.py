@@ -137,9 +137,8 @@ class Lexer():
             token_string += self.buffered_char
             self.buffered_char = self.source.get_char()
             if not self.buffered_char.isdigit():
-                raise UnexpectedCharacterError(
-                    "Unexpected character while parsing number: " +
-                    token_string)
+                raise ParseError("Non-digit after dot in number: " +
+                                 token_string)
             while (self.buffered_char.isdigit()):
                 token_string += self.buffered_char
                 self.buffered_char = self.source.get_char()
@@ -147,5 +146,8 @@ class Lexer():
         if not token_string[-1].isdigit():
             raise UnexpectedCharacterError(
                 "Not number at the end of const number: " + token_string)
+        if self.buffered_char in self.LETTERS:
+            raise UnexpectedCharacterError(
+                "Number shouldn't contain any letters.")
 
         return Token(TokenType.CONST, token_string)
