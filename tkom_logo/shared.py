@@ -69,14 +69,19 @@ class Location:
 
 @dataclass
 class Token(object):
-    value: str
     symbol_type: TokenType
+    value: str
     location: Location
 
     def __init__(self,
                  token_type: TokenType,
                  input_string: str,
                  location: Location = None):
+        if type(token_type) != TokenType:
+            raise TypeError
+        if type(input_string) != str:
+            raise TypeError
+
         self.value = input_string
         self.symbol_type = token_type
         self.location = location

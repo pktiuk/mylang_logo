@@ -113,7 +113,7 @@ class Lexer():
             token_string += self.buffered_char
         # TODO error handling and add quote escaping
         self.buffered_char = None
-        return Token(token_string, TokenType.CONST)
+        return Token(TokenType.CONST, token_string)
 
     def _parse_identifier(self, token_string):
 
@@ -124,7 +124,7 @@ class Lexer():
         if token_string in self.RESTRICTED_IDENTIFIERS.keys():
             return self.RESTRICTED_IDENTIFIERS[token_string]
 
-        return Token(token_string, TokenType.IDENTIFIER)
+        return Token(TokenType.IDENTIFIER, token_string)
 
     def _parse_number(self, token_string):
         # parsing first part of number (before dot)
@@ -142,4 +142,4 @@ class Lexer():
             while (self.buffered_char.isdigit()):
                 self.buffered_char = self.source.get_char()
                 token_string += self.buffered_char
-        return Token(token_string, TokenType.CONST)
+        return Token(TokenType.CONST, token_string)
