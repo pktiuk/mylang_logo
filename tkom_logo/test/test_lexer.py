@@ -7,8 +7,8 @@ import pytest
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
-from tkom_logo.lexer import Lexer, UnexpectedCharacterError
-from tkom_logo.shared import *
+from lexer import Lexer, UnexpectedCharacterError
+from shared import Token, TokenType
 
 
 class TextBuffer:
@@ -36,4 +36,3 @@ class TestLexer:
         lexer = Lexer(source=s)
         with pytest.raises(UnexpectedCharacterError):
             lexer.get_token()
-
