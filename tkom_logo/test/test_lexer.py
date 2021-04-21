@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 import os
 import pytest
@@ -5,7 +7,8 @@ import pytest
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
-from tkom_logo.lexer import Lexer, TextBuffer
+from tkom_logo.lexer import Lexer, UnexpectedCharacterError
+from tkom_logo.shared import *
 
 
 class TextBuffer:
@@ -23,7 +26,14 @@ class TextBuffer:
 
 
 class TestLexer:
-    def test_base(self):
+    def test_1(self):
         t = TextBuffer("<=(\"ukafsd\"+312.543/1322())")
         lexer = Lexer(source=t)
-        assert lexer.get_token().value == "<="
+        assert lexer.get_token() == Token(TokenType.COMP_OPERATOR, "<=")
+
+    def test_wrong_identifier(self):
+        s = TextBuffer("1ls")
+        lexer = Lexer(source=s)
+        with pytest.raises(UnexpectedCharacterError):
+            lexer.get_token()
+
