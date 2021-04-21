@@ -1,4 +1,5 @@
 from shared import ConsoleLogger, Token, TokenType
+from queue import Queue
 
 
 class UnexpectedCharacterError(BaseException):
@@ -50,18 +51,37 @@ class Lexer():
         "else": Token(TokenType.ELSE, "else"),
     }
 
-    def __init__(self, logger=ConsoleLogger, source=None):
+    def __init__(self,
+                 source,
+                 logger=ConsoleLogger(),
+                 output_queque: Queue = Queue(maxsize=10)):
         self.source = source
         self.logger = logger
-        self.output = None
+        self.output_queque = output_queque
         self.buffered_char = "\n"
 
-    def run():
-        '''
-        while(queque not empty)
-            parse #with handling errors
-        '''
-        pass
+        self.is_running = False
+
+    def start(self):
+        if self.output_queque is None:
+            raise Exception("No output Queue defined")
+
+        self.is_running = True
+        while (self.is_running):
+            try:
+                t = self.get_token()
+                self.output_queque.put(t)
+            except UnexpectedCharacterError as exc:
+                self.logger.error(str(exc))
+            except UnexpectedCharacterError as exc:
+                self.logger.error(str(exc))
+            except Exception as exc:
+                # TODO handle other errors
+                self.logger.error("Unexpected exception occured: " + str(exc))
+
+    def stop(self):
+        self.is_running = False
+        # TODO use Queue as a source
 
     def get_token(self) -> Token:
         if self.buffered_char is None:
