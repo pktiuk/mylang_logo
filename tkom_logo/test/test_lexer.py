@@ -163,4 +163,8 @@ if(pole > 10 && pole <200)
     q = Queue(200)
     lexer = Lexer(source=s, output_queque=q)
 
-    lexer.start()
+    tr = threading.Thread(target=lexer.start)
+    tr.start()
+    tr.join(timeout=1)
+    assert not tr.is_alive()
+    assert q.qsize() == 113
