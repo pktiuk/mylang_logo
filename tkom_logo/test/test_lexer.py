@@ -7,22 +7,33 @@ import pytest
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
-from lexer import Lexer, UnexpectedCharacterError, ParseError
-from shared import Token, TokenType
+from shared import Token, TokenType, Location
+from lexer import Lexer, UnexpectedCharacterError, ParseError, TextReader
 
 
-class TextBuffer:
+class TextBuffer(TextReader):
     def __init__(self, msg: str):
         self.msg = msg
         self.counter = 0
         self.lineno = 0
+        self.charnr = 0
 
     def get_char(self):
         self.counter += 1
+        self.charnr += 1
         if self.counter <= len(self.msg):
+            if self.msg[self.counter - 1] == "\n":
+                self.lineno += 1
+                self.charnr = 0
             return self.msg[self.counter - 1]
         else:
-            return "+"
+            return "\x00"
+
+    def get_location(self) -> Location:
+        return Location(self.lineno, self.charnr)
+
+    def close(self):
+        pass
 
 
 def test_lexer():
