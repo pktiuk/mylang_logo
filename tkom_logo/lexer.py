@@ -1,5 +1,27 @@
-from shared import ConsoleLogger, Token, TokenType
+from shared import ConsoleLogger, Token, TokenType, Location
 from queue import Queue
+
+
+class TextReader:
+    """Base class for queque reading letters
+    """
+    def get_char(self) -> str:
+        """if buffer empty then wait
+
+        Returns:
+            single character (or 0x00 when closing)
+        """
+        raise NotImplementedError
+
+    def close(self):
+        """Prepares Reader for closing
+        get_char will return 0x00 instead of waiting for
+        empty queue
+        """
+        raise NotImplementedError
+
+    def get_location(self) -> Location:
+        raise NotImplementedError
 
 
 class UnexpectedCharacterError(BaseException):
@@ -53,7 +75,7 @@ class Lexer():
     }
 
     def __init__(self,
-                 source,
+                 source: TextReader,
                  logger=ConsoleLogger(),
                  output_queque: Queue = Queue(maxsize=10)):
         self.source = source
@@ -79,14 +101,16 @@ class Lexer():
             except Exception as exc:
                 # TODO handle other errors
                 self.logger.error("Unexpected exception occured: " + str(exc))
+        self.is_running = False
 
     def stop(self):
-        self.is_running = False
-        # TODO use Queue as a source
+        self.source.close()
 
     def get_token(self) -> Token:
         if self.buffered_char is None:
             self.buffered_char = self.source.get_char()
+            if self.buffered_char == "\x00":
+                return
 
         # read all of whitespaces between tokens
         while (self.buffered_char in self.WHITESPACE_ELEMENTS):
