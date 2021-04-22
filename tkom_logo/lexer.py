@@ -19,7 +19,7 @@ class Lexer():
         "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     ]
     NUMBERS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-    WHITESPACE_ELEMENTS = ["\n", " "]
+    WHITESPACE_ELEMENTS = [" ", "\t"]
 
     # Tokens consisting of only one token which cannot be parts of other tokens
     SINGLE_CHAR_TOKENS = {
@@ -31,6 +31,7 @@ class Lexer():
         "}": Token(TokenType.CLOSE_BLOCK, "}"),
         "(": Token(TokenType.OPEN_PAREN, "("),
         ")": Token(TokenType.CLOSE_PAREN, ")"),
+        "\n": Token(TokenType.EOL, "\n")
     }
 
     # Tokens consisting of two tokens, which can't be part of

@@ -38,6 +38,7 @@ def test_basic():
     assert lexer.get_token() == Token(TokenType.MULT_OPERATOR, "/")
     assert lexer.get_token() == Token(TokenType.CONST, "1322")
     assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(")
+    assert lexer.get_token() == Token(TokenType.EOL, "\n")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
 

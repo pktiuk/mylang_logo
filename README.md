@@ -133,7 +133,9 @@ constValue - token bezpośrednio przeliczany na jakąś wartość
 "fun", "if", "else", "while",  
 "{", "}", "(", ")", '"'  
 "+", "-", "*",  "/", "!"  
-"||", "&&", "==",  "!=", "<", "<=", ">", ">="
+"||", "&&", "==",  "!=", "<", "<=", ">", ">="  
+EOF - End Of File  
+EOL - End Of Line
 
 Funkcje wbudowane takie jak `print` nie będą tokenami, podobnie jak nazwy typów wbudowanych, bedą one rozpoznawane jako identyfikatory.
 
