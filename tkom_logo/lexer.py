@@ -177,7 +177,10 @@ class Lexer():
         while (self.buffered_char != '"'):
             self.buffered_char = self.source.get_char()
             token_string += self.buffered_char
-        # TODO error handling and add quote escaping
+            if token_string[-2::] == '\\"':
+                self.buffered_char = self.source.get_char()
+                token_string += self.buffered_char
+
         self.buffered_char = None
         return Token(TokenType.CONST, token_string)
 

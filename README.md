@@ -115,7 +115,7 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 
 **identifier** = `letter, {naturalNumber | letter | specialSign};`  
 **constValue** = `number | string;`  
-**string** = `'"' {letter | naturalNumber | specialSign } '"';`  
+**string** = `'"' {letter | naturalNumber | specialSign | stringEscapedSign} '"';`  
 **number** = `naturalNumber [ ".", digit, {digit}];`  
 **naturalNumber** = `"0" | (nonZeroDigit, {digit});`  
 
@@ -123,6 +123,7 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **nonZeroDigit** = `"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;`  
 **digit** = `"0" | nonZeroDigit;`  
 **specialSign** = `"_";`  
+**stringEscapedSign** = `'/"';`  
 
 ## Tokeny
 
@@ -141,4 +142,13 @@ Funkcje wbudowane takie jak `print` nie będą tokenami, podobnie jak nazwy typ�
 
 ## Testy
 
-Testy poszczególnych elementów analizatora będą realizowane za pomocą prostych testów jednostkowych stworzonych z pomocą narzędzia pytest.  
+Testy poszczególnych elementów analizatora są realizowane za pomocą prostych testów jednostkowych stworzonych z pomocą narzędzia pytest.  
+
+Uruchomienie testów:
+
+```bash
+pytest --pyargs tkom_logo
+```
+
+Poszczególne moduły systemu są testowane oddzielnie, aby umożliwić łatwiejszą weryfikację testów.  
+Testy są pisane na bieżąco, przy każdym znalezionym błędzie, który nie jest pokryty w ramach zbioru testowego dodawany jest nowy testcase mający badać dany przypadek.
