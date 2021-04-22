@@ -42,6 +42,7 @@ class ConsoleLogger(Logger):
 
 
 class TokenType(Enum):
+    ASSIGNMENT_OPERATOR = auto()
     EOF = auto()
     EOL = auto()
     FUN = auto()

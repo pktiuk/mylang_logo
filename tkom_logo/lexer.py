@@ -111,6 +111,8 @@ class Lexer():
             return Token(TokenType.COMP_OPERATOR, ">")
         elif token_string[0] == "!":
             return Token(TokenType.UNARY_OPERATOR, "!")
+        elif token_string[0] == "=":
+            return Token(TokenType.ASSIGNMENT_OPERATOR, "=")
 
         if token_string[0] == '"':
             return self._parse_defined_string(token_string)

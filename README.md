@@ -132,7 +132,7 @@ identifier - token zawierający identyfikator, który może wskazywać na jaką�
 constValue - token bezpośrednio przeliczany na jakąś wartość  
 "fun", "if", "else", "while",  
 "{", "}", "(", ")", '"'  
-"+", "-", "*",  "/", "!"  
+"+", "-", "*",  "/", "!"  "="  
 "||", "&&", "==",  "!=", "<", "<=", ">", ">="  
 EOF - End Of File  
 EOL - End Of Line
