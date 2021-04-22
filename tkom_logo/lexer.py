@@ -59,7 +59,7 @@ class Lexer():
         self.source = source
         self.logger = logger
         self.output_queque = output_queque
-        self.buffered_char = "\n"
+        self.buffered_char = None
 
         self.is_running = False
 

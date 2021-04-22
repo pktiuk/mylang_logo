@@ -39,6 +39,7 @@ def test_basic():
     assert lexer.get_token() == Token(TokenType.CONST, "1322")
     assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(")
     assert lexer.get_token() == Token(TokenType.EOL, "\n")
+    assert lexer.get_token() == Token(TokenType.EOL, "\n")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
 
@@ -47,14 +48,14 @@ def test_wrong_identifiers():
     s = TextBuffer("1ls")
     lexer = Lexer(source=s)
     with pytest.raises(UnexpectedCharacterError):
-        lexer.get_token()
+        print(lexer.get_token())
 
     s = TextBuffer("1312.43ls")
     lexer = Lexer(source=s)
     with pytest.raises(UnexpectedCharacterError):
-        lexer.get_token()
+        print(lexer.get_token())
 
     s = TextBuffer("1312.")
     lexer = Lexer(source=s)
     with pytest.raises(ParseError):
-        lexer.get_token()
+        print(lexer.get_token())
