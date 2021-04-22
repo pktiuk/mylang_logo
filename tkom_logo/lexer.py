@@ -118,6 +118,7 @@ class Lexer():
             return self._parse_defined_string(token_string)
 
         if token_string[0] in self.LETTERS:
+            token_string = token_string[0]
             return self._parse_identifier(token_string)
 
         if token_string[0].isdigit() and token_string[0] != "0":
