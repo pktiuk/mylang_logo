@@ -25,7 +25,7 @@ class TextBuffer:
             return "+"
 
 
-def test_basic():
+def test_lexer():
     t = TextBuffer("""<=(\"word\"+         312.543/1322(
         
     ))""")
@@ -42,6 +42,16 @@ def test_basic():
     assert lexer.get_token() == Token(TokenType.EOL, "\n")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
+
+
+def test_lexer2():
+    t = TextBuffer("""n=432+32""")
+    lexer = Lexer(source=t)
+    assert lexer.get_token() == Token(TokenType.IDENTIFIER, "n")
+    assert lexer.get_token() == Token(TokenType.ASSIGNMENT_OPERATOR, "=")
+    assert lexer.get_token() == Token(TokenType.CONST, "432")
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+")
+    assert lexer.get_token() == Token(TokenType.CONST, "32")
 
 
 def test_wrong_identifiers():
