@@ -53,7 +53,8 @@ class Lexer():
         "}": Token(TokenType.CLOSE_BLOCK, "}"),
         "(": Token(TokenType.OPEN_PAREN, "("),
         ")": Token(TokenType.CLOSE_PAREN, ")"),
-        "\n": Token(TokenType.EOL, "\n")
+        "\n": Token(TokenType.EOL, "\n"),
+        ".": Token(TokenType.FIELD_OPERATOR, "."),
     }
 
     # Tokens consisting of two tokens, which can't be part of
@@ -101,12 +102,13 @@ class Lexer():
             try:
                 t = self.get_token()
                 self.output_queque.put(t)
+                if t.symbol_type == TokenType.EOF:
+                    self.is_running = False
             except UnexpectedCharacterError as exc:
                 self.logger.error(str(exc))
             except UnexpectedCharacterError as exc:
                 self.logger.error(str(exc))
             except Exception as exc:
-                # TODO handle other errors
                 self.logger.error("Unexpected exception occured: " + str(exc))
         self.is_running = False
 
@@ -125,8 +127,8 @@ class Lexer():
     def get_token(self) -> Token:
         if self.buffered_char is None:
             self.buffered_char = self.source.get_char()
-            if self.buffered_char == "\x00":
-                return
+        if self.buffered_char == '\0':
+            return Token(TokenType.EOF, "")
 
         # read all of whitespaces between tokens
         while (self.buffered_char in self.WHITESPACE_ELEMENTS):
@@ -163,14 +165,16 @@ class Lexer():
             token_string = token_string[0]
             return self._parse_identifier(token_string)
 
-        if token_string[0].isdigit() and token_string[0] != "0":
+        if token_string[0].isdigit():
             return self._parse_number(token_string)
 
         if token_string[0] not in self.LETTERS and not token_string[0].isdigit(
         ):
+            if token_string[0] == '\0':
+                return Token(TokenType.EOF, "")
             raise UnexpectedCharacterError(
-                "Unknown token, unexpected first character: " +
-                token_string[0])
+                f"Unknown token, unexpected first character in token: {token_string}"
+            )
 
     def _parse_defined_string(self, token_string):
 
@@ -196,11 +200,15 @@ class Lexer():
         return Token(TokenType.IDENTIFIER, token_string)
 
     def _parse_number(self, token_string):
+        token_string = token_string[0]
         # parsing first part of number (before dot)
-        while (self.buffered_char.isdigit()):
-            self.buffered_char = self.source.get_char()
+        if token_string[0] == "0":
             if self.buffered_char.isdigit():
+                raise ParseError("Not allowed number format: " + token_string)
+        else:
+            while (self.buffered_char.isdigit()):
                 token_string += self.buffered_char
+                self.buffered_char = self.source.get_char()
 
         if (self.buffered_char == "."):
             token_string += self.buffered_char

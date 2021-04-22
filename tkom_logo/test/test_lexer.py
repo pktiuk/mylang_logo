@@ -3,6 +3,8 @@
 import sys
 import os
 import pytest
+import threading
+from queue import Queue
 
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
@@ -32,7 +34,7 @@ class TextBuffer(TextReader):
                 self.newline = True
             return self.msg[self.counter - 1]
         else:
-            return "\x00"
+            return '\0'
 
     def get_location(self) -> Location:
         return Location(self.lineno, self.charnr)
@@ -82,14 +84,17 @@ def test_lexer2():
     assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 6))
 
 
-def test_wrong_identifiers():
-    s = TextBuffer("1ls")
-    lexer = Lexer(source=s)
-    with pytest.raises(UnexpectedCharacterError):
-        print(lexer.get_token())
+def test_number_parsing():
+    t = TextBuffer("0")
+    lexer = Lexer(source=t)
+    assert lexer.get_token() == Token(TokenType.CONST, "0", Location(0, 0))
 
-    s = TextBuffer("1312.43ls")
-    lexer = Lexer(source=s)
+    t = TextBuffer("0.12")
+    lexer = Lexer(source=t)
+    assert lexer.get_token() == Token(TokenType.CONST, "0.12", Location(0, 0))
+
+    t = TextBuffer("1312.43ls")
+    lexer = Lexer(source=t)
     with pytest.raises(UnexpectedCharacterError):
         print(lexer.get_token())
 
@@ -97,3 +102,65 @@ def test_wrong_identifiers():
     lexer = Lexer(source=s)
     with pytest.raises(ParseError):
         print(lexer.get_token())
+
+    s = TextBuffer("032")
+    lexer = Lexer(source=s)
+    with pytest.raises(ParseError):
+        print(lexer.get_token())
+
+
+def test_wrong_identifiers():
+    s = TextBuffer("1ls")
+    lexer = Lexer(source=s)
+    with pytest.raises(UnexpectedCharacterError):
+        print(lexer.get_token())
+
+
+def test_proper_EOF():
+    s = TextBuffer("")
+    lexer = Lexer(source=s)
+    assert lexer.get_token().symbol_type == TokenType.EOF
+
+    s = TextBuffer("    ")
+    lexer = Lexer(source=s)
+    assert lexer.get_token().symbol_type == TokenType.EOF
+
+    s = TextBuffer("  \n  ")
+    lexer = Lexer(source=s)
+    lexer.get_token()
+    assert lexer.get_token().symbol_type == TokenType.EOF
+
+
+def test_running():
+    s = TextBuffer("""fun draw_square(len)
+{
+  i = 0
+  t = Turtle()
+  while(i<=3)
+  {
+    t.fd(len)
+    t.rt(90)
+    i=i+1
+  }
+  pole = len*len
+  return(pole)
+}
+
+print("Obrysowane pole ")
+
+pole=draw_square(10)
+
+msg = ""
+
+if(pole > 10 && pole <200)
+{
+  print("jest wieksze od 10 i mniejsze od 200")
+}else
+{
+  print("jest inne niz przewidywane")
+}
+  """)
+    q = Queue(200)
+    lexer = Lexer(source=s, output_queque=q)
+
+    lexer.start()
