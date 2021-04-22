@@ -16,15 +16,20 @@ class TextBuffer(TextReader):
         self.msg = msg
         self.counter = 0
         self.lineno = 0
-        self.charnr = 0
+        self.charnr = -1
+        self.newline = False
 
     def get_char(self):
         self.counter += 1
         self.charnr += 1
         if self.counter <= len(self.msg):
-            if self.msg[self.counter - 1] == "\n":
+            if self.newline:
                 self.lineno += 1
                 self.charnr = 0
+                self.newline = False
+
+            if self.msg[self.counter - 1] == "\n":
+                self.newline = True
             return self.msg[self.counter - 1]
         else:
             return "\x00"
@@ -38,31 +43,43 @@ class TextBuffer(TextReader):
 
 def test_lexer():
     t = TextBuffer("""<=(\"word\"+         312.543/1322(
-        
+
     ))""")
     lexer = Lexer(source=t)
-    assert lexer.get_token() == Token(TokenType.COMP_OPERATOR, "<=")
-    assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(")
-    assert lexer.get_token() == Token(TokenType.CONST, '"word"')
-    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+")
-    assert lexer.get_token() == Token(TokenType.CONST, "312.543")
-    assert lexer.get_token() == Token(TokenType.MULT_OPERATOR, "/")
-    assert lexer.get_token() == Token(TokenType.CONST, "1322")
-    assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(")
-    assert lexer.get_token() == Token(TokenType.EOL, "\n")
-    assert lexer.get_token() == Token(TokenType.EOL, "\n")
-    assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
-    assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")")
+    assert lexer.get_token() == Token(TokenType.COMP_OPERATOR, "<=",
+                                      Location(0, 0))
+    assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(",
+                                      Location(0, 2))
+    assert lexer.get_token() == Token(TokenType.CONST, '"word"',
+                                      Location(0, 3))
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
+                                      Location(0, 9))
+    assert lexer.get_token() == Token(TokenType.CONST, "312.543",
+                                      Location(0, 19))
+    assert lexer.get_token() == Token(TokenType.MULT_OPERATOR, "/",
+                                      Location(0, 26))
+    assert lexer.get_token() == Token(TokenType.CONST, "1322", Location(0, 27))
+    assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(",
+                                      Location(0, 31))
+    assert lexer.get_token() == Token(TokenType.EOL, "\n", Location(0, 32))
+    assert lexer.get_token() == Token(TokenType.EOL, "\n", Location(1, 0))
+    assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")",
+                                      Location(2, 4))
+    assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")",
+                                      Location(2, 5))
 
 
 def test_lexer2():
     t = TextBuffer("""n=432+32""")
     lexer = Lexer(source=t)
-    assert lexer.get_token() == Token(TokenType.IDENTIFIER, "n")
-    assert lexer.get_token() == Token(TokenType.ASSIGNMENT_OPERATOR, "=")
-    assert lexer.get_token() == Token(TokenType.CONST, "432")
-    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+")
-    assert lexer.get_token() == Token(TokenType.CONST, "32")
+    assert lexer.get_token() == Token(TokenType.IDENTIFIER, "n",
+                                      Location(0, 0))
+    assert lexer.get_token() == Token(TokenType.ASSIGNMENT_OPERATOR, "=",
+                                      Location(0, 1))
+    assert lexer.get_token() == Token(TokenType.CONST, "432", Location(0, 2))
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
+                                      Location(0, 5))
+    assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 6))
 
 
 def test_wrong_identifiers():
