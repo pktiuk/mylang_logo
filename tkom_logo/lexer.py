@@ -82,10 +82,17 @@ class Lexer():
         self.logger = logger
         self.output_queque = output_queque
         self.buffered_char = None
+        self.current_location = Location(0, 0)
 
         self.is_running = False
 
     def start(self):
+        """Starts continously processing characters from source and putting them
+        into specified queuq
+
+        Raises:
+            Exception: raised when no output Queue is defined
+        """
         if self.output_queque is None:
             raise Exception("No output Queue defined")
 
@@ -106,6 +113,15 @@ class Lexer():
     def stop(self):
         self.source.close()
 
+    def _add_loaded_location_to_token(decorated_fun, *args, **kwargs):
+        def output_fun(*args, **kwargs):
+            t = decorated_fun(*args, **kwargs)
+            t.location = args[0].current_location
+            return t
+
+        return output_fun
+
+    @_add_loaded_location_to_token
     def get_token(self) -> Token:
         if self.buffered_char is None:
             self.buffered_char = self.source.get_char()
@@ -115,6 +131,8 @@ class Lexer():
         # read all of whitespaces between tokens
         while (self.buffered_char in self.WHITESPACE_ELEMENTS):
             self.buffered_char = self.source.get_char()
+
+        self.current_location = self.source.get_location()
 
         if self.buffered_char in self.SINGLE_CHAR_TOKENS.keys():
             ret_val = self.buffered_char

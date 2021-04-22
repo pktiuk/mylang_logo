@@ -63,7 +63,11 @@ class TokenType(Enum):
     IDENTIFIER = auto()
 
 
+@dataclass
 class Location:
+    line: int
+    char_number: int
+
     def __init__(self, line, char_number):
         self.line = line
         self.char_number = char_number
