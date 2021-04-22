@@ -71,8 +71,8 @@ def test_lexer():
                                       Location(2, 5))
 
 
-def test_lexer2():
-    t = TextBuffer("""n=432+32""")
+def test_lexer_assignment():
+    t = TextBuffer("""n=432+32-0+-32""")
     lexer = Lexer(source=t)
     assert lexer.get_token() == Token(TokenType.IDENTIFIER, "n",
                                       Location(0, 0))
@@ -82,6 +82,14 @@ def test_lexer2():
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
                                       Location(0, 5))
     assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 6))
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "-",
+                                      Location(0, 8))
+    assert lexer.get_token() == Token(TokenType.CONST, "0", Location(0, 9))
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
+                                      Location(0, 10))
+    assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "-",
+                                      Location(0, 11))
+    assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 12))
 
 
 def test_number_parsing():
