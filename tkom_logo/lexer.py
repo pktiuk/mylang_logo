@@ -127,12 +127,13 @@ class Lexer():
     def get_token(self) -> Token:
         if self.buffered_char is None:
             self.buffered_char = self.source.get_char()
-        if self.buffered_char == '\0':
-            return Token(TokenType.EOF, "")
 
         # read all of whitespaces between tokens
         while (self.buffered_char in self.WHITESPACE_ELEMENTS):
             self.buffered_char = self.source.get_char()
+
+        if self.buffered_char == '\0':
+            return Token(TokenType.EOF, "")
 
         self.current_location = self.source.get_location()
 
@@ -170,8 +171,6 @@ class Lexer():
 
         if token_string[0] not in self.LETTERS and not token_string[0].isdigit(
         ):
-            if token_string[0] == '\0':
-                return Token(TokenType.EOF, "")
             raise UnexpectedCharacterError(
                 f"Unknown token, unexpected first character in token: {token_string}"
             )
