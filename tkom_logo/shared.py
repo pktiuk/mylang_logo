@@ -82,13 +82,11 @@ class Token(object):
 
     def __init__(self,
                  token_type: TokenType,
-                 input_string: str,
+                 input_value: str,
                  location: Location = None):
         if type(token_type) != TokenType:
             raise TypeError
-        if type(input_string) != str:
-            raise TypeError
 
-        self.value = input_string
+        self.value = input_value
         self.symbol_type = token_type
         self.location = location

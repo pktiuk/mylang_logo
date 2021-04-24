@@ -56,15 +56,13 @@ def test_lexer():
                                       Location(0, 3))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
                                       Location(0, 9))
-    assert lexer.get_token() == Token(TokenType.CONST, "312.543",
+    assert lexer.get_token() == Token(TokenType.CONST, 312.543,
                                       Location(0, 19))
     assert lexer.get_token() == Token(TokenType.MULT_OPERATOR, "/",
                                       Location(0, 26))
-    assert lexer.get_token() == Token(TokenType.CONST, "1322", Location(0, 27))
+    assert lexer.get_token() == Token(TokenType.CONST, 1322, Location(0, 27))
     assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(",
                                       Location(0, 31))
-    assert lexer.get_token() == Token(TokenType.EOL, "\n", Location(0, 32))
-    assert lexer.get_token() == Token(TokenType.EOL, "\n", Location(1, 0))
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")",
                                       Location(2, 4))
     assert lexer.get_token() == Token(TokenType.CLOSE_PAREN, ")",
@@ -78,28 +76,28 @@ def test_lexer_assignment():
                                       Location(0, 0))
     assert lexer.get_token() == Token(TokenType.ASSIGNMENT_OPERATOR, "=",
                                       Location(0, 1))
-    assert lexer.get_token() == Token(TokenType.CONST, "432", Location(0, 2))
+    assert lexer.get_token() == Token(TokenType.CONST, 432, Location(0, 2))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
                                       Location(0, 5))
-    assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 6))
+    assert lexer.get_token() == Token(TokenType.CONST, 32, Location(0, 6))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "-",
                                       Location(0, 8))
-    assert lexer.get_token() == Token(TokenType.CONST, "0", Location(0, 9))
+    assert lexer.get_token() == Token(TokenType.CONST, 0, Location(0, 9))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
                                       Location(0, 10))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "-",
                                       Location(0, 11))
-    assert lexer.get_token() == Token(TokenType.CONST, "32", Location(0, 12))
+    assert lexer.get_token() == Token(TokenType.CONST, 32, Location(0, 12))
 
 
 def test_number_parsing():
     t = TextBuffer("0")
     lexer = Lexer(source=t)
-    assert lexer.get_token() == Token(TokenType.CONST, "0", Location(0, 0))
+    assert lexer.get_token() == Token(TokenType.CONST, 0, Location(0, 0))
 
     t = TextBuffer("0.12")
     lexer = Lexer(source=t)
-    assert lexer.get_token() == Token(TokenType.CONST, "0.12", Location(0, 0))
+    assert lexer.get_token() == Token(TokenType.CONST, 0.12, Location(0, 0))
 
     t = TextBuffer("1312.43ls")
     lexer = Lexer(source=t)
@@ -139,7 +137,7 @@ def test_proper_EOF():
     assert lexer.get_token().symbol_type == TokenType.EOF
 
 
-def test_running():
+def test_big_text():
     s = TextBuffer("""fun draw_square(len)
 {
   i = 0

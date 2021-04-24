@@ -196,34 +196,31 @@ class Lexer():
         return Token(TokenType.IDENTIFIER, token_string)
 
     def _parse_number(self):
-        token_string = self.buffered_char
+        value = float(self.buffered_char)
         # parsing first part of number (before dot)
         if self.buffered_char == "0":
             if self._get_char().isdigit():
-                raise ParseError("Not allowed number format: " + token_string)
+                raise ParseError("Not allowed number format (0xx)")
         else:
             while (self._get_char().isdigit()):
-                token_string += self.buffered_char
+                value = 10 * value + float(self.buffered_char)
 
         if (self.buffered_char == "."):
-            token_string += self.buffered_char
-
             if not self._get_char().isdigit():
-                raise ParseError("Non-digit after dot in number: " +
-                                 token_string)
+                raise ParseError("Non-digit after dot in number")
 
-            token_string += self.buffered_char
+            denominator = 10
+            numerator = float(self.buffered_char)
             while (self._get_char().isdigit()):
-                token_string += self.buffered_char
+                denominator *= 10
+                numerator = numerator * 10 + float(self.buffered_char)
+            value = value + numerator / denominator
 
-        if not token_string[-1].isdigit():
-            raise UnexpectedCharacterError(
-                "Not number at the end of const number: " + token_string)
         if self.buffered_char.isalpha():
             raise UnexpectedCharacterError(
                 "Number shouldn't contain any letters.")
 
-        return Token(TokenType.CONST, token_string)
+        return Token(TokenType.CONST, value)
 
     def _get_char(self) -> str:
         self.buffered_char = self.source.get_char()
