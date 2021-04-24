@@ -35,29 +35,45 @@ class ParseError(BaseException):
 class Lexer():
     RESTRICTED_WORDS = ["fun", "if", "while", "else"]
 
-    # Tokens consisting of only one token which cannot be parts of other tokens
-    SINGLE_CHAR_TOKENS = {
-        "+": lambda: Token(TokenType.ADD_OPERATOR, "+"),
-        "-": lambda: Token(TokenType.ADD_OPERATOR, "-"),
-        "*": lambda: Token(TokenType.MULT_OPERATOR, "*"),
-        "/": lambda: Token(TokenType.MULT_OPERATOR, "/"),
-        "{": lambda: Token(TokenType.OPEN_BLOCK, "{"),
-        "}": lambda: Token(TokenType.CLOSE_BLOCK, "}"),
-        "(": lambda: Token(TokenType.OPEN_PAREN, "("),
-        ")": lambda: Token(TokenType.CLOSE_PAREN, ")"),
-        ".": lambda: Token(TokenType.FIELD_OPERATOR, "."),
-    }
-
-    # Tokens consisting of two tokens, which can't be part of
-    # identifier or const value
-    TWO_CHAR_TOKENS = {
-        "||": Token(TokenType.OR_OPERATOR, "||"),
-        "&&": Token(TokenType.AND_OPERATOR, "&&"),
-        "==": Token(TokenType.COMP_OPERATOR, "=="),
-        "<=": Token(TokenType.COMP_OPERATOR, "<="),
-        ">=": Token(TokenType.COMP_OPERATOR, ">="),
-        "!=": Token(TokenType.COMP_OPERATOR, "!="),
-    }
+    # One or two-character tokens
+    SHORT_TOKENS = {
+        "+":
+        lambda self: Token(TokenType.ADD_OPERATOR, "+"),
+        "-":
+        lambda self: Token(TokenType.ADD_OPERATOR, "-"),
+        "*":
+        lambda self: Token(TokenType.MULT_OPERATOR, "*"),
+        "/":
+        lambda self: Token(TokenType.MULT_OPERATOR, "/"),
+        "{":
+        lambda self: Token(TokenType.OPEN_BLOCK, "{"),
+        "}":
+        lambda self: Token(TokenType.CLOSE_BLOCK, "}"),
+        "(":
+        lambda self: Token(TokenType.OPEN_PAREN, "("),
+        ")":
+        lambda self: Token(TokenType.CLOSE_PAREN, ")"),
+        ".":
+        lambda self: Token(TokenType.FIELD_OPERATOR, "."),
+        "<":
+        lambda self: Token(TokenType.COMP_OPERATOR, "<=")
+        if self._get_char() == "=" else Token(TokenType.COMP_OPERATOR, "<"),
+        ">":
+        lambda self: Token(TokenType.COMP_OPERATOR, ">=")
+        if self._get_char() == "=" else Token(TokenType.COMP_OPERATOR, ">"),
+        "=":
+        lambda self: Token(TokenType.COMP_OPERATOR, "==") if self._get_char()
+        == "=" else Token(TokenType.ASSIGNMENT_OPERATOR, "="),
+        "!":
+        lambda self: Token(TokenType.COMP_OPERATOR, "!=")
+        if self._get_char() == "=" else Token(TokenType.UNARY_OPERATOR, "!"),
+        "|":
+        lambda self: Token(TokenType.OR_OPERATOR, "||")
+        if self._get_char() == "" else UnexpectedCharacterError,
+        "&":
+        lambda self: Token(TokenType.AND_OPERATOR, "&&")
+        if self._get_char() == "" else UnexpectedCharacterError,
+    }  # TODO properly raise errors from above
 
     RESTRICTED_IDENTIFIERS = {
         "fun": Token(TokenType.FUN, "fun"),
@@ -129,28 +145,17 @@ class Lexer():
 
         self.current_location = self.source.get_location()
 
-        generator = self.SINGLE_CHAR_TOKENS.get(self.buffered_char)
+        generator = self.SHORT_TOKENS.get(self.buffered_char)
 
         if generator:
-            self.buffered_char = None
-            return generator()
+            token = generator(self)
+            if token.value[-1] == self.buffered_char:
+                self.buffered_char = None
+            return token
 
         token_string = self.buffered_char
         self._get_char()
         token_string += self.buffered_char
-        if token_string in self.TWO_CHAR_TOKENS.keys():
-            self.buffered_char = None
-            return self.TWO_CHAR_TOKENS[token_string]
-
-        # Cover non-trivial single character tokens
-        if token_string[0] == "<":
-            return Token(TokenType.COMP_OPERATOR, "<")
-        elif token_string[0] == ">":
-            return Token(TokenType.COMP_OPERATOR, ">")
-        elif token_string[0] == "!":
-            return Token(TokenType.UNARY_OPERATOR, "!")
-        elif token_string[0] == "=":
-            return Token(TokenType.ASSIGNMENT_OPERATOR, "=")
 
         if token_string[0] == '"':
             return self._parse_defined_string(token_string)
