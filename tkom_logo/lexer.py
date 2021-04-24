@@ -25,11 +25,11 @@ class TextReader:
 
 
 class UnexpectedCharacterError(BaseException):
-    pass
+    location: Location
 
 
 class ParseError(BaseException):
-    pass
+    location: Location
 
 
 class Lexer():
@@ -62,18 +62,18 @@ class Lexer():
         lambda self: Token(TokenType.COMP_OPERATOR, ">=")
         if self._get_char() == "=" else Token(TokenType.COMP_OPERATOR, ">"),
         "=":
-        lambda self: Token(TokenType.COMP_OPERATOR, "==") if self._get_char()
-        == "=" else Token(TokenType.ASSIGNMENT_OPERATOR, "="),
+        lambda self: Token(TokenType.COMP_OPERATOR, "==") if self._get_char(
+        ) == "=" else Token(TokenType.ASSIGNMENT_OPERATOR, "="),
         "!":
         lambda self: Token(TokenType.COMP_OPERATOR, "!=")
         if self._get_char() == "=" else Token(TokenType.UNARY_OPERATOR, "!"),
         "|":
-        lambda self: Token(TokenType.OR_OPERATOR, "||")
-        if self._get_char() == "" else UnexpectedCharacterError,
+        lambda self: Token(TokenType.OR_OPERATOR, "||") if self._get_char(
+        ) == "" else Lexer._raise_error(UnexpectedCharacterError),
         "&":
-        lambda self: Token(TokenType.AND_OPERATOR, "&&")
-        if self._get_char() == "" else UnexpectedCharacterError,
-    }  # TODO properly raise errors from above
+        lambda self: Token(TokenType.AND_OPERATOR, "&&") if self._get_char() ==
+        "" else Lexer._raise_error(UnexpectedCharacterError),
+    }
 
     RESTRICTED_IDENTIFIERS = {
         "fun": lambda: Token(TokenType.FUN, "fun"),
@@ -122,15 +122,19 @@ class Lexer():
     def stop(self):
         self.source.close()
 
-    def _add_loaded_location_to_token(decorated_fun, *args, **kwargs):
+    def _handle_returned_token(decorated_fun, *args, **kwargs):
         def output_fun(*args, **kwargs):
-            t = decorated_fun(*args, **kwargs)
-            t.location = args[0].current_location
+            try:
+                t = decorated_fun(*args, **kwargs)
+                t.location = args[0].current_location
+            except (UnexpectedCharacterError, ParseError) as err:
+                err.location = args[0].current_location
+                raise err
             return t
 
         return output_fun
 
-    @_add_loaded_location_to_token
+    @_handle_returned_token
     def get_token(self) -> Token:
         if self.buffered_char is None:
             self._get_char()
@@ -225,3 +229,7 @@ class Lexer():
     def _get_char(self) -> str:
         self.buffered_char = self.source.get_char()
         return self.buffered_char
+
+    @staticmethod
+    def _raise_error(error):
+        raise error
