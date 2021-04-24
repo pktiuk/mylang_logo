@@ -153,68 +153,67 @@ class Lexer():
                 self.buffered_char = None
             return token
 
-        token_string = self.buffered_char
-        self._get_char()
-        token_string += self.buffered_char
+        if self.buffered_char == '"':
+            return self._parse_defined_string()
 
-        if token_string[0] == '"':
-            return self._parse_defined_string(token_string)
+        if self.buffered_char.isalpha():
+            return self._parse_identifier()
 
-        if token_string[0].isalpha():
-            token_string = token_string[0]
-            return self._parse_identifier(token_string)
+        if self.buffered_char.isdigit():
+            return self._parse_number()
 
-        if token_string[0].isdigit():
-            return self._parse_number(token_string)
-
-        if not token_string[0].isalpha() and not token_string[0].isdigit():
+        if not self.buffered_char.isalpha() and not self.buffered_char.isdigit(
+        ):
             raise UnexpectedCharacterError(
-                f"Unknown token, unexpected first character in token: {token_string}"
+                f"Unknown token, unexpected first character: {self.buffered_char}"
             )
 
-    def _parse_defined_string(self, token_string):
-
-        while (self.buffered_char != '"'):
-            self._get_char()
+    def _parse_defined_string(self):
+        token_string = self.buffered_char
+        while (self._get_char() != '"'):
+            if self.buffered_char == "\0":
+                raise EOFError(
+                    f'Unexpected EOF during string parse: {token_string}')
             token_string += self.buffered_char
-            if token_string[-2::] == '\\"':
+            if token_string[-1] == '\\':
                 self._get_char()
                 token_string += self.buffered_char
-
+        token_string += self.buffered_char
         self.buffered_char = None
+
         return Token(TokenType.CONST, token_string)
 
-    def _parse_identifier(self, token_string):
-
+    def _parse_identifier(self):
+        token_string = ""
         while self.buffered_char.isalnum() or self.buffered_char == "_":
             token_string += self.buffered_char
             self._get_char()
 
-        if token_string in self.RESTRICTED_IDENTIFIERS.keys():
+        if token_string in self.RESTRICTED_IDENTIFIERS.keys():    # TODO
             return self.RESTRICTED_IDENTIFIERS[token_string]
 
         return Token(TokenType.IDENTIFIER, token_string)
 
-    def _parse_number(self, token_string):
-        token_string = token_string[0]
+    def _parse_number(self):
+        token_string = self.buffered_char
         # parsing first part of number (before dot)
-        if token_string[0] == "0":
-            if self.buffered_char.isdigit():
+        if self.buffered_char == "0":
+            if self._get_char().isdigit():
                 raise ParseError("Not allowed number format: " + token_string)
         else:
-            while (self.buffered_char.isdigit()):
+            while (self._get_char().isdigit()):
                 token_string += self.buffered_char
-                self._get_char()
 
         if (self.buffered_char == "."):
             token_string += self.buffered_char
-            self._get_char()
-            if not self.buffered_char.isdigit():
+
+            if not self._get_char().isdigit():
                 raise ParseError("Non-digit after dot in number: " +
                                  token_string)
-            while (self.buffered_char.isdigit()):
+
+            token_string += self.buffered_char
+            while (self._get_char().isdigit()):
                 token_string += self.buffered_char
-                self._get_char()
 
         if not token_string[-1].isdigit():
             raise UnexpectedCharacterError(
