@@ -34,14 +34,6 @@ class ParseError(BaseException):
 
 class Lexer():
     RESTRICTED_WORDS = ["fun", "if", "while", "else"]
-    LETTERS = [
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-        "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b",
-        "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
-        "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
-    ]
-    NUMBERS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-    WHITESPACE_ELEMENTS = [" ", "\t"]
 
     # Tokens consisting of only one token which cannot be parts of other tokens
     SINGLE_CHAR_TOKENS = {
@@ -53,7 +45,6 @@ class Lexer():
         "}": Token(TokenType.CLOSE_BLOCK, "}"),
         "(": Token(TokenType.OPEN_PAREN, "("),
         ")": Token(TokenType.CLOSE_PAREN, ")"),
-        "\n": Token(TokenType.EOL, "\n"),
         ".": Token(TokenType.FIELD_OPERATOR, "."),
     }
 
@@ -129,8 +120,9 @@ class Lexer():
             self._get_char()
 
         # read all of whitespaces between tokens
-        while (self.buffered_char in self.WHITESPACE_ELEMENTS):
-            self._get_char()
+        if self.buffered_char.isspace():
+            while (self._get_char().isspace()):
+                pass
 
         if self.buffered_char == '\0':
             return Token(TokenType.EOF, "")
@@ -162,15 +154,14 @@ class Lexer():
         if token_string[0] == '"':
             return self._parse_defined_string(token_string)
 
-        if token_string[0] in self.LETTERS:
+        if token_string[0].isalpha():
             token_string = token_string[0]
             return self._parse_identifier(token_string)
 
         if token_string[0].isdigit():
             return self._parse_number(token_string)
 
-        if token_string[0] not in self.LETTERS and not token_string[0].isdigit(
-        ):
+        if not token_string[0].isalpha() and not token_string[0].isdigit():
             raise UnexpectedCharacterError(
                 f"Unknown token, unexpected first character in token: {token_string}"
             )
@@ -189,7 +180,7 @@ class Lexer():
 
     def _parse_identifier(self, token_string):
 
-        while self.buffered_char in self.LETTERS + ["_"] + self.NUMBERS:
+        while self.buffered_char.isalnum() or self.buffered_char == "_":
             token_string += self.buffered_char
             self._get_char()
 
@@ -222,12 +213,12 @@ class Lexer():
         if not token_string[-1].isdigit():
             raise UnexpectedCharacterError(
                 "Not number at the end of const number: " + token_string)
-        if self.buffered_char in self.LETTERS:
+        if self.buffered_char.isalpha():
             raise UnexpectedCharacterError(
                 "Number shouldn't contain any letters.")
 
         return Token(TokenType.CONST, token_string)
 
-    def _get_char(self):
+    def _get_char(self) -> str:
         self.buffered_char = self.source.get_char()
         return self.buffered_char
