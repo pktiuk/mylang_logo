@@ -37,15 +37,15 @@ class Lexer():
 
     # Tokens consisting of only one token which cannot be parts of other tokens
     SINGLE_CHAR_TOKENS = {
-        "+": Token(TokenType.ADD_OPERATOR, "+"),
-        "-": Token(TokenType.ADD_OPERATOR, "-"),
-        "*": Token(TokenType.MULT_OPERATOR, "*"),
-        "/": Token(TokenType.MULT_OPERATOR, "/"),
-        "{": Token(TokenType.OPEN_BLOCK, "{"),
-        "}": Token(TokenType.CLOSE_BLOCK, "}"),
-        "(": Token(TokenType.OPEN_PAREN, "("),
-        ")": Token(TokenType.CLOSE_PAREN, ")"),
-        ".": Token(TokenType.FIELD_OPERATOR, "."),
+        "+": lambda: Token(TokenType.ADD_OPERATOR, "+"),
+        "-": lambda: Token(TokenType.ADD_OPERATOR, "-"),
+        "*": lambda: Token(TokenType.MULT_OPERATOR, "*"),
+        "/": lambda: Token(TokenType.MULT_OPERATOR, "/"),
+        "{": lambda: Token(TokenType.OPEN_BLOCK, "{"),
+        "}": lambda: Token(TokenType.CLOSE_BLOCK, "}"),
+        "(": lambda: Token(TokenType.OPEN_PAREN, "("),
+        ")": lambda: Token(TokenType.CLOSE_PAREN, ")"),
+        ".": lambda: Token(TokenType.FIELD_OPERATOR, "."),
     }
 
     # Tokens consisting of two tokens, which can't be part of
@@ -129,10 +129,11 @@ class Lexer():
 
         self.current_location = self.source.get_location()
 
-        if self.buffered_char in self.SINGLE_CHAR_TOKENS.keys():
-            ret_val = self.buffered_char
+        generator = self.SINGLE_CHAR_TOKENS.get(self.buffered_char)
+
+        if generator:
             self.buffered_char = None
-            return self.SINGLE_CHAR_TOKENS[ret_val]
+            return generator()
 
         token_string = self.buffered_char
         self._get_char()
