@@ -126,11 +126,11 @@ class Lexer():
     @_add_loaded_location_to_token
     def get_token(self) -> Token:
         if self.buffered_char is None:
-            self.buffered_char = self.source.get_char()
+            self._get_char()
 
         # read all of whitespaces between tokens
         while (self.buffered_char in self.WHITESPACE_ELEMENTS):
-            self.buffered_char = self.source.get_char()
+            self._get_char()
 
         if self.buffered_char == '\0':
             return Token(TokenType.EOF, "")
@@ -143,7 +143,7 @@ class Lexer():
             return self.SINGLE_CHAR_TOKENS[ret_val]
 
         token_string = self.buffered_char
-        self.buffered_char = self.source.get_char()
+        self._get_char()
         token_string += self.buffered_char
         if token_string in self.TWO_CHAR_TOKENS.keys():
             self.buffered_char = None
@@ -178,10 +178,10 @@ class Lexer():
     def _parse_defined_string(self, token_string):
 
         while (self.buffered_char != '"'):
-            self.buffered_char = self.source.get_char()
+            self._get_char()
             token_string += self.buffered_char
             if token_string[-2::] == '\\"':
-                self.buffered_char = self.source.get_char()
+                self._get_char()
                 token_string += self.buffered_char
 
         self.buffered_char = None
@@ -191,7 +191,7 @@ class Lexer():
 
         while self.buffered_char in self.LETTERS + ["_"] + self.NUMBERS:
             token_string += self.buffered_char
-            self.buffered_char = self.source.get_char()
+            self._get_char()
 
         if token_string in self.RESTRICTED_IDENTIFIERS.keys():
             return self.RESTRICTED_IDENTIFIERS[token_string]
@@ -207,17 +207,17 @@ class Lexer():
         else:
             while (self.buffered_char.isdigit()):
                 token_string += self.buffered_char
-                self.buffered_char = self.source.get_char()
+                self._get_char()
 
         if (self.buffered_char == "."):
             token_string += self.buffered_char
-            self.buffered_char = self.source.get_char()
+            self._get_char()
             if not self.buffered_char.isdigit():
                 raise ParseError("Non-digit after dot in number: " +
                                  token_string)
             while (self.buffered_char.isdigit()):
                 token_string += self.buffered_char
-                self.buffered_char = self.source.get_char()
+                self._get_char()
 
         if not token_string[-1].isdigit():
             raise UnexpectedCharacterError(
@@ -227,3 +227,7 @@ class Lexer():
                 "Number shouldn't contain any letters.")
 
         return Token(TokenType.CONST, token_string)
+
+    def _get_char(self):
+        self.buffered_char = self.source.get_char()
+        return self.buffered_char
