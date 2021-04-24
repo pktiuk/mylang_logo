@@ -76,10 +76,10 @@ class Lexer():
     }  # TODO properly raise errors from above
 
     RESTRICTED_IDENTIFIERS = {
-        "fun": Token(TokenType.FUN, "fun"),
-        "while": Token(TokenType.WHILE, "while"),
-        "if": Token(TokenType.IF, "if"),
-        "else": Token(TokenType.ELSE, "else"),
+        "fun": lambda: Token(TokenType.FUN, "fun"),
+        "while": lambda: Token(TokenType.WHILE, "while"),
+        "if": lambda: Token(TokenType.IF, "if"),
+        "else": lambda: Token(TokenType.ELSE, "else"),
     }
 
     def __init__(self,
@@ -189,8 +189,9 @@ class Lexer():
             token_string += self.buffered_char
             self._get_char()
 
-        if token_string in self.RESTRICTED_IDENTIFIERS.keys():    # TODO
-            return self.RESTRICTED_IDENTIFIERS[token_string]
+        generator = self.RESTRICTED_IDENTIFIERS.get(token_string)
+        if generator:
+            return generator()
 
         return Token(TokenType.IDENTIFIER, token_string)
 
