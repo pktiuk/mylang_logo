@@ -136,6 +136,11 @@ def test_proper_EOF():
     lexer.get_token()
     assert lexer.get_token().symbol_type == TokenType.EOF
 
+    s = TextBuffer('   "beginning of string123')
+    lexer = Lexer(source=s)
+    with pytest.raises(EOFError):
+        lexer.get_token()
+
 
 def test_big_text():
     s = TextBuffer("""fun draw_square(len)
@@ -173,4 +178,4 @@ if(pole > 10 && pole <200)
     tr.start()
     tr.join(timeout=1)
     assert not tr.is_alive()
-    assert q.qsize() == 113
+    assert q.qsize() == 85
