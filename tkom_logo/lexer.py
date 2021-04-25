@@ -61,7 +61,7 @@ class Lexer():
         if self._get_char() == "=" else Token(TokenType.UNARY_OPERATOR, "!"),
         "|":
         lambda self: Token(TokenType.OR_OPERATOR, "||") if self._get_char(
-        ) == "" else Lexer._raise_error(UnexpectedCharacterError),
+        ) == "|" else Lexer._raise_error(UnexpectedCharacterError),
         "&":
         lambda self: Token(TokenType.AND_OPERATOR, "&&") if self._get_char() ==
         "&" else Lexer._raise_error(UnexpectedCharacterError),
