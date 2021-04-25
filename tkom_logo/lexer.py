@@ -74,45 +74,13 @@ class Lexer():
         "else": lambda: Token(TokenType.ELSE, "else"),
     }
 
-    def __init__(self,
-                 source: TextReader,
-                 logger=ConsoleLogger(),
-                 output_queque: Queue = Queue(maxsize=10)):
+    def __init__(self, source: TextReader, logger=ConsoleLogger()):
         self.source = source
         self.logger = logger
-        self.output_queque = output_queque
         self.buffered_char = None
         self.current_location = Location(0, 0)
 
         self.is_running = False
-
-    def start(self):
-        """Starts continously processing characters from source and putting them
-        into specified queuq
-
-        Raises:
-            Exception: raised when no output Queue is defined
-        """
-        if self.output_queque is None:
-            raise Exception("No output Queue defined")
-
-        self.is_running = True
-        while (self.is_running):
-            try:
-                t = self.get_token()
-                self.output_queque.put(t)
-                if t.symbol_type == TokenType.EOF:
-                    self.is_running = False
-            except UnexpectedCharacterError as exc:
-                self.logger.error(str(exc))
-            except UnexpectedCharacterError as exc:
-                self.logger.error(str(exc))
-            except Exception as exc:
-                self.logger.error("Unexpected exception occured: " + str(exc))
-        self.is_running = False
-
-    def stop(self):
-        self.source.close()
 
     def _handle_returned_token(decorated_fun, *args, **kwargs):
         def output_fun(*args, **kwargs):
