@@ -64,7 +64,7 @@ class Lexer():
         ) == "" else Lexer._raise_error(UnexpectedCharacterError),
         "&":
         lambda self: Token(TokenType.AND_OPERATOR, "&&") if self._get_char() ==
-        "" else Lexer._raise_error(UnexpectedCharacterError),
+        "&" else Lexer._raise_error(UnexpectedCharacterError),
     }
 
     RESTRICTED_IDENTIFIERS = {

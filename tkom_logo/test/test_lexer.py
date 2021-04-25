@@ -172,11 +172,12 @@ if(pole > 10 && pole <200)
   print("jest inne niz przewidywane")
 }
   """)
-    q = Queue(200)
-    lexer = Lexer(source=s, output_queque=q)
 
-    tr = threading.Thread(target=lexer.start)
-    tr.start()
-    tr.join(timeout=1)
-    assert not tr.is_alive()
-    assert q.qsize() == 85
+    lexer = Lexer(source=s)
+
+    tokens = []
+    for i in range(90):
+        tokens.append(lexer.get_token())
+
+    assert tokens[85].symbol_type == TokenType.EOF
+    assert tokens[84].symbol_type != TokenType.EOF
