@@ -1,5 +1,5 @@
 from shared import ConsoleLogger, Token, TokenType, Location
-from queue import Queue
+from language_errors import UnexpectedCharacterError, ParseError
 
 
 class TextReader:
@@ -22,14 +22,6 @@ class TextReader:
 
     def get_location(self) -> Location:
         raise NotImplementedError
-
-
-class UnexpectedCharacterError(BaseException):
-    location: Location
-
-
-class ParseError(BaseException):
-    location: Location
 
 
 class Lexer():

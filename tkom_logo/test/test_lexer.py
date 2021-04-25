@@ -10,7 +10,8 @@ module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
 from shared import Token, TokenType, Location
-from lexer import Lexer, UnexpectedCharacterError, ParseError, TextReader
+from lexer import Lexer, TextReader
+from language_errors import UnexpectedCharacterError, ParseError
 
 
 class TextBuffer(TextReader):
