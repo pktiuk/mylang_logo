@@ -99,7 +99,7 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **expression** = `logicalExpression | mathExpression;`  
 **logicalExpression** = `andCondition, {"||", andCondition};`  
 **andCondition** = `relation, {"&&", relation};`  
-**relation** = `mathExpression, compSign, mathExpression | "(" logicalExpression ")"`;  
+**relation** = `mathExpression, [compSign, mathExpression] | "(" logicalExpression ")"`;  
 **mathExpression** = `mathExpression, addOperator | factor, {multOperator};`  
 **factor** = `value | "(" mathExpression ")";`  
 **value** = `[ "!" | "-" ], identifier, {functionOperator } | [ "!" | "-" ], constValue`  

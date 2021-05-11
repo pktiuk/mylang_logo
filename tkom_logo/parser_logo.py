@@ -29,8 +29,52 @@ class Parser(object):
         return result
 
     def parse_expression(self) -> ParserNode:
+        if self._get_token().symbol_type == TokenType.OPEN_PAREN:
+            self._pop_token()
+            result = self.parse_math_expression()
+            if self._pop_token().symbol_type != TokenType.CLOSE_PAREN:
+                raise SyntaxError("No ending parenthesis.")
+            return result
+
         result = self.parse_math_expression()
+        logical_operators = [
+            TokenType.OR_OPERATOR, TokenType.AND_OPERATOR,
+            TokenType.COMP_OPERATOR
+        ]
+        if self._get_token().symbol_type in logical_operators:
+            result = self.parse_and_condition(result)
+            #TODO - || operator
+
         return result
+
+    def parse_and_condition(self, first_math_expression):
+        result = None
+        if self._get_token().symbol_type == TokenType.COMP_OPERATOR:
+            result = ParserNode(
+                self._pop_token(),
+                [first_math_expression,
+                 self.parse_math_expression()])
+            first_math_expression = None
+
+        while self._get_token().symbol_type == TokenType.AND_OPERATOR:
+            and_operator = self._pop_token()
+            relation = self.parse_relation(first_math_expression)
+            first_math_expression = None
+            if result:
+                result = ParserNode(and_operator, [result, relation])
+            else:
+                result = relation
+        return result
+
+    def parse_relation(self, first_math_expression=None):
+        if not first_math_expression:
+            first_math_expression = self.parse_math_expression()
+
+        if self._get_token().symbol_type == TokenType.COMP_OPERATOR:
+            return ParserNode(
+                self._pop_token(),
+                [first_math_expression,
+                 self.parse_math_expression()])
 
     def parse_math_expression(self) -> ParserNode:
         result = self.parse_factor()
@@ -51,7 +95,7 @@ class Parser(object):
             self._pop_token()
             result = self.parse_math_expression()
             if self._get_token().symbol_type != TokenType.CLOSE_PAREN:
-                raise SyntaxError("No ending parenthese.")
+                raise SyntaxError("No ending parenthesis.")
             self._pop_token()
         else:
             result = self.parse_value()
@@ -70,6 +114,6 @@ class Parser(object):
                 return ParserNode(unary_token, [self.parse_value()])
 
             raise SyntaxError(
-                f'Wrong token ({self.get_token()}) after unary operation ')
+                f'Wrong token ({self._get_token()}) after unary operation ')
 
         raise NotImplementedError()
