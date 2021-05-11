@@ -43,7 +43,10 @@ class Parser(object):
         ]
         if self._get_token().symbol_type in logical_operators:
             result = self.parse_and_condition(result)
-            #TODO - || operator
+            while self._get_token().symbol_type == TokenType.OR_OPERATOR:
+                result = ParserNode(
+                    self._pop_token(),
+                    [result, self.parse_and_condition()])
 
         return result
 
