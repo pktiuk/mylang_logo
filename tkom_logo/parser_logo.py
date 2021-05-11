@@ -21,6 +21,8 @@ class Parser(object):
         return res
 
     def parse(self) -> ParserNode:
+        while self._get_token().symbol_type == TokenType.EOL:
+            self._pop_token()
         result = self.parse_statement()
         return result
 
