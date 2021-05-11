@@ -102,7 +102,8 @@ class ParserNode(object):
         self.children = children
 
     def __str__(self, level=0):
-        ret = "\t" * level + self.token.__str__() + "\n"
+        ret = "\t" * level
+        ret += f'{self.token.value} type: {self.token.symbol_type} Loc: {self.token.location} \n'
         for child in self.children:
             ret += child.__str__(level + 1)
         return ret

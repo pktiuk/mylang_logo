@@ -39,6 +39,10 @@ class Parser(object):
             new_tree = self.parse_factor()
             result = ParserNode(token=mult_token, children=[result, new_tree])
 
+        if self._get_token().symbol_type == TokenType.ADD_OPERATOR:
+            result = ParserNode(
+                self._pop_token(),
+                children=[result, self.parse_math_expression()])
         return result
 
     def parse_factor(self) -> ParserNode:
