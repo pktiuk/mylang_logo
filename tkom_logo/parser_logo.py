@@ -56,5 +56,16 @@ class Parser(object):
     def parse_value(self) -> ParserNode:
         if self._get_token().symbol_type == TokenType.CONST:
             return ParserNode(self._pop_token())
-        # elif self._get_token().symbol_type == TokenType.UNARY_OPERATOR:
+        elif self._get_token().symbol_type in [
+                TokenType.UNARY_OPERATOR, TokenType.ADD_OPERATOR
+        ]:
+            unary_token = self._pop_token()
+            if self._get_token().symbol_type in [
+                    TokenType.IDENTIFIER, TokenType.CONST
+            ]:
+                return ParserNode(unary_token, [self.parse_value()])
+
+            raise SyntaxError(
+                f'Wrong token ({self.get_token()}) after unary operation ')
+
         raise NotImplementedError()
