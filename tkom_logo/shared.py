@@ -90,3 +90,25 @@ class Token(object):
         self.value = input_value
         self.symbol_type = token_type
         self.location = location
+
+
+@dataclass
+class ParserNode(object):
+    token: Token
+    children: list
+
+    def __init__(self, token: Token, children=[]):
+        self.token = token
+        self.children = children
+
+    def __str__(self, level=0):
+        ret = "\t" * level + self.token.__str__() + "\n"
+        for child in self.children:
+            ret += child.__str__(level + 1)
+        return ret
+
+    def get_depth(self) -> int:
+        if len(self.children):
+            return 1 + max(x.get_depth() for x in self.children)
+        else:
+            return 0

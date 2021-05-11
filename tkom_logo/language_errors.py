@@ -7,3 +7,7 @@ class UnexpectedCharacterError(BaseException):
 
 class ParseError(BaseException):
     location: Location
+
+
+class SyntaxError(BaseException):
+    location: Location
