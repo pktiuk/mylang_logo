@@ -23,6 +23,10 @@ def test_multiplications():
         Token(TokenType.CONST, 22),
         Token(TokenType.MULT_OPERATOR, "*"),
         Token(TokenType.CONST, 4),
+        Token(TokenType.MULT_OPERATOR, "/"),
+        Token(TokenType.CONST, 3),
+        Token(TokenType.MULT_OPERATOR, "*"),
+        Token(TokenType.CONST, 1),
         Token(TokenType.EOL, "\n")
     ]
     q = Queue()
