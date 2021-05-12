@@ -28,9 +28,9 @@ class Parser(object):
 
     def parse_statement(self) -> ParserNode:
 
-        if self._get_token().value == "fun":
+        if self._get_token().symbol_type == TokenType.FUN:
             return self.parse_function()
-        elif self._get_token().value == "while":
+        elif self._get_token().symbol_type == TokenType.WHILE:
             return self.parse_while()
         else:
             result = self.parse_expression()
@@ -135,8 +135,23 @@ class Parser(object):
 
             raise SyntaxError(
                 f'Wrong token ({self._get_token()}) after unary operation ')
+        elif self._get_token().symbol_type == TokenType.IDENTIFIER:
+            result = ParserNode(self._pop_token())
+            while self._get_token().symbol_type == TokenType.OPEN_PAREN:
+                result = self.parse_function_operator(result)
+            return result
 
         raise NotImplementedError()
+
+    def parse_function_operator(self, function: ParserNode):
+        fun_operator = self._pop_token()
+        fun_operator.symbol_type = TokenType.FUN_OPERATOR
+        result = ParserNode(fun_operator, [function])
+        # Parsing arguments
+        while self._get_token().symbol_type != TokenType.CLOSE_PAREN:
+            raise NotImplementedError()  # TODO:parse arguments
+        self._pop_token()
+        return result
 
     def parse_while(self):
         raise NotImplementedError()

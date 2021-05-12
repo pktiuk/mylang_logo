@@ -62,6 +62,7 @@ class TokenType(Enum):
     CONST = auto()
     IDENTIFIER = auto()
     FIELD_OPERATOR = auto()
+    FUN_OPERATOR = auto()
 
 
 @dataclass
