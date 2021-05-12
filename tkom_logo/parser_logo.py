@@ -27,10 +27,14 @@ class Parser(object):
         return token_type == self.__get_token().symbol_type
 
     def parse(self) -> ParserNode:
-        while self._check_token_type(TokenType.EOL):
-            self.__pop_token()
-        result = self.__parse_statement()
-        return result
+        try:
+            while self._check_token_type(TokenType.EOL):
+                self.__pop_token()
+            result = self.__parse_statement()
+            return result
+        except SyntaxError as err:
+            err.location = self.__get_token().location
+            raise err
 
     def __parse_statement(self) -> ParserNode:
 
