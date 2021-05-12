@@ -77,8 +77,10 @@ class Parser(object):
 
         return result
 
-    def __parse_and_condition(self, first_math_expression) -> ParserNode:
-        result = None
+    def __parse_and_condition(self, first_math_expression=None) -> ParserNode:
+        if not first_math_expression:
+            first_math_expression = self.__parse_math_expression()
+        result = first_math_expression
         if self._check_token_type(TokenType.COMP_OPERATOR):
             result = ParserNode(
                 self.__pop_token(),

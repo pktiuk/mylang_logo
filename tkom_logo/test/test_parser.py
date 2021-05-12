@@ -10,7 +10,7 @@ sys.path.append(module_path)
 
 from shared import Token, TokenType, Location, ParserNode
 from parser_logo import Parser
-from language_errors import UnexpectedCharacterError, ParseError
+from language_errors import UnexpectedCharacterError, ParseError, SyntaxError
 from test_lexer import TextBuffer
 from lexer import Lexer
 
@@ -64,7 +64,7 @@ def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
 def test_parser_stability():
     TEST_STRINGS = [
         "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2=3&& 5>2", "-a +3",
-        "funkcja()+32"
+        "funkcja()+32", "a > 43 && var || obj.get()"
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
@@ -150,3 +150,18 @@ def test_field_operators():
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
+
+
+def test_exceptions():
+    q = generate_queue("while True")
+    p = Parser(token_source=q)
+    with pytest.raises(SyntaxError, match="opening paren"):
+        p.parse()
+    q = generate_queue("if value")
+    p = Parser(token_source=q)
+    with pytest.raises(SyntaxError, match="opening paren"):
+        p.parse()
+    q = generate_queue("thh.field.()")
+    p = Parser(token_source=q)
+    with pytest.raises(SyntaxError, match="after dot"):
+        p.parse()
