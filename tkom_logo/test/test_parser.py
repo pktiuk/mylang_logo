@@ -108,3 +108,15 @@ def test_functions():
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
+
+
+def test_loops():
+    TEST_STRINGS = [
+        "while(true){" + "}",
+    ]
+    for string in TEST_STRINGS:
+        print(f'parsing string: {string}')
+        q = generate_queue(string)
+        p = Parser(token_source=q)
+        result = p.parse()
+        check_leaves_and_nodes(result)

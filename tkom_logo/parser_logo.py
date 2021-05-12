@@ -71,7 +71,7 @@ class Parser(object):
 
         return result
 
-    def parse_and_condition(self, first_math_expression):
+    def parse_and_condition(self, first_math_expression) -> ParserNode:
         result = None
         if self._check_token_type(TokenType.COMP_OPERATOR):
             result = ParserNode(
@@ -90,7 +90,7 @@ class Parser(object):
                 result = relation
         return result
 
-    def parse_relation(self, first_math_expression=None):
+    def parse_relation(self, first_math_expression=None) -> ParserNode:
         if not first_math_expression:
             first_math_expression = self.parse_math_expression()
 
@@ -149,7 +149,7 @@ class Parser(object):
 
         raise RuntimeError()
 
-    def parse_function_operator(self, function: ParserNode):
+    def parse_function_operator(self, function: ParserNode) -> ParserNode:
         fun_operator = self._pop_token()
         fun_operator.symbol_type = TokenType.FUN_OPERATOR
         result = ParserNode(fun_operator, [function])
@@ -165,10 +165,20 @@ class Parser(object):
         self._pop_token()
         return result
 
-    def parse_while(self):
-        raise NotImplementedError()
+    def parse_while(self) -> ParserNode:
+        loop = ParserNode(self._pop_token())
+        if not self._check_token_type(TokenType.OPEN_PAREN):
+            raise SyntaxError("No opening paren after while definition")
+        self._pop_token()
+        logical_exp = self.parse_expression()
+        if not self._check_token_type(TokenType.CLOSE_PAREN):
+            raise SyntaxError("No closing paren after while definition")
+        self._pop_token()
+        loop.children.append(logical_exp)
+        loop.children.append(self.parse_block())
+        return loop
 
-    def parse_function_def(self):
+    def parse_function_def(self) -> ParserNode:
         '''
         function tree:
         fun_definition:
@@ -203,7 +213,7 @@ class Parser(object):
         result.children.append(block)
         return result
 
-    def parse_block(self):
+    def parse_block(self) -> ParserNode:
         if not self._check_token_type(TokenType.OPEN_BLOCK):
             raise SyntaxError("No opening block in block declaration")
 
