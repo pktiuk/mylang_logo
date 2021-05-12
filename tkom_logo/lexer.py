@@ -47,6 +47,8 @@ class Lexer():
         lambda self: Token(TokenType.CLOSE_PAREN, ")"),
         ".":
         lambda self: Token(TokenType.FIELD_OPERATOR, "."),
+        ",":
+        lambda self: Token(TokenType.COMMA, ","),
         "<":
         lambda self: Token(TokenType.COMP_OPERATOR, "<=")
         if self._get_char() == "=" else Token(TokenType.COMP_OPERATOR, "<"),

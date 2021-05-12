@@ -142,7 +142,7 @@ def test_proper_EOF():
 
 
 def test_big_text():
-    s = TextBuffer("""fun draw_square(len)
+    s = TextBuffer("""fun draw_square(len,len2)
 {
   i = 0
   t = Turtle()
@@ -177,5 +177,5 @@ if(pole > 10 && pole <200)
     for i in range(90):
         tokens.append(lexer.get_token())
 
-    assert tokens[85].symbol_type == TokenType.EOF
-    assert tokens[84].symbol_type != TokenType.EOF
+    assert tokens[87].symbol_type == TokenType.EOF
+    assert tokens[86].symbol_type != TokenType.EOF
