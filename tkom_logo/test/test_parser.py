@@ -32,21 +32,14 @@ def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
     """Leaves in tree can be only values,
     middle nodes can be only operators
     """
-    LEAF_TOKENS = [TokenType.CONST, TokenType.IDENTIFIER]
+    LEAF_TOKENS = [TokenType.CONST, TokenType.IDENTIFIER, TokenType.OPEN_BLOCK]
     NODE_TOKENS = [
-        TokenType.ADD_OPERATOR,
-        TokenType.MULT_OPERATOR,
-        TokenType.UNARY_OPERATOR,
-        TokenType.OR_OPERATOR,
-        TokenType.AND_OPERATOR,
-        TokenType.COMP_OPERATOR,
-        TokenType.FIELD_OPERATOR,
-        TokenType.ASSIGNMENT_OPERATOR,
-        TokenType.IF,
-        TokenType.ELSE,
-        TokenType.WHILE,
-        TokenType.FUN,
-        TokenType.FUN_OPERATOR,
+        TokenType.ADD_OPERATOR, TokenType.MULT_OPERATOR,
+        TokenType.UNARY_OPERATOR, TokenType.OR_OPERATOR,
+        TokenType.AND_OPERATOR, TokenType.COMP_OPERATOR,
+        TokenType.FIELD_OPERATOR, TokenType.ASSIGNMENT_OPERATOR, TokenType.IF,
+        TokenType.ELSE, TokenType.WHILE, TokenType.FUN, TokenType.FUN_OPERATOR,
+        TokenType.OPEN_BLOCK
     ]
     NOT_ALLOWED_TOKENS = [TokenType.EOF, TokenType.EOL]
     if print_tree:

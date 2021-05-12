@@ -99,9 +99,9 @@ class ParserNode(object):
     token: Token
     children: list
 
-    def __init__(self, token: Token, children=[]):
+    def __init__(self, token: Token, children=None):
         self.token = token
-        self.children = children
+        self.children = children if children else []
 
     def __str__(self, level=0):
         ret = "\t" * level
