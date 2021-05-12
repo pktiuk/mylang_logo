@@ -27,8 +27,21 @@ class Parser(object):
         return result
 
     def parse_statement(self) -> ParserNode:
-        result = self.parse_expression()
-        return result
+
+        if self._get_token().value == "fun":
+            return self.parse_function()
+        elif self._get_token().value == "while":
+            return self.parse_while()
+        else:
+            result = self.parse_expression()
+
+            # check if assignment
+            if result.children == [] and self._get_token(
+            ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
+                return ParserNode(self._pop_token(),
+                                  [result, self.parse_expression()])
+            else:
+                return result
 
     def parse_expression(self) -> ParserNode:
         if self._get_token().symbol_type == TokenType.OPEN_PAREN:
@@ -80,6 +93,8 @@ class Parser(object):
                 self._pop_token(),
                 [first_math_expression,
                  self.parse_math_expression()])
+        else:
+            return first_math_expression
 
     def parse_math_expression(self) -> ParserNode:
         result = self.parse_factor()
@@ -121,4 +136,10 @@ class Parser(object):
             raise SyntaxError(
                 f'Wrong token ({self._get_token()}) after unary operation ')
 
+        raise NotImplementedError()
+
+    def parse_while(self):
+        raise NotImplementedError()
+
+    def parse_function(self):
         raise NotImplementedError()

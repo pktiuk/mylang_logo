@@ -28,6 +28,13 @@ def generate_queue(text) -> Queue:
     return q
 
 
+def check_leaves_and_nodes(tree):
+    """Leaves in tree can be only values,
+    middle nodes can be only operators
+    """
+    pass
+
+
 def test_parser_stability():
     q = generate_queue("(-33*1)/-2")
     p = Parser(token_source=q)
@@ -38,6 +45,10 @@ def test_parser_stability():
     result = p.parse()
     print(result)
     q = generate_queue("23==3&& 5>2")
+    p = Parser(token_source=q)
+    result = p.parse()
+    print(result)
+    q = generate_queue("2=3&& 5>2")
     p = Parser(token_source=q)
     result = p.parse()
     print(result)
