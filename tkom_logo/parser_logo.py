@@ -23,17 +23,20 @@ class Parser(object):
         else:
             return self.token_source.get()
 
+    def _check_token_type(self, token_type: TokenType) -> bool:
+        return token_type == self._get_token().symbol_type
+
     def parse(self) -> ParserNode:
-        while self._get_token().symbol_type == TokenType.EOL:
+        while self._check_token_type(TokenType.EOL):
             self._pop_token()
         result = self.parse_statement()
         return result
 
     def parse_statement(self) -> ParserNode:
 
-        if self._get_token().symbol_type == TokenType.FUN:
+        if self._check_token_type(TokenType.FUN):
             return self.parse_function_def()
-        elif self._get_token().symbol_type == TokenType.WHILE:
+        elif self._check_token_type(TokenType.WHILE):
             return self.parse_while()
         else:
             result = self.parse_expression()
@@ -47,7 +50,7 @@ class Parser(object):
                 return result
 
     def parse_expression(self) -> ParserNode:
-        if self._get_token().symbol_type == TokenType.OPEN_PAREN:
+        if self._check_token_type(TokenType.OPEN_PAREN):
             self._pop_token()
             result = self.parse_math_expression()
             if self._pop_token().symbol_type != TokenType.CLOSE_PAREN:
@@ -61,7 +64,7 @@ class Parser(object):
         ]
         if self._get_token().symbol_type in logical_operators:
             result = self.parse_and_condition(result)
-            while self._get_token().symbol_type == TokenType.OR_OPERATOR:
+            while self._check_token_type(TokenType.OR_OPERATOR):
                 result = ParserNode(
                     self._pop_token(),
                     [result, self.parse_and_condition()])
@@ -70,14 +73,14 @@ class Parser(object):
 
     def parse_and_condition(self, first_math_expression):
         result = None
-        if self._get_token().symbol_type == TokenType.COMP_OPERATOR:
+        if self._check_token_type(TokenType.COMP_OPERATOR):
             result = ParserNode(
                 self._pop_token(),
                 [first_math_expression,
                  self.parse_math_expression()])
             first_math_expression = None
 
-        while self._get_token().symbol_type == TokenType.AND_OPERATOR:
+        while self._check_token_type(TokenType.AND_OPERATOR):
             and_operator = self._pop_token()
             relation = self.parse_relation(first_math_expression)
             first_math_expression = None
@@ -91,7 +94,7 @@ class Parser(object):
         if not first_math_expression:
             first_math_expression = self.parse_math_expression()
 
-        if self._get_token().symbol_type == TokenType.COMP_OPERATOR:
+        if self._check_token_type(TokenType.COMP_OPERATOR):
             return ParserNode(
                 self._pop_token(),
                 [first_math_expression,
@@ -101,12 +104,12 @@ class Parser(object):
 
     def parse_math_expression(self) -> ParserNode:
         result = self.parse_factor()
-        while self._get_token().symbol_type == TokenType.MULT_OPERATOR:
+        while self._check_token_type(TokenType.MULT_OPERATOR):
             mult_token = self._pop_token()
             new_tree = self.parse_factor()
             result = ParserNode(token=mult_token, children=[result, new_tree])
 
-        if self._get_token().symbol_type == TokenType.ADD_OPERATOR:
+        if self._check_token_type(TokenType.ADD_OPERATOR):
             result = ParserNode(
                 self._pop_token(),
                 children=[result, self.parse_math_expression()])
@@ -114,10 +117,10 @@ class Parser(object):
 
     def parse_factor(self) -> ParserNode:
         result = None
-        if self._get_token().symbol_type == TokenType.OPEN_PAREN:
+        if self._check_token_type(TokenType.OPEN_PAREN):
             self._pop_token()
             result = self.parse_math_expression()
-            if self._get_token().symbol_type != TokenType.CLOSE_PAREN:
+            if not self._check_token_type(TokenType.CLOSE_PAREN):
                 raise SyntaxError("No ending parenthesis.")
             self._pop_token()
         else:
@@ -125,7 +128,7 @@ class Parser(object):
         return result
 
     def parse_value(self) -> ParserNode:
-        if self._get_token().symbol_type == TokenType.CONST:
+        if self._check_token_type(TokenType.CONST):
             return ParserNode(self._pop_token())
         elif self._get_token().symbol_type in [
                 TokenType.UNARY_OPERATOR, TokenType.ADD_OPERATOR
@@ -138,9 +141,9 @@ class Parser(object):
 
             raise SyntaxError(
                 f'Wrong token ({self._get_token()}) after unary operation ')
-        elif self._get_token().symbol_type == TokenType.IDENTIFIER:
+        elif self._check_token_type(TokenType.IDENTIFIER):
             result = ParserNode(self._pop_token())
-            while self._get_token().symbol_type == TokenType.OPEN_PAREN:
+            while self._check_token_type(TokenType.OPEN_PAREN):
                 result = self.parse_function_operator(result)
             return result
 
@@ -151,10 +154,10 @@ class Parser(object):
         fun_operator.symbol_type = TokenType.FUN_OPERATOR
         result = ParserNode(fun_operator, [function])
         # Parsing arguments
-        if self._get_token().symbol_type != TokenType.CLOSE_PAREN:
+        if not self._check_token_type(TokenType.CLOSE_PAREN):
             result.children.append(self.parse_expression())
-        while self._get_token().symbol_type != TokenType.CLOSE_PAREN:
-            if self._get_token().symbol_type != TokenType.COMMA:
+        while not self._check_token_type(TokenType.CLOSE_PAREN):
+            if not self._check_token_type(TokenType.COMMA):
                 raise SyntaxError(
                     "No comma or close parenthesis after argument expression")
             self._pop_token()
@@ -179,19 +182,19 @@ class Parser(object):
         fun = self._pop_token()
         fun.symbol_type = TokenType.FUN
         result = ParserNode(fun)
-        if self._get_token().symbol_type != TokenType.OPEN_PAREN:
+        if not self._check_token_type(TokenType.OPEN_PAREN):
             raise SyntaxError("No opening paren after function definition")
         self._pop_token()
 
         # parse arguments
-        if self._get_token().symbol_type == TokenType.IDENTIFIER:
+        if self._check_token_type(TokenType.IDENTIFIER):
             result.children.append(ParserNode(self._pop_token()))
 
-        while self._get_token().symbol_type != TokenType.CLOSE_PAREN:
-            if self._get_token().symbol_type != TokenType.COMMA:
+        while not self._check_token_type(TokenType.CLOSE_PAREN):
+            if not self._check_token_type(TokenType.COMMA):
                 raise SyntaxError("No comma between arguments")
             self._pop_token()
-            if self._get_token().symbol_type != TokenType.IDENTIFIER:
+            if not self._check_token_type(TokenType.IDENTIFIER):
                 raise SyntaxError("Wrong function argument")
             result.children.append(ParserNode(self._pop_token()))
         self._pop_token()
@@ -201,11 +204,11 @@ class Parser(object):
         return result
 
     def parse_block(self):
-        if self._get_token().symbol_type != TokenType.OPEN_BLOCK:
+        if not self._check_token_type(TokenType.OPEN_BLOCK):
             raise SyntaxError("No opening block in block declaration")
 
         result = ParserNode(self._pop_token())
-        while self._get_token().symbol_type != TokenType.CLOSE_BLOCK:
+        while not self._check_token_type(TokenType.CLOSE_BLOCK):
             result.children.append(self.parse_statement())
         self._pop_token()
         return result
