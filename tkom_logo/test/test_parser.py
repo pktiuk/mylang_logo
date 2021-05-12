@@ -96,7 +96,11 @@ def test_functions():
     TEST_STRINGS = [
         "f1()()()", "f2(arg1)", "f3(2+3*5)", "f4(32,43-34)", "f5(1*(2+3))",
         "f6(1*2*(4+5),32,val1)", "fun foo(){" + "}", "fun foo2(arg1) {" + "}",
-        "fun foo3(arg1, arg2) {" + "}"
+        "fun foo3(arg1, arg2) {" + "}", "fun foo4(arg1, arg2) {x = 54+2" + "}",
+        "fun foo5() {x = 34 x = x +3" + "}", "fun foo6(num1){\n" + """
+        tmp = 43
+        tmp = tmp - arg
+        print(tmp)}"""
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
