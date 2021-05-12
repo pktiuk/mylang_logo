@@ -87,9 +87,8 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 ## Gramatyka
 
 **program**  =  `{ statement | definition };`  
-**definition** = `functionDefinition | variableDefinition;`  
+**definition** = `functionDefinition;`  
 **functionDefinition** =  `"fun" identifier, "(", [ identifier, {",", identifier} ], ")", block;`  
-**variableDefinition** = `identifier,  "=", expression ;`  
 **statement** = ` ifStatement | whileStatement | expression | valueAssignment; `  
 **ifStatement** = `"if", "(", logicalExpression, ")", block[ "else" block] ;`  
 **whileStatement** = `"while", "(", logicalExpression, ")", block;`  
