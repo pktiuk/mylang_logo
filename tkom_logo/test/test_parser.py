@@ -46,6 +46,7 @@ def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
         TokenType.ELSE,
         TokenType.WHILE,
         TokenType.FUN,
+        TokenType.FUN_OPERATOR,
     ]
     NOT_ALLOWED_TOKENS = [TokenType.EOF, TokenType.EOL]
     if print_tree:
@@ -65,22 +66,16 @@ def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
 
 
 def test_parser_stability():
-    q = generate_queue("(-33*1)/-2")
-    p = Parser(token_source=q)
-    result = p.parse()
-    check_leaves_and_nodes(result)
-    q = generate_queue("2+3*4")
-    p = Parser(token_source=q)
-    result = p.parse()
-    check_leaves_and_nodes(result)
-    q = generate_queue("23==3&& 5>2")
-    p = Parser(token_source=q)
-    result = p.parse()
-    check_leaves_and_nodes(result)
-    q = generate_queue("2=3&& 5>2")
-    p = Parser(token_source=q)
-    result = p.parse()
-    check_leaves_and_nodes(result)
+    TEST_STRINGS = [
+        "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2=3&& 5>2", "-a +3",
+        "funkcja()+32"
+    ]
+    for string in TEST_STRINGS:
+        print(f'parsing string: {string}')
+        q = generate_queue(string)
+        p = Parser(token_source=q)
+        result = p.parse()
+        check_leaves_and_nodes(result)
 
 
 def test_multiplications():
