@@ -183,8 +183,9 @@ class Parser(object):
             raise SyntaxError("No opening paren after function definition")
         self._pop_token()
 
+        # parse arguments
         if self._get_token().symbol_type == TokenType.IDENTIFIER:
-            result.children.append(self._pop_token())
+            result.children.append(ParserNode(self._pop_token()))
 
         while self._get_token().symbol_type != TokenType.CLOSE_PAREN:
             if self._get_token().symbol_type != TokenType.COMMA:
@@ -192,7 +193,7 @@ class Parser(object):
             self._pop_token()
             if self._get_token().symbol_type != TokenType.IDENTIFIER:
                 raise SyntaxError("Wrong function argument")
-            result.children.append(self._pop_token())
+            result.children.append(ParserNode(self._pop_token()))
         self._pop_token()
 
         block = self.parse_block()
