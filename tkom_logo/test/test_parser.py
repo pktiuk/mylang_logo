@@ -112,7 +112,8 @@ def test_functions():
 
 def test_loops():
     TEST_STRINGS = [
-        "while(true){" + "}",
+        "while(true){" + "}", "while(3<43){" + "}",
+        "while(true){ x = x+1" + "}"
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
