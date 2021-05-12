@@ -102,7 +102,7 @@ def test_multiplications():
 def test_functions():
     TEST_STRINGS = [
         "f1()()()", "f2(arg1)", "f3(2+3*5)", "f4(32,43-34)", "f5(1*(2+3))",
-        "f6(1*2*(4+5),32,val1)"
+        "f6(1*2*(4+5),32,val1)", "fun foo(){" + "}"
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
