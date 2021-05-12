@@ -148,8 +148,14 @@ class Parser(object):
         fun_operator.symbol_type = TokenType.FUN_OPERATOR
         result = ParserNode(fun_operator, [function])
         # Parsing arguments
+        if self._get_token().symbol_type != TokenType.CLOSE_PAREN:
+            result.children.append(self.parse_expression())
         while self._get_token().symbol_type != TokenType.CLOSE_PAREN:
-            raise NotImplementedError()  # TODO:parse arguments
+            if self._get_token().symbol_type != TokenType.COMMA:
+                raise SyntaxError(
+                    "No comma or close parenthesis after argument expression")
+            self._pop_token()
+            result.children.append(self.parse_expression())
         self._pop_token()
         return result
 
