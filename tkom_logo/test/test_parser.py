@@ -32,13 +32,16 @@ def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
     """Leaves in tree can be only values,
     middle nodes can be only operators
     """
-    LEAF_TOKENS = [TokenType.CONST, TokenType.IDENTIFIER, TokenType.OPEN_BLOCK]
+    LEAF_TOKENS = [
+        TokenType.CONST, TokenType.IDENTIFIER, TokenType.OPEN_BLOCK,
+        TokenType.ELSE
+    ]
     NODE_TOKENS = [
         TokenType.ADD_OPERATOR, TokenType.MULT_OPERATOR,
         TokenType.UNARY_OPERATOR, TokenType.OR_OPERATOR,
         TokenType.AND_OPERATOR, TokenType.COMP_OPERATOR,
         TokenType.FIELD_OPERATOR, TokenType.ASSIGNMENT_OPERATOR, TokenType.IF,
-        TokenType.ELSE, TokenType.WHILE, TokenType.FUN, TokenType.FUN_OPERATOR,
+        TokenType.WHILE, TokenType.FUN, TokenType.FUN_OPERATOR,
         TokenType.OPEN_BLOCK
     ]
     NOT_ALLOWED_TOKENS = [TokenType.EOF, TokenType.EOL]
@@ -114,6 +117,20 @@ def test_loops():
     TEST_STRINGS = [
         "while(true){" + "}", "while(3<43){" + "}",
         "while(true){ x = x+1" + "}"
+    ]
+    for string in TEST_STRINGS:
+        print(f'parsing string: {string}')
+        q = generate_queue(string)
+        p = Parser(token_source=q)
+        result = p.parse()
+        check_leaves_and_nodes(result)
+
+
+def test_ifs():
+    TEST_STRINGS = [
+        "if(true){" + "}",
+        "if(3<43 && is_checked){" + "}",
+        "if(true){ x = x+1" + "}else{" + "print(msg)}",
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')

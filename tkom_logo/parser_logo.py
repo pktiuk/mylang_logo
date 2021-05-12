@@ -38,6 +38,8 @@ class Parser(object):
             return self.parse_function_def()
         elif self._check_token_type(TokenType.WHILE):
             return self.parse_while()
+        elif self._check_token_type(TokenType.IF):
+            return self.parse_if()
         else:
             result = self.parse_expression()
 
@@ -221,4 +223,29 @@ class Parser(object):
         while not self._check_token_type(TokenType.CLOSE_BLOCK):
             result.children.append(self.parse_statement())
         self._pop_token()
+        return result
+
+    def parse_if(self):
+        """if tree:
+            IF:
+            - condition
+            - block
+            - (optional) ELSE
+            - (optional) else-block
+        """
+        result = ParserNode(self._pop_token())
+
+        if not self._check_token_type(TokenType.OPEN_PAREN):
+            raise SyntaxError("No opening paren if")
+        self._pop_token()
+        result.children.append(self.parse_expression())
+        if not self._check_token_type(TokenType.CLOSE_PAREN):
+            raise SyntaxError("No closing paren after if condition")
+        self._pop_token()
+        result.children.append(self.parse_block())
+
+        if self._check_token_type(TokenType.ELSE):
+            result.children.append(ParserNode(self._pop_token()))
+            result.children.append(self.parse_block())
+
         return result
