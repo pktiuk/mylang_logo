@@ -145,8 +145,13 @@ class Parser(object):
                 f'Wrong token ({self._get_token()}) after unary operation ')
         elif self._check_token_type(TokenType.IDENTIFIER):
             result = ParserNode(self._pop_token())
-            while self._check_token_type(TokenType.OPEN_PAREN):
-                result = self.parse_function_operator(result)
+            while self._check_token_type(
+                    TokenType.OPEN_PAREN) or self._check_token_type(
+                        TokenType.FIELD_OPERATOR):
+                if self._check_token_type(TokenType.OPEN_PAREN):
+                    result = self.parse_function_operator(result)
+                else:
+                    result = self.parse_field_operator(result)
             return result
 
         raise RuntimeError()
@@ -248,4 +253,11 @@ class Parser(object):
             result.children.append(ParserNode(self._pop_token()))
             result.children.append(self.parse_block())
 
+        return result
+
+    def parse_field_operator(self, source: ParserNode) -> ParserNode:
+        result = ParserNode(self._pop_token(), [source])
+        if not self._check_token_type(TokenType.IDENTIFIER):
+            raise SyntaxError("Wrong token after dot")
+        result.children.append(ParserNode(self._pop_token()))
         return result

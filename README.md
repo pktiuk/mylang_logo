@@ -101,11 +101,12 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **relation** = `mathExpression, [compSign, mathExpression] | "(" logicalExpression ")"`;  
 **mathExpression** = `mathExpression, addOperator | factor, {multOperator};`  
 **factor** = `value | "(" mathExpression ")";`  
-**value** = `[ "!" | "-" ], identifier, {functionOperator } | [ "!" | "-" ], constValue`  
+**value** = `[ "!" | "-" ], identifier, {functionOperator | fieldOperator } | [ "!" | "-" ], constValue`  
 
 **addOperator** = `addSign, mathExpression;`  
 **multOperator** = `multSign, factor;`  
 **functionOperator** = `"(" [ expression, {",", expression} ], ")";`  
+**fieldOperator** = `"." identifier`
 
 **addSign** = `"+" | "-" ;`  
 **multSign** = `"*" | "/";`  

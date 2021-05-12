@@ -138,3 +138,15 @@ def test_ifs():
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
+
+
+def test_field_operators():
+    TEST_STRINGS = [
+        "turtle.print()", "turtle.move(4231)", "something.get_elem().value"
+    ]
+    for string in TEST_STRINGS:
+        print(f'parsing string: {string}')
+        q = generate_queue(string)
+        p = Parser(token_source=q)
+        result = p.parse()
+        check_leaves_and_nodes(result)
