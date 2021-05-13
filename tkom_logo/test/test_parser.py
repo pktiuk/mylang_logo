@@ -22,39 +22,6 @@ def generate_lexer(text) -> Lexer:
     return lexer
 
 
-def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
-    """Leaves in tree can be only values,
-    middle nodes can be only operators
-    """
-    LEAF_TOKENS = [
-        TokenType.CONST, TokenType.IDENTIFIER, TokenType.OPEN_BLOCK,
-        TokenType.ELSE
-    ]
-    NODE_TOKENS = [
-        TokenType.ADD_OPERATOR, TokenType.MULT_OPERATOR,
-        TokenType.UNARY_OPERATOR, TokenType.OR_OPERATOR,
-        TokenType.AND_OPERATOR, TokenType.COMP_OPERATOR,
-        TokenType.FIELD_OPERATOR, TokenType.ASSIGNMENT_OPERATOR, TokenType.IF,
-        TokenType.WHILE, TokenType.FUN, TokenType.FUN_OPERATOR,
-        TokenType.OPEN_BLOCK
-    ]
-    NOT_ALLOWED_TOKENS = [TokenType.EOF, TokenType.EOL]
-    if print_tree:
-        print(tree)
-
-    if tree.token.symbol_type in NOT_ALLOWED_TOKENS:
-        raise ValueError("Not allowed token in tree")
-
-    if tree.get_depth() == 0:
-        if tree.token.symbol_type not in LEAF_TOKENS:
-            raise ValueError("Wrong value of leaf token")
-    else:
-        if tree.token.symbol_type not in NODE_TOKENS:
-            raise ValueError("Wrong value of middle node token")
-        for child in tree.children:
-            check_leaves_and_nodes(child, False)
-
-
 def test_parser_stability():
     TEST_STRINGS = [
         "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2=3&& 5>2", "-a +3",
@@ -65,14 +32,14 @@ def test_parser_stability():
         q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
-        check_leaves_and_nodes(result)
+        print(result)
 
 
 def test_multiplications():
     q = generate_lexer("22*4/3*1")
     p = Parser(token_source=q)
     result = p.parse()
-    check_leaves_and_nodes(result)
+    print(result)
     assert result.token.value == "*"
 
 
@@ -91,7 +58,7 @@ def test_functions():
         q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
-        check_leaves_and_nodes(result)
+        print(result)
 
 
 def test_loops():
@@ -104,7 +71,7 @@ def test_loops():
         q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
-        check_leaves_and_nodes(result)
+        print(result)
 
 
 def test_ifs():
@@ -118,7 +85,7 @@ def test_ifs():
         q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
-        check_leaves_and_nodes(result)
+        print(result)
 
 
 def test_field_operators():
@@ -130,7 +97,7 @@ def test_field_operators():
         q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
-        check_leaves_and_nodes(result)
+        print(result)
 
 
 def test_exceptions():

@@ -14,12 +14,39 @@ class Statement(object):
         self.location = loc
 
 
-class Definition(object):
+class Expression(Statement):
     def __init__(self, loc: Location):
-        self.location = loc
+        super().__init__(loc)
+
+    def get_value(self):
+        raise NotImplementedError
 
 
-class FunctionDefinition(Definition):
+class MathExpression(Expression):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
+        self.products = []
+
+
+class Factor(MathExpression):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
+        self.elements = []
+
+
+class Value(Factor):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
+
+
+class ConstValue(Value):
+    def __init__(self, loc: Location, value, unary_op=None):
+        super().__init__(loc)
+        self.value = value
+        self.unary_op = unary_op
+
+
+class LogicalExpression(Expression):
     def __init__(self, loc: Location):
         super().__init__(loc)
 
@@ -28,6 +55,41 @@ class Block(object):
     def __init__(self):
         self.definitions_list = []
         self.statements = []
+
+
+class IfStatement(Statement):
+    def __init__(self,
+                 loc: Location,
+                 condition: LogicalExpression,
+                 true_block: Block,
+                 false_block: Block = None):
+        super().__init__(loc)
+        self.condition = condition
+        self.true_block = true_block
+        self.false_block = false_block
+
+    def __str__(self, depth=0):
+        ret = "\t" * depth + "IF\n"
+        ret += self.condition.__str__(depth + 1)
+        ret += self.true_block.__str__(depth + 1)
+        if self.false_block:
+            ret += self.false_block.__str__(depth + 1)
+        else:
+            ret += "None else"
+        return ret
+
+
+class Definition(object):
+    def __init__(self, loc: Location):
+        self.location = loc
+
+
+class FunctionDefinition(Definition):
+    def __init__(self, loc: Location, condition: LogicalExpression,
+                 block: Block):
+        super().__init__(loc)
+        self.condition = condition
+        self.block = block
 
 
 class Parser(object):
@@ -279,20 +341,25 @@ class Parser(object):
         """
         if not self._check_token_type(TokenType.IF):
             return None
-        result = ParserNode(self.__pop_token())
+        location = self.__pop_token().location
 
         if not self._check_token_type(TokenType.OPEN_PAREN):
             raise SyntaxError("No opening paren if")
         self.__pop_token()
-        result.children.append(self.__parse_expression())
+
+        condition = self.__parse_expression()
         if not self._check_token_type(TokenType.CLOSE_PAREN):
             raise SyntaxError("No closing paren after if condition")
         self.__pop_token()
-        result.children.append(self.__parse_block())
+
+        true_block = self.__parse_block()
+        result = IfStatement(location,
+                             condition=condition,
+                             true_block=true_block)
 
         if self._check_token_type(TokenType.ELSE):
-            result.children.append(ParserNode(self.__pop_token()))
-            result.children.append(self.__parse_block())
+            self.__pop_token()
+            result.false_block = self.__parse_block()
 
         return result
 
