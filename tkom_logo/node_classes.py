@@ -1,6 +1,4 @@
-from lexer import Lexer, TextReader
-from shared import Token, TokenType, ConsoleLogger, Logger, Location
-from language_errors import SyntaxError
+from .shared import Location
 
 
 class Program(object):

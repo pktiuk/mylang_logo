@@ -1,5 +1,5 @@
-from shared import ConsoleLogger, Token, TokenType, Location
-from language_errors import UnexpectedCharacterError, ParseError
+from .shared import ConsoleLogger, Token, TokenType, Location
+from .language_errors import UnexpectedCharacterError, ParseError
 
 
 class TextReader:

@@ -1,7 +1,7 @@
-from lexer import Lexer, TextReader
-from shared import Token, TokenType, ConsoleLogger, Logger, Location
-from language_errors import SyntaxError
-from node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition
+from .lexer import Lexer
+from .shared import Token, TokenType, ConsoleLogger, Logger, Location
+from .language_errors import SyntaxError
+from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition
 
 
 class Parser(object):
@@ -209,7 +209,7 @@ class Parser(object):
         return FunOperator(location, arguments)
 
     def __parse_while(self) -> WhileStatement:
-        if not self._check_token_type(TokenType.WHILE):
+        if self.__get_token().symbol_type != TokenType.WHILE:
             return None
         loc = self.__pop_token().location
         if not self._check_token_type(TokenType.OPEN_PAREN):

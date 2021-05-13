@@ -1,4 +1,4 @@
-from shared import Location
+from .shared import Location
 
 
 class UnexpectedCharacterError(BaseException):
