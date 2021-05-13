@@ -82,7 +82,6 @@ class Comparison(Expression):
         return ""
 
 
-
 class AndCondition(Expression):
     def __init__(self, left: Comparison, right: 'AndCondition'):
         super().__init__(left.location)
@@ -311,18 +310,26 @@ class Parser(object):
             return result
 
         result = self.__parse_math_expression()
-        # TODO move to separate fun
+
+        if result:
+            logic = self.__parse_logical_expression(result)
+            if logic:
+                return logic
+
+        return result
+
+    def __parse_logical_expression(self, first_math_expression):
         logical_operators = [
             TokenType.OR_OPERATOR, TokenType.AND_OPERATOR,
             TokenType.COMP_OPERATOR
         ]
-        if result and self.__get_token().symbol_type in logical_operators:
-            result = self.__parse_and_condition(result)
+        if self.__get_token().symbol_type in logical_operators:
+            result = self.__parse_and_condition(first_math_expression)
             if self._check_token_type(TokenType.OR_OPERATOR):
                 self.__pop_token()
                 result = OrCondition(result, self.__parse_expression())
-
-        return result
+            return result
+        return None
 
     def __parse_and_condition(self, first_math_expression) -> AndCondition:
 
