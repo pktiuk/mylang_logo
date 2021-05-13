@@ -34,12 +34,21 @@ class MathExpression(Expression):
 
 
 class Factor(MathExpression):
-    def __init__(self, loc: Location):
+    def __init__(self, loc: Location, left: 'Value', right: 'Factor',
+                 operator: str):
         super().__init__(loc)
-        self.elements = []
+        self.left = left
+        self.right = right
+        self.mult_operator = operator
+
+    def __str__(self, depth=0):
+        res = "\t" * depth + self.mult_operator + "\n"
+        res += self.left.__str__(depth + 1)
+        res += self.right.__str__(depth + 1)
+        return res
 
 
-class Value(Factor):
+class Value(MathExpression):
     def __init__(self, loc: Location):
         super().__init__(loc)
 
@@ -84,7 +93,7 @@ class IdValue(Value):
         for op in reversed(self.operators):
             res += op.__str__(depth)
             depth = depth + 1
-        res += self.name
+        res += "\t" * depth + self.name + "\n"
         return res
 
 
@@ -95,7 +104,7 @@ class ConstValue(Value):
         self.unary_op = unary_op
 
     def __str__(self, depth=0):
-        return "\t" * depth + str(self.value)
+        return "\t" * depth + str(self.value) + "\n"
 
     def get_value(self):
         if not self.unary_op:
@@ -305,7 +314,7 @@ class Parser(object):
                 children=[result, self.__parse_math_expression()])
         return result
 
-    def __parse_factor(self) -> ParserNode:
+    def __parse_factor(self) -> Factor:
         result = None
         if self._check_token_type(TokenType.OPEN_PAREN):
             self.__pop_token()
@@ -315,6 +324,11 @@ class Parser(object):
             self.__pop_token()
         else:
             result = self.__parse_value()
+            if self._check_token_type(TokenType.MULT_OPERATOR):
+                mult_op = self.__pop_token().value
+                result = Factor(result.location, result, self.__parse_factor(),
+                                mult_op)
+
         return result
 
     def __parse_value(self) -> Value:
@@ -351,7 +365,7 @@ class Parser(object):
 
         raise RuntimeError()
 
-    def __parse_function_operator(self) -> ParserNode:
+    def __parse_function_operator(self) -> FunOperator:
         if not self._check_token_type(TokenType.OPEN_PAREN):
             return None
         location = self.__pop_token().location
@@ -425,7 +439,7 @@ class Parser(object):
         block = self.__parse_block()
         return FunctionDefinition(fun.location, fun.value, block, arguments)
 
-    def __parse_block(self) -> ParserNode:
+    def __parse_block(self) -> Block:
         if not self._check_token_type(TokenType.OPEN_BLOCK):
             raise SyntaxError("No opening block in block declaration")
 
@@ -467,7 +481,7 @@ class Parser(object):
 
         return result
 
-    def __parse_field_operator(self) -> ParserNode:
+    def __parse_field_operator(self) -> FieldOperator:
         if not self._check_token_type(TokenType.FIELD_OPERATOR):
             return None
         loc = self.__pop_token().location
