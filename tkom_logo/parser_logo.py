@@ -288,13 +288,18 @@ class Parser(object):
 
         result = self.__parse_expression()
         if result:
-            # check if assignment
-            if type(result) == IdValue and self.__get_token(
+            assignment = self.__parse_assignment(result)
+            result = assignment if assignment else result
+        return result
+
+    def __parse_assignment(self, target: IdValue):
+        if target:
+            if type(target) == IdValue and self.__get_token(
             ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
                 self.__pop_token()
-                return ValueAssignment(result.location, result.name,
+                return ValueAssignment(target.location, target.name,
                                        self.__parse_expression())
-        return result
+        return None
 
     def __parse_definition(self) -> Definition:
         return self.__parse_function_def()
