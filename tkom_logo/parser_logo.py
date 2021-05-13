@@ -1,5 +1,5 @@
 from lexer import Lexer, TextReader
-from shared import ParserNode, Token, TokenType, ConsoleLogger, Logger, Location
+from shared import Token, TokenType, ConsoleLogger, Logger, Location
 from language_errors import SyntaxError
 
 
@@ -25,6 +25,16 @@ class Expression(Statement):
 
     def get_value(self):
         raise NotImplementedError
+
+
+class ValueAssignment(Statement):
+    def __init__(self, loc, name, expression: Expression):
+        super().__init__(loc)
+        self.name = name
+        self.expression = expression
+
+    def __str__(self, depth=0):
+        return depth * "\t" + self.name + self.expression.__str__(depth + 1)
 
 
 class MathExpression(Expression):
@@ -282,8 +292,9 @@ class Parser(object):
             # check if assignment
             if type(result) == IdValue and self.__get_token(
             ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
-                return ParserNode(self.__pop_token(),
-                                  [result, self.__parse_expression()])
+                self.__pop_token()
+                return ValueAssignment(result.location, result.name,
+                                       self.__parse_expression())
         return result
 
     def __parse_definition(self) -> Definition:
