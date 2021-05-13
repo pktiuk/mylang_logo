@@ -15,17 +15,11 @@ from test_lexer import TextBuffer
 from lexer import Lexer
 
 
-def generate_queue(text) -> Queue:
+def generate_lexer(text) -> Lexer:
     buf = TextBuffer(text)
     lexer = Lexer(buf)
-    tokens = []
-    for i in range(90):
-        tokens.append(lexer.get_token())
 
-    q = Queue()
-    for token in tokens:
-        q.put(token)
-    return q
+    return lexer
 
 
 def check_leaves_and_nodes(tree: ParserNode, print_tree=True):
@@ -68,31 +62,18 @@ def test_parser_stability():
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
-        q = generate_queue(string)
+        q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
 
 
 def test_multiplications():
-    tokens = [
-        Token(TokenType.CONST, 22),
-        Token(TokenType.MULT_OPERATOR, "*"),
-        Token(TokenType.CONST, 4),
-        Token(TokenType.MULT_OPERATOR, "/"),
-        Token(TokenType.CONST, 3),
-        Token(TokenType.MULT_OPERATOR, "*"),
-        Token(TokenType.CONST, 1),
-        Token(TokenType.EOL, "\n")
-    ]
-    q = Queue()
-    for token in tokens:
-        q.put(token)
+    q = generate_lexer("22*4/3*1")
     p = Parser(token_source=q)
     result = p.parse()
     check_leaves_and_nodes(result)
     assert result.token.value == "*"
-    assert result.children[1].token == tokens[-2]
 
 
 def test_functions():
@@ -107,7 +88,7 @@ def test_functions():
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
-        q = generate_queue(string)
+        q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
@@ -120,7 +101,7 @@ def test_loops():
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
-        q = generate_queue(string)
+        q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
@@ -134,7 +115,7 @@ def test_ifs():
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
-        q = generate_queue(string)
+        q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
@@ -146,22 +127,22 @@ def test_field_operators():
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
-        q = generate_queue(string)
+        q = generate_lexer(string)
         p = Parser(token_source=q)
         result = p.parse()
         check_leaves_and_nodes(result)
 
 
 def test_exceptions():
-    q = generate_queue("while True")
+    q = generate_lexer("while True")
     p = Parser(token_source=q)
     with pytest.raises(SyntaxError, match="opening paren"):
         p.parse()
-    q = generate_queue("if value")
+    q = generate_lexer("if value")
     p = Parser(token_source=q)
     with pytest.raises(SyntaxError, match="opening paren"):
         p.parse()
-    q = generate_queue("thh.field.()")
+    q = generate_lexer("thh.field.()")
     p = Parser(token_source=q)
     with pytest.raises(SyntaxError, match="after dot"):
         p.parse()

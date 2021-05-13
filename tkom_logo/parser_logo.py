@@ -1,18 +1,18 @@
-from queue import Queue
+from lexer import Lexer, TextReader
 from shared import ParserNode, Token, TokenType, ConsoleLogger, Logger
 from language_errors import SyntaxError
 
 
 class Parser(object):
     def __init__(self,
-                 token_source: Queue = None,
+                 token_source: Lexer = None,
                  logger: Logger = ConsoleLogger):
         self.current_token = None
         self.token_source = token_source
 
     def __get_token(self) -> Token:
         if not self.current_token:
-            self.current_token = self.token_source.get()
+            self.current_token = self.token_source.get_token()
         return self.current_token
 
     def __pop_token(self):
@@ -21,7 +21,7 @@ class Parser(object):
             self.current_token = None
             return res
         else:
-            return self.token_source.get()
+            return self.token_source.get_token()
 
     def _check_token_type(self, token_type: TokenType) -> bool:
         return token_type == self.__get_token().symbol_type
