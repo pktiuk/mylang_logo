@@ -80,16 +80,33 @@ class IfStatement(Statement):
 
 
 class Definition(object):
-    def __init__(self, loc: Location):
+    def __init__(self, loc: Location, name: str):
         self.location = loc
+        self.name = name
 
 
 class FunctionDefinition(Definition):
-    def __init__(self, loc: Location, condition: LogicalExpression,
-                 block: Block):
-        super().__init__(loc)
-        self.condition = condition
+    def __init__(
+        self,
+        loc: Location,
+        name: str,
+        block: Block,
+        arguments: list = None,
+    ):
+        super().__init__(loc, name)
+        if arguments:
+            self.arguments = arguments
+        else:
+            self.arguments = []
         self.block = block
+
+    def __str__(self, depth=0):
+        ret = "\t" * depth + f"FUN: {self.name}\n" + "\t" * depth
+        for x in self.arguments:
+            ret += x
+        ret += "\n"
+        ret += self.block.__str__(depth + 1)
+        return ret
 
 
 class Parser(object):
@@ -298,28 +315,27 @@ class Parser(object):
             return None
         self.__pop_token()
         fun = self.__pop_token()
-        fun.symbol_type = TokenType.FUN
-        result = ParserNode(fun)
+
         if not self._check_token_type(TokenType.OPEN_PAREN):
             raise SyntaxError("No opening paren after function definition")
         self.__pop_token()
-
+        arguments = []
         # parse arguments
         if self._check_token_type(TokenType.IDENTIFIER):
-            result.children.append(ParserNode(self.__pop_token()))
+            arguments.append(self.__pop_token().value)
 
-        while not self._check_token_type(TokenType.CLOSE_PAREN):
-            if not self._check_token_type(TokenType.COMMA):
-                raise SyntaxError("No comma between arguments")
+        while self._check_token_type(TokenType.COMMA):
             self.__pop_token()
             if not self._check_token_type(TokenType.IDENTIFIER):
                 raise SyntaxError("Wrong function argument")
-            result.children.append(ParserNode(self.__pop_token()))
+            arguments.append(self.__pop_token().value)
+
+        if not self._check_token_type(TokenType.CLOSE_PAREN):
+            raise SyntaxError("Missing close paren")
         self.__pop_token()
 
         block = self.__parse_block()
-        result.children.append(block)
-        return result
+        return FunctionDefinition(fun.location, fun.value, block, arguments)
 
     def __parse_block(self) -> ParserNode:
         if not self._check_token_type(TokenType.OPEN_BLOCK):
@@ -331,7 +347,7 @@ class Parser(object):
         self.__pop_token()
         return result
 
-    def __parse_if(self):
+    def __parse_if(self) -> IfStatement:
         """if tree:
             IF:
             - condition
