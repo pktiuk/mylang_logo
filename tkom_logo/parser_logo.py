@@ -9,9 +9,14 @@ class Program(object):
         self.statements = []
 
 
-class Statement(object):
+class Node(object):
     def __init__(self, loc: Location):
         self.location = loc
+
+
+class Statement(Node):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
 
 
 class Expression(Statement):
@@ -39,6 +44,50 @@ class Value(Factor):
         super().__init__(loc)
 
 
+class FieldOperator(Node):
+    def __init__(self, loc: Location, name):
+        super().__init__(loc)
+        self.name = name
+
+    def __str__(self, depth=0):
+        return "\t" * depth + f". {self.name}"
+
+
+class FunOperator(Node):
+    def __init__(self, loc: Location, arguments):
+        super().__init__(loc)
+        self.arguments = arguments
+
+    def __str__(self, depth=0):
+        ret = "\t" * depth + f"()"
+        for arg in self.arguments:
+            ret += arg.__str__(depth + 1)
+        return ret
+
+
+class IdValue(Value):
+    def __init__(self,
+                 loc: Location,
+                 name: str,
+                 unary_op=None,
+                 operators=None):
+        super().__init__(loc)
+        self.name = name
+        self.unary_op = unary_op
+        if operators:
+            self.operators = operators
+        else:
+            self.operators = []
+
+    def __str__(self, depth=0):
+        res = ""
+        for op in reversed(self.operators):
+            res += op.__str__(depth)
+            depth = depth + 1
+        res += self.name
+        return res
+
+
 class ConstValue(Value):
     def __init__(self, loc: Location, value, unary_op=None):
         super().__init__(loc)
@@ -49,7 +98,10 @@ class ConstValue(Value):
         return "\t" * depth + str(self.value)
 
     def get_value(self):
-        return self.value
+        if not self.unary_op:
+            return self.value
+        else:
+            raise NotImplementedError
 
 
 class LogicalExpression(Expression):
@@ -174,7 +226,7 @@ class Parser(object):
         result = self.__parse_expression()
         if result:
             # check if assignment
-            if result.children == [] and self.__get_token(
+            if type(result) == IdValue and self.__get_token(
             ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
                 return ParserNode(self.__pop_token(),
                                   [result, self.__parse_expression()])
@@ -184,6 +236,8 @@ class Parser(object):
         return self.__parse_function_def()
 
     def __parse_expression(self) -> ParserNode:
+        if self._check_token_type(TokenType.CLOSE_PAREN):
+            return None
         if self._check_token_type(TokenType.OPEN_PAREN):
             self.__pop_token()
             result = self.__parse_math_expression()
@@ -281,33 +335,44 @@ class Parser(object):
                 f'Wrong token ({self.__get_token()}) after unary operation ')
 
         elif self._check_token_type(TokenType.IDENTIFIER):
-            result = ParserNode(self.__pop_token())
-            while self._check_token_type(
-                    TokenType.OPEN_PAREN) or self._check_token_type(
-                        TokenType.FIELD_OPERATOR):
-                if self._check_token_type(TokenType.OPEN_PAREN):
-                    result = self.__parse_function_operator(result)
-                else:
-                    result = self.__parse_field_operator(result)
-            return result
+            id_token = self.__pop_token()
+            operators = []
+
+            operator = True
+            while operator:
+                operator = self.__parse_function_operator()
+                if not operator:
+                    operator = self.__parse_field_operator()
+                if operator:
+                    operators.append(operator)
+            return IdValue(id_token.location,
+                           id_token.value,
+                           operators=operators)
 
         raise RuntimeError()
 
-    def __parse_function_operator(self, function: ParserNode) -> ParserNode:
-        fun_operator = self.__pop_token()
-        fun_operator.symbol_type = TokenType.FUN_OPERATOR
-        result = ParserNode(fun_operator, [function])
+    def __parse_function_operator(self) -> ParserNode:
+        if not self._check_token_type(TokenType.OPEN_PAREN):
+            return None
+        location = self.__pop_token().location
+
         # Parsing arguments
-        if not self._check_token_type(TokenType.CLOSE_PAREN):
-            result.children.append(self.__parse_expression())
-        while not self._check_token_type(TokenType.CLOSE_PAREN):
-            if not self._check_token_type(TokenType.COMMA):
-                raise SyntaxError(
-                    "No comma or close parenthesis after argument expression")
-            self.__pop_token()
-            result.children.append(self.__parse_expression())
+
+        argument = self.__parse_expression()
+        arguments = []
+        if argument:
+            arguments = [argument]
+            while self._check_token_type(TokenType.COMMA):
+                self.__pop_token()
+                argument = self.__parse_expression()
+                if argument:
+                    arguments.append(argument)
+                else:
+                    raise SyntaxError("Problem with parsing arguments")
+            if not self._check_token_type(TokenType.CLOSE_PAREN):
+                raise SyntaxError("Missing close paren")
         self.__pop_token()
-        return result
+        return FunOperator(location, arguments)
 
     def __parse_while(self) -> WhileStatement:
         if not self._check_token_type(TokenType.WHILE):
@@ -402,9 +467,10 @@ class Parser(object):
 
         return result
 
-    def __parse_field_operator(self, source: ParserNode) -> ParserNode:
-        result = ParserNode(self.__pop_token(), [source])
+    def __parse_field_operator(self) -> ParserNode:
+        if not self._check_token_type(TokenType.FIELD_OPERATOR):
+            return None
+        loc = self.__pop_token().location
         if not self._check_token_type(TokenType.IDENTIFIER):
             raise SyntaxError("Wrong token after dot")
-        result.children.append(ParserNode(self.__pop_token()))
-        return result
+        return FieldOperator(loc, self.__pop_token().value)
