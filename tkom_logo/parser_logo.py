@@ -45,6 +45,12 @@ class ConstValue(Value):
         self.value = value
         self.unary_op = unary_op
 
+    def __str__(self, depth=0):
+        return "\t" * depth + str(self.value)
+
+    def get_value(self):
+        return self.value
+
 
 class LogicalExpression(Expression):
     def __init__(self, loc: Location):
@@ -257,9 +263,10 @@ class Parser(object):
             result = self.__parse_value()
         return result
 
-    def __parse_value(self) -> ParserNode:
+    def __parse_value(self) -> Value:
         if self._check_token_type(TokenType.CONST):
-            return ParserNode(self.__pop_token())
+            token = self.__pop_token()
+            return ConstValue(token.location, token.value)
         elif self.__get_token().symbol_type in [
                 TokenType.UNARY_OPERATOR, TokenType.ADD_OPERATOR
         ]:
@@ -267,10 +274,12 @@ class Parser(object):
             if self.__get_token().symbol_type in [
                     TokenType.IDENTIFIER, TokenType.CONST
             ]:
-                return ParserNode(unary_token, [self.__parse_value()])
-
+                token = self.__pop_token()
+                return ConstValue(token.location, token.value,
+                                  unary_token.value)
             raise SyntaxError(
                 f'Wrong token ({self.__get_token()}) after unary operation ')
+
         elif self._check_token_type(TokenType.IDENTIFIER):
             result = ParserNode(self.__pop_token())
             while self._check_token_type(
