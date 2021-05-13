@@ -25,7 +25,7 @@ def generate_lexer(text) -> Lexer:
 def test_parser_stability():
     TEST_STRINGS = [
         "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2=3&& 5>2", "-a +3",
-        "funkcja()+32", "a > 43 && var || obj.get()"
+        "funkcja()+32", "a > 43 && var==4 || obj.get() != 12"
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')
@@ -76,7 +76,7 @@ def test_loops():
 def test_ifs():
     TEST_STRINGS = [
         "if(true){" + "}",
-        "if(3<43 && is_checked){" + "}",
+        "if(3<43 && is_checked==1){" + "}",
         "if(true){ x = x+1" + "}else{" + "print(msg)}",
     ]
     for string in TEST_STRINGS:

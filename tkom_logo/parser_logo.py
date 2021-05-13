@@ -61,6 +61,38 @@ class Value(Expression):
         super().__init__(loc)
 
 
+class Comparison(Expression):
+    def __init__(self, left: Expression, right: Expression, comp_sign):
+        super().__init__(left.location)
+        self.left = left
+        self.right = right
+        self.comp_sign = comp_sign
+
+    def __str__(self, depth=0):
+        return ""
+
+
+
+class AndCondition(Expression):
+    def __init__(self, left: Comparison, right: 'AndCondition'):
+        super().__init__(left.location)
+        self.left = left
+        self.right = right
+
+    def __str__(self, depth=0):
+        return ""
+
+
+class OrCondition(Expression):
+    def __init__(self, left: AndCondition, right: 'OrCondition'):
+        super().__init__(left.location)
+        self.left = left
+        self.right = right
+
+    def __str__(self, depth=0):
+        return ""
+
+
 class FieldOperator(Node):
     def __init__(self, loc: Location, name):
         super().__init__(loc)
@@ -221,7 +253,7 @@ class Parser(object):
     def _check_token_type(self, token_type: TokenType) -> bool:
         return token_type == self.__get_token().symbol_type
 
-    def parse(self) -> ParserNode:
+    def parse(self) -> Statement:
         try:
             result = self.__parse_definition()
             if result:
@@ -252,7 +284,7 @@ class Parser(object):
     def __parse_definition(self) -> Definition:
         return self.__parse_function_def()
 
-    def __parse_expression(self) -> ParserNode:
+    def __parse_expression(self) -> Expression:
         if self._check_token_type(TokenType.CLOSE_PAREN):
             return None
         if self._check_token_type(TokenType.OPEN_PAREN):
@@ -263,51 +295,47 @@ class Parser(object):
             return result
 
         result = self.__parse_math_expression()
+        # TODO move to separate fun
         logical_operators = [
             TokenType.OR_OPERATOR, TokenType.AND_OPERATOR,
             TokenType.COMP_OPERATOR
         ]
-        if self.__get_token().symbol_type in logical_operators:
+        if result and self.__get_token().symbol_type in logical_operators:
             result = self.__parse_and_condition(result)
-            while self._check_token_type(TokenType.OR_OPERATOR):
-                result = ParserNode(
-                    self.__pop_token(),
-                    [result, self.__parse_and_condition()])
+            if self._check_token_type(TokenType.OR_OPERATOR):
+                self.__pop_token()
+                result = OrCondition(result, self.__parse_expression())
 
         return result
 
-    def __parse_and_condition(self, first_math_expression=None) -> ParserNode:
-        if not first_math_expression:
+    def __parse_and_condition(self, first_math_expression) -> AndCondition:
+
+        result = self.__parse_relation(first_math_expression)
+        if not result:
+            raise SyntaxError("")
+
+        if self._check_token_type(TokenType.AND_OPERATOR):
+            self.__pop_token()
             first_math_expression = self.__parse_math_expression()
-        result = first_math_expression
-        if self._check_token_type(TokenType.COMP_OPERATOR):
-            result = ParserNode(
-                self.__pop_token(),
-                [first_math_expression,
-                 self.__parse_math_expression()])
-            first_math_expression = None
+            if not first_math_expression:
+                raise SyntaxError("")
 
-        while self._check_token_type(TokenType.AND_OPERATOR):
-            and_operator = self.__pop_token()
-            relation = self.__parse_relation(first_math_expression)
-            first_math_expression = None
-            if result:
-                result = ParserNode(and_operator, [result, relation])
-            else:
-                result = relation
+            return AndCondition(
+                result, self.__parse_and_condition(first_math_expression))
+
         return result
 
-    def __parse_relation(self, first_math_expression=None) -> ParserNode:
+    def __parse_relation(self, first_math_expression) -> Comparison:
+
         if not first_math_expression:
             first_math_expression = self.__parse_math_expression()
 
         if self._check_token_type(TokenType.COMP_OPERATOR):
-            return ParserNode(
-                self.__pop_token(),
-                [first_math_expression,
-                 self.__parse_math_expression()])
+            comp = self.__pop_token().value
+            return Comparison(first_math_expression,
+                              self.__parse_math_expression(), comp)
         else:
-            return first_math_expression
+            return None
 
     def __parse_math_expression(self) -> Expression:
         result = self.__parse_factor()
