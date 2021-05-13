@@ -79,6 +79,20 @@ class IfStatement(Statement):
         return ret
 
 
+class WhileStatement(Statement):
+    def __init__(self, loc: Location, condition: LogicalExpression,
+                 block: Block):
+        super().__init__(loc)
+        self.condition = condition
+        self.block = block
+
+    def __str__(self, depth=0):
+        ret = "\t" * depth + "While cond:"
+        ret += self.condition.__str__(depth + 1)
+        ret += self.block.__str__(depth + 1)
+        return ret
+
+
 class Definition(object):
     def __init__(self, loc: Location, name: str):
         self.location = loc
@@ -286,10 +300,10 @@ class Parser(object):
         self.__pop_token()
         return result
 
-    def __parse_while(self) -> ParserNode:
+    def __parse_while(self) -> WhileStatement:
         if not self._check_token_type(TokenType.WHILE):
             return None
-        loop = ParserNode(self.__pop_token())
+        loc = self.__pop_token().location
         if not self._check_token_type(TokenType.OPEN_PAREN):
             raise SyntaxError("No opening paren after while definition")
         self.__pop_token()
@@ -297,9 +311,9 @@ class Parser(object):
         if not self._check_token_type(TokenType.CLOSE_PAREN):
             raise SyntaxError("No closing paren after while definition")
         self.__pop_token()
-        loop.children.append(logical_exp)
-        loop.children.append(self.__parse_block())
-        return loop
+
+        block = self.__parse_block()
+        return WhileStatement(loc, logical_exp, block)
 
     def __parse_function_def(self) -> FunctionDefinition:
         '''
