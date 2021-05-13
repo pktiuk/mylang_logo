@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition
+from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program
 
 
 class Parser(object):
@@ -26,6 +26,17 @@ class Parser(object):
 
     def _check_token_type(self, token_type: TokenType) -> bool:
         return token_type == self.__get_token().symbol_type
+
+    def parse_program(self) -> Program:
+        parsed = self.parse()
+        if parsed:
+            program = Program()
+            while parsed:
+                program.add_element(parsed)
+                parsed = self.parse()
+            return program
+
+        return None
 
     def parse(self) -> Statement:
         try:

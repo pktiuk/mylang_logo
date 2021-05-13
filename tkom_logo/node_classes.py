@@ -1,12 +1,6 @@
 from .shared import Location
 
 
-class Program(object):
-    def __init__(self):
-        self.definitions_list = []
-        self.statements = []
-
-
 class Statement:
     def __init__(self, loc: Location):
         self.location = loc
@@ -234,4 +228,27 @@ class FunctionDefinition(Definition):
             ret += x
         ret += "\n"
         ret += self.block.__str__(depth + 1)
+        return ret
+
+
+class Program(object):
+    def __init__(self):
+        self.definitions_list = []
+        self.statements = []
+
+    def add_element(self, element: 'Statement or Definition'):
+        if issubclass(type(element), Definition):
+            self.definitions_list.append(element)
+        elif issubclass(type(element), Statement):
+            self.statements.append(element)
+        else:
+            raise RuntimeError
+
+    def __str__(self):
+        ret = "Definitions:\n"
+        for d in self.definitions_list:
+            ret += d.__str__(1)
+        ret += "Statements:\n"
+        for d in self.statements:
+            ret += d.__str__(1)
         return ret

@@ -110,3 +110,10 @@ def test_exceptions():
     p = Parser(token_source=q)
     with pytest.raises(SyntaxError, match="after dot"):
         p.parse()
+
+
+def test_program_parsing():
+    q = generate_lexer("fun f1(){" + "}x = 32 foo(x+1)")
+    p = Parser(token_source=q)
+    prog = p.parse_program()
+    print(prog)
