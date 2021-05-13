@@ -40,7 +40,6 @@ def test_multiplications():
     p = Parser(token_source=q)
     result = p.parse()
     print(result)
-    assert result.token.value == "*"
 
 
 def test_functions():

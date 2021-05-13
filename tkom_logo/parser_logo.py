@@ -28,15 +28,23 @@ class Expression(Statement):
 
 
 class MathExpression(Expression):
-    def __init__(self, loc: Location):
-        super().__init__(loc)
-        self.products = []
+    def __init__(self, left: 'Factor', right: 'MathExpression', operator: str):
+        super().__init__(left.location)
+        self.left = left
+        self.right = right
+        self.operator = operator
+
+    def __str__(self, depth=0):
+        res = "\t" * depth + self.operator + "\n"
+        res += self.left.__str__(depth + 1)
+        res += self.right.__str__(depth + 1)
+        return res
 
 
-class Factor(MathExpression):
+class Factor(Expression):
     def __init__(self, loc: Location, left: 'Value', right: 'Factor',
                  operator: str):
-        super().__init__(loc)
+        super().__init__(left.location)
         self.left = left
         self.right = right
         self.mult_operator = operator
@@ -48,7 +56,7 @@ class Factor(MathExpression):
         return res
 
 
-class Value(MathExpression):
+class Value(Expression):
     def __init__(self, loc: Location):
         super().__init__(loc)
 
@@ -301,17 +309,13 @@ class Parser(object):
         else:
             return first_math_expression
 
-    def __parse_math_expression(self) -> ParserNode:
+    def __parse_math_expression(self) -> Expression:
         result = self.__parse_factor()
-        while self._check_token_type(TokenType.MULT_OPERATOR):
-            mult_token = self.__pop_token()
-            new_tree = self.__parse_factor()
-            result = ParserNode(token=mult_token, children=[result, new_tree])
 
         if self._check_token_type(TokenType.ADD_OPERATOR):
-            result = ParserNode(
-                self.__pop_token(),
-                children=[result, self.__parse_math_expression()])
+            operator = self.__pop_token().value
+            result = MathExpression(result, self.__parse_math_expression(),
+                                    operator)
         return result
 
     def __parse_factor(self) -> Factor:
