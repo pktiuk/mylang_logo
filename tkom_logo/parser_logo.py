@@ -1,6 +1,33 @@
 from lexer import Lexer, TextReader
-from shared import ParserNode, Token, TokenType, ConsoleLogger, Logger
+from shared import ParserNode, Token, TokenType, ConsoleLogger, Logger, Location
 from language_errors import SyntaxError
+
+
+class Program(object):
+    def __init__(self):
+        self.definitions_list = []
+        self.statements = []
+
+
+class Statement(object):
+    def __init__(self, loc: Location):
+        self.location = loc
+
+
+class Definition(object):
+    def __init__(self, loc: Location):
+        self.location = loc
+
+
+class FunctionDefinition(Definition):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
+
+
+class Block(object):
+    def __init__(self):
+        self.definitions_list = []
+        self.statements = []
 
 
 class Parser(object):
@@ -28,32 +55,34 @@ class Parser(object):
 
     def parse(self) -> ParserNode:
         try:
-            while self._check_token_type(TokenType.EOL):
-                self.__pop_token()
-            result = self.__parse_statement()
-            return result
+            result = self.__parse_definition()
+            if result:
+                return result
+            return self.__parse_statement()
         except SyntaxError as err:
             err.location = self.__get_token().location
             raise err
 
-    def __parse_statement(self) -> ParserNode:
+    def __parse_statement(self) -> Statement:
 
-        if self._check_token_type(TokenType.FUN):
-            return self.__parse_function_def()
-        elif self._check_token_type(TokenType.WHILE):
-            return self.__parse_while()
-        elif self._check_token_type(TokenType.IF):
-            return self.__parse_if()
-        else:
-            result = self.__parse_expression()
+        result = self.__parse_while()
+        if result:
+            return result
+        result = self.__parse_if()
+        if result:
+            return result
 
+        result = self.__parse_expression()
+        if result:
             # check if assignment
             if result.children == [] and self.__get_token(
             ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
                 return ParserNode(self.__pop_token(),
                                   [result, self.__parse_expression()])
-            else:
-                return result
+        return result
+
+    def __parse_definition(self) -> Definition:
+        return self.__parse_function_def()
 
     def __parse_expression(self) -> ParserNode:
         if self._check_token_type(TokenType.OPEN_PAREN):
@@ -179,6 +208,8 @@ class Parser(object):
         return result
 
     def __parse_while(self) -> ParserNode:
+        if not self._check_token_type(TokenType.WHILE):
+            return None
         loop = ParserNode(self.__pop_token())
         if not self._check_token_type(TokenType.OPEN_PAREN):
             raise SyntaxError("No opening paren after while definition")
@@ -191,7 +222,7 @@ class Parser(object):
         loop.children.append(self.__parse_block())
         return loop
 
-    def __parse_function_def(self) -> ParserNode:
+    def __parse_function_def(self) -> FunctionDefinition:
         '''
         function tree:
         fun_definition:
@@ -201,6 +232,8 @@ class Parser(object):
             - argn
             - block
         '''
+        if not self._check_token_type(TokenType.FUN):
+            return None
         self.__pop_token()
         fun = self.__pop_token()
         fun.symbol_type = TokenType.FUN
@@ -244,6 +277,8 @@ class Parser(object):
             - (optional) ELSE
             - (optional) else-block
         """
+        if not self._check_token_type(TokenType.IF):
+            return None
         result = ParserNode(self.__pop_token())
 
         if not self._check_token_type(TokenType.OPEN_PAREN):
