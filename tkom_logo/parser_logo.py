@@ -159,9 +159,14 @@ class LogicalExpression(Expression):
 
 
 class Block(object):
-    def __init__(self):
-        self.definitions_list = []
-        self.statements = []
+    def __init__(self, statements: list):
+        self.statements = statements
+
+    def __str__(self, depth=0):
+        res = depth * "\t" + "BLOCK\n"
+        for statement in self.statements:
+            res += statement.__str__(depth + 1)
+        return res
 
 
 class IfStatement(Statement):
@@ -395,7 +400,7 @@ class Parser(object):
                            id_token.value,
                            operators=operators)
 
-        raise RuntimeError()
+        return None
 
     def __parse_function_operator(self) -> FunOperator:
         if not self._check_token_type(TokenType.OPEN_PAREN):
@@ -474,12 +479,17 @@ class Parser(object):
     def __parse_block(self) -> Block:
         if not self._check_token_type(TokenType.OPEN_BLOCK):
             raise SyntaxError("No opening block in block declaration")
-
-        result = ParserNode(self.__pop_token())
-        while not self._check_token_type(TokenType.CLOSE_BLOCK):
-            result.children.append(self.__parse_statement())
         self.__pop_token()
-        return result
+        statements = []
+        statement = self.__parse_statement()
+        while statement:
+            statements.append(statement)
+            statement = self.__parse_statement()
+
+        if not self._check_token_type(TokenType.CLOSE_BLOCK):
+            raise SyntaxError("No close of block")
+        self.__pop_token()
+        return Block(statements)
 
     def __parse_if(self) -> IfStatement:
         """if tree:
