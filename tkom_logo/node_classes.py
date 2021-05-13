@@ -115,7 +115,7 @@ class FunOperator:
         self.arguments = arguments
 
     def __str__(self, depth=0):
-        ret = "\t" * depth + f"()"
+        ret = "\t" * depth + "()"
         for arg in self.arguments:
             ret += arg.__str__(depth + 1)
         return ret

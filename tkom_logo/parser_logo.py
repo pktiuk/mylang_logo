@@ -1,5 +1,5 @@
 from .lexer import Lexer
-from .shared import Token, TokenType, ConsoleLogger, Logger, Location
+from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
 from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition
 

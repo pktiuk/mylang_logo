@@ -7,9 +7,8 @@ import pytest
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
-from ..shared import Token, TokenType, Location, ParserNode
 from ..parser_logo import Parser
-from ..language_errors import UnexpectedCharacterError, ParseError, SyntaxError
+from ..language_errors import ParseError, SyntaxError
 from .test_lexer import TextBuffer
 from ..lexer import Lexer
 
