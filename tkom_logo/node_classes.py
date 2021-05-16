@@ -21,7 +21,8 @@ class ValueAssignment(Statement):
         self.expression = expression
 
     def __str__(self, depth=0):
-        return depth * "\t" + self.name + self.expression.__str__(depth + 1)
+        return depth * "\t" + self.name + "=\n" + self.expression.__str__(
+            depth + 1)
 
 
 class MathExpression(Expression):
