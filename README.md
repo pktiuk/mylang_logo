@@ -95,15 +95,16 @@ W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsz
 **block** = `"{", {statement}, "}" ;`  
 
 **valueAssignment** = `identifier, "=", expression;`  
-**expression** = `logicalExpression | mathExpression;`  
+**expression** = `logicalExpression;`  
 **logicalExpression** = `andCondition, {"||", andCondition};`  
 **andCondition** = `relation, {"&&", relation};`  
-**relation** = `mathExpression, [compSign, mathExpression] | "(" logicalExpression ")"`;  
-**mathExpression** = `mathExpression, addOperator | factor, {multOperator};`  
-**factor** = `value | "(" mathExpression ")";`  
-**value** = `[ "!" | "-" ], identifier, {functionOperator | fieldOperator } | [ "!" | "-" ], constValue`  
+**relation** = `mathExpression, [compSign, mathExpression]`;  
+**mathExpression** = `AddExpression, { addOperator};`  
+**AddExpression** = `factor, {multOperator};`  
+**factor** = `[ "!" | "-" ], (value | "(" logicalExpression ")");`  
+**value** = `identifier, {functionOperator | fieldOperator } | constValue`  
 
-**addOperator** = `addSign, mathExpression;`  
+**addOperator** = `addSign, AddExpression;`  
 **multOperator** = `multSign, factor;`  
 **functionOperator** = `"(" [ expression, {",", expression} ], ")";`  
 **fieldOperator** = `"." identifier`
