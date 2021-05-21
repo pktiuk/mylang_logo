@@ -98,22 +98,22 @@ class Parser(object):
         else:
             return first_exp
 
-    def __parse_and_condition(self, first_math_expression) -> AndCondition:
+    def __parse_and_condition(self) -> Expression:
 
-        result = self.__parse_relation(first_math_expression)
-        if not result:
-            raise SyntaxError("")
+        first_relation = self.__parse_relation()
+        if not first_relation:
+            return None
 
-        if self._check_token_type(TokenType.AND_OPERATOR):
-            self.__pop_token()
-            first_math_expression = self.__parse_math_expression()
-            if not first_math_expression:
-                raise SyntaxError("")
+        other_relations = []
 
-            return AndCondition(
-                result, self.__parse_and_condition(first_math_expression))
+        while self._check_token_type(TokenType.AND_OPERATOR, True):
+            other_relations.append(self.__parse_relation())
 
-        return result
+        if other_relations:
+            other_relations.insert(0, first_relation)
+            return AndCondition(other_relations)
+        else:
+            return first_relation
 
     def __parse_relation(self, first_math_expression) -> Comparison:
 

@@ -85,14 +85,16 @@ class LogicalExpression(BaseLogicalExpression):
         return ""
 
 
-class AndCondition(LogicalExpression):
-    def __init__(self, left: Comparison, right: 'AndCondition'):
-        super().__init__(left.location)
-        self.left = left
-        self.right = right
+class AndCondition(BaseLogicalExpression):
+    def __init__(self, relations: list):
+        super().__init__(relations[0].location)
+        self.relations = relations
 
     def __str__(self, depth=0):
-        return ""
+        res = "\t" * depth + "&&\n"
+        for cond in self.and_conditions:
+            res += cond.__str__(depth + 1)
+        return res
 
 
 class OrCondition(LogicalExpression):
