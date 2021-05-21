@@ -76,8 +76,6 @@ class Parser(object):
         return self.__parse_function_def()
 
     def __parse_expression(self) -> Expression:
-        if self._check_token_type(TokenType.CLOSE_PAREN):
-            return None
         if self._check_token_type(TokenType.OPEN_PAREN):
             self.__pop_token()
             result = self.__parse_math_expression()
