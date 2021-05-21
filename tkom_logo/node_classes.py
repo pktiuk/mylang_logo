@@ -25,18 +25,27 @@ class ValueAssignment(Statement):
             depth + 1)
 
 
-class MathExpression(Expression):
-    def __init__(self, left: 'Factor', right: 'MathExpression', operator: str):
-        super().__init__(left.location)
-        self.left = left
-        self.right = right
-        self.operator = operator
+class AddExpression(Expression):
+    def __init__(self, factors: list, operators: list):
+        super().__init__(factors[0].location)
+        self.operators = operators
+        self.factors = factors
 
     def __str__(self, depth=0):
-        res = "\t" * depth + self.operator + "\n"
-        res += self.left.__str__(depth + 1)
-        res += self.right.__str__(depth + 1)
-        return res
+        res = "\t" * depth + self.operators[0]
+        # TODO
+        return "res"
+
+
+class MathExpression(Expression):
+    def __init__(self, add_expressions, operators):
+        super().__init__(add_expressions[0].location)
+        self.operators = operators
+        self.add_expressions = add_expressions
+
+    def __str__(self, depth=0):
+        # TODO
+        return "res"
 
 
 class Factor(Expression):
@@ -99,7 +108,7 @@ class AndCondition(BaseLogicalExpression):
         return res
 
 
-class OrCondition(LogicalExpression):
+class OrCondition(BaseLogicalExpression):
     def __init__(self, left: AndCondition, right: 'OrCondition'):
         super().__init__(left.location)
         self.left = left
@@ -183,7 +192,7 @@ class Block(object):
 class IfStatement(Statement):
     def __init__(self,
                  loc: Location,
-                 condition: LogicalExpression,
+                 condition: BaseLogicalExpression,
                  true_block: Block,
                  false_block: Block = None):
         super().__init__(loc)
@@ -203,7 +212,7 @@ class IfStatement(Statement):
 
 
 class WhileStatement(Statement):
-    def __init__(self, loc: Location, condition: LogicalExpression,
+    def __init__(self, loc: Location, condition: BaseLogicalExpression,
                  block: Block):
         super().__init__(loc)
         self.condition = condition

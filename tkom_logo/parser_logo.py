@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Relation, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program, LogicalExpression
+from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Relation, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program, LogicalExpression, AddExpression
 
 
 class Parser(object):
@@ -26,9 +26,9 @@ class Parser(object):
 
     def _check_token_type(self,
                           token_type: TokenType,
-                          pop: bool = False) -> bool:
+                          pop_if_true: bool = False) -> bool:
         result = token_type == self.__get_token().symbol_type
-        if pop:
+        if pop_if_true and result:
             self.__pop_token()
         return result
 
@@ -125,20 +125,44 @@ class Parser(object):
         else:
             return first_math_expression
 
-    def __parse_math_expression(self) -> Expression:
-        result = self.__parse_factor()
+    def __parse_math_expression(self) -> MathExpression:
+        first_add_expr = self.__parse_add_expr()
 
-        if self._check_token_type(TokenType.ADD_OPERATOR):
-            operator = self.__pop_token().value
-            result = MathExpression(result, self.__parse_math_expression(),
-                                    operator)
-        return result
+        operators = []
+        add_expressions = [first_add_expr]
+        while self._check_token_type(TokenType.ADD_OPERATOR):
+            operators.append(self.__pop_token().value)
+            add_exp = self.__parse_add_expr()
+            if not add_exp:
+                raise SyntaxError("No factor after add operator")
+            add_expressions.append(add_exp)
+
+        if operators:
+            return MathExpression(add_expressions, operators)
+        else:
+            return first_add_expr
+
+    def __parse_add_expr(self) -> AddExpression:
+        first_factor = self.__parse_factor()
+        operators = []
+        factors = [first_factor]
+
+        while self._check_token_type(TokenType.MULT_OPERATOR):
+            operators.append(self.__pop_token().value)
+            factor = self.__parse_factor()
+            if not factor:
+                raise SyntaxError("No factor after add operator")
+            factors.append(factor)
+
+        if operators:
+            return AddExpression(factors, operators)
+        else:
+            return first_factor
 
     def __parse_factor(self) -> Factor:
         result = None
-        if self._check_token_type(TokenType.OPEN_PAREN):
-            self.__pop_token()
-            result = self.__parse_math_expression()
+        if self._check_token_type(TokenType.OPEN_PAREN, True):
+            result = self.__parse_logical_expression()
             self.__validate_next_token(TokenType.CLOSE_PAREN,
                                        "No ending parenthesis.")
         else:
