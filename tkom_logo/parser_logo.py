@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program, LogicalExpression
+from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Relation, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program, LogicalExpression
 
 
 class Parser(object):
@@ -115,17 +115,15 @@ class Parser(object):
         else:
             return first_relation
 
-    def __parse_relation(self, first_math_expression) -> Comparison:
-
-        if not first_math_expression:
-            first_math_expression = self.__parse_math_expression()
+    def __parse_relation(self) -> Relation:
+        first_math_expression = self.__parse_math_expression()
 
         if self._check_token_type(TokenType.COMP_OPERATOR):
             comp = self.__pop_token().value
-            return Comparison(first_math_expression,
-                              self.__parse_math_expression(), comp)
+            return Relation(first_math_expression,
+                            self.__parse_math_expression(), comp)
         else:
-            return None
+            return first_math_expression
 
     def __parse_math_expression(self) -> Expression:
         result = self.__parse_factor()

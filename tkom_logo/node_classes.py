@@ -76,6 +76,8 @@ class LogicalExpression(BaseLogicalExpression):
         return res
 
 
+class Relation(BaseLogicalExpression):
+    def __init__(self, left: MathExpression, right: MathExpression, comp_sign):
         super().__init__(left.location)
         self.left = left
         self.right = right
