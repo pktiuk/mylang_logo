@@ -59,13 +59,23 @@ class Value(Expression):
         super().__init__(loc)
 
 
-class LogicalExpression(Expression):
+class BaseLogicalExpression(Expression):
     def __init__(self, loc: Location):
         super().__init__(loc)
 
 
-class Comparison(LogicalExpression):
-    def __init__(self, left: Expression, right: Expression, comp_sign):
+class LogicalExpression(BaseLogicalExpression):
+    def __init__(self, and_conditions: list):
+        super().__init__(and_conditions[0].location)
+        self.and_conditions = and_conditions
+
+    def __str__(self, depth=0):
+        res = "\t" * depth + "||\n"
+        for cond in self.and_conditions:
+            res += cond.__str__(depth + 1)
+        return res
+
+
         super().__init__(left.location)
         self.left = left
         self.right = right

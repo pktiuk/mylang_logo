@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program
+from .node_classes import Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Comparison, AndCondition, OrCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, Program, LogicalExpression
 
 
 class Parser(object):
@@ -24,8 +24,13 @@ class Parser(object):
         else:
             return self.token_source.get_token()
 
-    def _check_token_type(self, token_type: TokenType) -> bool:
-        return token_type == self.__get_token().symbol_type
+    def _check_token_type(self,
+                          token_type: TokenType,
+                          pop: bool = False) -> bool:
+        result = token_type == self.__get_token().symbol_type
+        if pop:
+            self.__pop_token()
+        return result
 
     def parse_program(self) -> Program:
         parsed = self.parse()
@@ -76,34 +81,22 @@ class Parser(object):
         return self.__parse_function_def()
 
     def __parse_expression(self) -> Expression:
-        if self._check_token_type(TokenType.OPEN_PAREN):
-            self.__pop_token()
-            result = self.__parse_math_expression()
-            self.__validate_next_token(TokenType.CLOSE_PAREN,
-                                       "No ending parenthesis.")
-            return result
+        return self.__parse_logical_expression()
 
-        result = self.__parse_math_expression()
+    def __parse_logical_expression(self):
+        first_exp = self.__parse_and_condition()
+        if not first_exp:
+            return None
 
-        if result:
-            logic = self.__parse_logical_expression(result)
-            if logic:
-                return logic
+        other_exp = []
+        while self._check_token_type(TokenType.OR_OPERATOR, True):
+            other_exp.append(self.__parse_and_condition())
 
-        return result
-
-    def __parse_logical_expression(self, first_math_expression):
-        logical_operators = [
-            TokenType.OR_OPERATOR, TokenType.AND_OPERATOR,
-            TokenType.COMP_OPERATOR
-        ]
-        if self.__get_token().symbol_type in logical_operators:
-            result = self.__parse_and_condition(first_math_expression)
-            if self._check_token_type(TokenType.OR_OPERATOR):
-                self.__pop_token()
-                result = OrCondition(result, self.__parse_expression())
-            return result
-        return None
+        if other_exp:
+            other_exp.insert(0, first_exp)
+            return LogicalExpression(other_exp)
+        else:
+            return first_exp
 
     def __parse_and_condition(self, first_math_expression) -> AndCondition:
 
