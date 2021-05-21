@@ -83,7 +83,7 @@ class Parser(object):
     def __parse_expression(self) -> Expression:
         return self.__parse_logical_expression()
 
-    def __parse_logical_expression(self):
+    def __parse_logical_expression(self, unary_op=None):
         first_exp = self.__parse_and_condition()
         if not first_exp:
             return None
@@ -94,7 +94,7 @@ class Parser(object):
 
         if other_exp:
             other_exp.insert(0, first_exp)
-            return LogicalExpression(other_exp)
+            return LogicalExpression(other_exp, unary_op)
         else:
             return first_exp
 
@@ -161,17 +161,26 @@ class Parser(object):
 
     def __parse_factor(self) -> Factor:
         result = None
+
+        unary_token = None
+        if self.__get_token().symbol_type in [
+                TokenType.UNARY_OPERATOR, TokenType.ADD_OPERATOR
+        ]:
+            unary_token = self.__pop_token().value
+
         if self._check_token_type(TokenType.OPEN_PAREN, True):
-            result = self.__parse_logical_expression()
+            result = self.__parse_logical_expression(unary_token)
             self.__validate_next_token(TokenType.CLOSE_PAREN,
                                        "No ending parenthesis.")
         else:
             result = self.__parse_value()
-            if self._check_token_type(TokenType.MULT_OPERATOR):
-                mult_op = self.__pop_token().value
-                result = Factor(result.location, result, self.__parse_factor(),
-                                mult_op)
-
+            values = [result]
+            operators = []
+            while self._check_token_type(TokenType.MULT_OPERATOR):
+                operators.append(self.__pop_token().value)
+                values.append(self.__parse_value())  # TODO check if not null
+            if operators:
+                result = Factor(values, operators, unary_token)
         return result
 
     def __parse_value(self) -> Value:

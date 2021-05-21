@@ -49,18 +49,15 @@ class MathExpression(Expression):
 
 
 class Factor(Expression):
-    def __init__(self, loc: Location, left: 'Value', right: 'Factor',
-                 operator: str):
-        super().__init__(left.location)
-        self.left = left
-        self.right = right
-        self.mult_operator = operator
+    def __init__(self, values, operators: list, unary_op=None):
+        super().__init__(values[0].location)
+        self.values = values
+        self.operators = operators
+        self.unary_op = unary_op
 
     def __str__(self, depth=0):
-        res = "\t" * depth + self.mult_operator + "\n"
-        res += self.left.__str__(depth + 1)
-        res += self.right.__str__(depth + 1)
-        return res
+        # TODO
+        return "res"
 
 
 class Value(Expression):
@@ -74,9 +71,10 @@ class BaseLogicalExpression(Expression):
 
 
 class LogicalExpression(BaseLogicalExpression):
-    def __init__(self, and_conditions: list):
+    def __init__(self, and_conditions: list, unary_op=None):
         super().__init__(and_conditions[0].location)
         self.and_conditions = and_conditions
+        self.unary_op = unary_op
 
     def __str__(self, depth=0):
         res = "\t" * depth + "||\n"
@@ -103,7 +101,7 @@ class AndCondition(BaseLogicalExpression):
 
     def __str__(self, depth=0):
         res = "\t" * depth + "&&\n"
-        for cond in self.and_conditions:
+        for cond in self.relations:
             res += cond.__str__(depth + 1)
         return res
 
