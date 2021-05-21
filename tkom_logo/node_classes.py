@@ -49,11 +49,10 @@ class MathExpression(Expression):
 
 
 class Factor(Expression):
-    def __init__(self, values, operators: list, unary_op=None):
-        super().__init__(values[0].location)
-        self.values = values
-        self.operators = operators
+    def __init__(self, value, unary_op=None):
+        super().__init__(value.location)
         self.unary_op = unary_op
+        self.value = value
 
     def __str__(self, depth=0):
         # TODO

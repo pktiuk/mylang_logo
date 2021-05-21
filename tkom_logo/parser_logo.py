@@ -174,32 +174,14 @@ class Parser(object):
                                        "No ending parenthesis.")
         else:
             result = self.__parse_value()
-            values = [result]
-            operators = []
-            while self._check_token_type(TokenType.MULT_OPERATOR):
-                operators.append(self.__pop_token().value)
-                values.append(self.__parse_value())  # TODO check if not null
-            if operators:
-                result = Factor(values, operators, unary_token)
+            if result and unary_token:
+                result = Factor(result, unary_token)
         return result
 
     def __parse_value(self) -> Value:
         if self._check_token_type(TokenType.CONST):
             token = self.__pop_token()
             return ConstValue(token.location, token.value)
-        elif self.__get_token().symbol_type in [
-                TokenType.UNARY_OPERATOR, TokenType.ADD_OPERATOR
-        ]:
-            unary_token = self.__pop_token()
-            if self.__get_token().symbol_type in [
-                    TokenType.IDENTIFIER, TokenType.CONST
-            ]:
-                token = self.__pop_token()
-                return ConstValue(token.location, token.value,
-                                  unary_token.value)
-            raise SyntaxError(
-                f'Wrong token ({self.__get_token()}) after unary operation ')
-
         elif self._check_token_type(TokenType.IDENTIFIER):
             id_token = self.__pop_token()
             operators = []
