@@ -81,8 +81,8 @@ class Parser(object):
         if self._check_token_type(TokenType.OPEN_PAREN):
             self.__pop_token()
             result = self.__parse_math_expression()
-            if self.__pop_token().symbol_type != TokenType.CLOSE_PAREN:
-                raise SyntaxError("No ending parenthesis.")
+            self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                       "No ending parenthesis.")
             return result
 
         result = self.__parse_math_expression()
@@ -150,9 +150,8 @@ class Parser(object):
         if self._check_token_type(TokenType.OPEN_PAREN):
             self.__pop_token()
             result = self.__parse_math_expression()
-            if not self._check_token_type(TokenType.CLOSE_PAREN):
-                raise SyntaxError("No ending parenthesis.")
-            self.__pop_token()
+            self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                       "No ending parenthesis.")
         else:
             result = self.__parse_value()
             if self._check_token_type(TokenType.MULT_OPERATOR):
@@ -214,8 +213,8 @@ class Parser(object):
                     arguments.append(argument)
                 else:
                     raise SyntaxError("Problem with parsing arguments")
-            if not self._check_token_type(TokenType.CLOSE_PAREN):
-                raise SyntaxError("Missing close paren")
+            self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                       "Missing close paren", False)
         self.__pop_token()
         return FunOperator(location, arguments)
 
@@ -223,13 +222,11 @@ class Parser(object):
         if self.__get_token().symbol_type != TokenType.WHILE:
             return None
         loc = self.__pop_token().location
-        if not self._check_token_type(TokenType.OPEN_PAREN):
-            raise SyntaxError("No opening paren after while definition")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.OPEN_PAREN,
+                                   "No opening paren after while definition")
         logical_exp = self.__parse_expression()
-        if not self._check_token_type(TokenType.CLOSE_PAREN):
-            raise SyntaxError("No closing paren after while definition")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                   "No closing paren after while definition")
 
         block = self.__parse_block()
         return WhileStatement(loc, logical_exp, block)
@@ -249,9 +246,8 @@ class Parser(object):
         self.__pop_token()
         fun = self.__pop_token()
 
-        if not self._check_token_type(TokenType.OPEN_PAREN):
-            raise SyntaxError("No opening paren after function definition")
-        self.__pop_token()
+        self.__validate_next_token(
+            TokenType.OPEN_PAREN, "No opening paren after function definition")
         arguments = []
         # parse arguments
         if self._check_token_type(TokenType.IDENTIFIER):
@@ -259,30 +255,26 @@ class Parser(object):
 
         while self._check_token_type(TokenType.COMMA):
             self.__pop_token()
-            if not self._check_token_type(TokenType.IDENTIFIER):
-                raise SyntaxError("Wrong function argument")
+            self.__validate_next_token(TokenType.IDENTIFIER,
+                                       "Wrong function argument", False)
             arguments.append(self.__pop_token().value)
 
-        if not self._check_token_type(TokenType.CLOSE_PAREN):
-            raise SyntaxError("Missing close paren")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                   "Missing close paren")
 
         block = self.__parse_block()
         return FunctionDefinition(fun.location, fun.value, block, arguments)
 
     def __parse_block(self) -> Block:
-        if not self._check_token_type(TokenType.OPEN_BLOCK):
-            raise SyntaxError("No opening block in block declaration")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.OPEN_BLOCK,
+                                   "No opening block in block declaration")
         statements = []
         statement = self.__parse_statement()
         while statement:
             statements.append(statement)
             statement = self.__parse_statement()
 
-        if not self._check_token_type(TokenType.CLOSE_BLOCK):
-            raise SyntaxError("No close of block")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.CLOSE_BLOCK, "No close of block")
         return Block(statements)
 
     def __parse_if(self) -> IfStatement:
@@ -297,14 +289,11 @@ class Parser(object):
             return None
         location = self.__pop_token().location
 
-        if not self._check_token_type(TokenType.OPEN_PAREN):
-            raise SyntaxError("No opening paren if")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.OPEN_PAREN, "No opening paren if")
 
         condition = self.__parse_expression()
-        if not self._check_token_type(TokenType.CLOSE_PAREN):
-            raise SyntaxError("No closing paren after if condition")
-        self.__pop_token()
+        self.__validate_next_token(TokenType.CLOSE_PAREN,
+                                   "No closing paren after if condition")
 
         true_block = self.__parse_block()
         result = IfStatement(location,
@@ -321,6 +310,18 @@ class Parser(object):
         if not self._check_token_type(TokenType.FIELD_OPERATOR):
             return None
         loc = self.__pop_token().location
-        if not self._check_token_type(TokenType.IDENTIFIER):
-            raise SyntaxError("Wrong token after dot")
+        self.__validate_next_token(TokenType.IDENTIFIER,
+                                   "Wrong token after dot", False)
         return FieldOperator(loc, self.__pop_token().value)
+
+    def __validate_next_token(self,
+                              expected_type: TokenType,
+                              err_msg: str,
+                              pop: bool = True):
+        """loads token and checks whether it token matches 
+           expected one and raises SyntaxError if not
+        """
+        if not self._check_token_type(expected_type):
+            raise SyntaxError(err_msg)
+        if pop:
+            self.__pop_token()
