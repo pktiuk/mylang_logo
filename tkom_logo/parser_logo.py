@@ -107,7 +107,9 @@ class Parser(object):
         other_relations = []
 
         while self._check_token_type(TokenType.AND_OPERATOR, True):
-            other_relations.append(self.__parse_relation())
+            rel = self.__check_none(self.__parse_relation(),
+                                    "Missing relation after and operator")
+            other_relations.append(rel)
 
         if other_relations:
             other_relations.insert(0, first_relation)
@@ -118,7 +120,8 @@ class Parser(object):
     def __parse_relation(self) -> Relation:
         first_math_expression = self.__parse_math_expression()
 
-        if self._check_token_type(TokenType.COMP_OPERATOR):
+        if self._check_token_type(
+                TokenType.COMP_OPERATOR) and first_math_expression:
             comp = self.__pop_token().value
             return Relation(first_math_expression,
                             self.__parse_math_expression(), comp)
@@ -130,12 +133,12 @@ class Parser(object):
 
         operators = []
         add_expressions = [first_add_expr]
-        while self._check_token_type(TokenType.ADD_OPERATOR):
-            operators.append(self.__pop_token().value)
-            add_exp = self.__parse_add_expr()
-            if not add_exp:
-                raise SyntaxError("No factor after add operator")
-            add_expressions.append(add_exp)
+        if first_add_expr:
+            while self._check_token_type(TokenType.ADD_OPERATOR):
+                operators.append(self.__pop_token().value)
+                add_exp = self.__check_none(self.__parse_add_expr(),
+                                            "No factor after add operator")
+                add_expressions.append(add_exp)
 
         if operators:
             return MathExpression(add_expressions, operators)
@@ -147,12 +150,12 @@ class Parser(object):
         operators = []
         factors = [first_factor]
 
-        while self._check_token_type(TokenType.MULT_OPERATOR):
-            operators.append(self.__pop_token().value)
-            factor = self.__parse_factor()
-            if not factor:
-                raise SyntaxError("No factor after add operator")
-            factors.append(factor)
+        if first_factor:
+            while self._check_token_type(TokenType.MULT_OPERATOR):
+                operators.append(self.__pop_token().value)
+                factor = self.__check_none(self.__parse_factor(),
+                                           "No factor after add operator")
+                factors.append(factor)
 
         if operators:
             return AddExpression(factors, operators)
@@ -169,9 +172,12 @@ class Parser(object):
             unary_token = self.__pop_token().value
 
         if self._check_token_type(TokenType.OPEN_PAREN, True):
-            result = self.__parse_logical_expression(unary_token)
+            result = self.__check_none(
+                self.__parse_logical_expression(unary_token),
+                "No expression in paren")
             self.__validate_next_token(TokenType.CLOSE_PAREN,
                                        "No ending parenthesis.")
+
         else:
             result = self.__parse_value()
             if result and unary_token:
@@ -228,7 +234,8 @@ class Parser(object):
         loc = self.__pop_token().location
         self.__validate_next_token(TokenType.OPEN_PAREN,
                                    "No opening paren after while definition")
-        logical_exp = self.__parse_expression()
+        logical_exp = self.__check_none(self.__parse_expression(),
+                                        "No expressions in while")
         self.__validate_next_token(TokenType.CLOSE_PAREN,
                                    "No closing paren after while definition")
 
@@ -270,6 +277,8 @@ class Parser(object):
         return FunctionDefinition(fun.location, fun.value, block, arguments)
 
     def __parse_block(self) -> Block:
+        """Returns block if parsed, if there is no block raises exception.
+        """
         self.__validate_next_token(TokenType.OPEN_BLOCK,
                                    "No opening block in block declaration")
         statements = []
@@ -329,3 +338,8 @@ class Parser(object):
             raise SyntaxError(err_msg)
         if pop:
             self.__pop_token()
+
+    def __check_none(self, element, err_msg):
+        if not element:
+            raise SyntaxError(err_msg)
+        return element
