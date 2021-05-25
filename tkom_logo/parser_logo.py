@@ -33,15 +33,19 @@ class Parser(object):
         return result
 
     def parse_program(self) -> Program:
-        parsed = self.parse()
-        if parsed:
-            program = Program()
-            while parsed:
-                program.add_element(parsed)
-                parsed = self.parse()
-            return program
+        statements = []
+        definitions = []
+        while (definition :=
+               self.__parse_definition()) or (statement :=
+                                              self.__parse_statement()):
+            if definition:
+                definitions.append(definition)  # weryfikuje redefinicje
+            else:
+                statements.append(statement)
 
-        return None
+        self.__validate_next_token(TokenType.EOF,
+                                   "EOF expected at the end of file")
+        return Program(definitions, statements)
 
     def parse(self) -> Statement:
         try:

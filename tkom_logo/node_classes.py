@@ -275,21 +275,13 @@ class FunctionDefinition(Definition):
 
 
 class Program(object):
-    def __init__(self):
-        self.definitions_list = []
-        self.statements = []
-
-    def add_element(self, element: 'Statement or Definition'):
-        if issubclass(type(element), Definition):
-            self.definitions_list.append(element)
-        elif issubclass(type(element), Statement):
-            self.statements.append(element)
-        else:
-            raise RuntimeError
+    def __init__(self, definitions=[], statements=[]):
+        self.definitions = definitions
+        self.statements = statements
 
     def __str__(self):
         ret = "Definitions:\n"
-        for d in self.definitions_list:
+        for d in self.definitions:
             ret += d.__str__(1)
         ret += "Statements:\n"
         for d in self.statements:
