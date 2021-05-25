@@ -32,9 +32,18 @@ class AddExpression(Expression):
         self.factors = factors
 
     def __str__(self, depth=0):
-        res = "\t" * depth + self.operators[0]
-        # TODO
-        return "res"
+        res = "\t" * depth + self.operators[0] + "\n"
+        depth += 1
+        res += self.factors[0].__str__(depth)
+        iter_nr = 1
+        while iter_nr < len(self.operators):
+            res += "\t" * depth + self.operators[iter_nr] + "\n"
+            depth += 1
+            res += self.factors[iter_nr].__str__(depth)
+            iter_nr += 1
+        res += "\t" * depth + self.factors.__str__()
+
+        return res
 
 
 class MathExpression(Expression):
@@ -44,8 +53,18 @@ class MathExpression(Expression):
         self.add_expressions = add_expressions
 
     def __str__(self, depth=0):
-        # TODO
-        return "res"
+        res = "\t" * depth + self.operators[0] + "\n"
+        depth += 1
+        res += self.add_expressions[0].__str__(depth)
+        iter_nr = 1
+        while iter_nr < len(self.operators):
+            res += "\t" * depth + self.operators[iter_nr] + "\n"
+            depth += 1
+            res += self.add_expressions[iter_nr].__str__(depth)
+            iter_nr += 1
+        res += "\t" * depth + self.add_expressions[-1].__str__() + "\n"
+
+        return res
 
 
 class Factor(Expression):
@@ -55,8 +74,11 @@ class Factor(Expression):
         self.value = value
 
     def __str__(self, depth=0):
-        # TODO
-        return "res"
+
+        if self.unary_op:
+            return depth * "\t" + self.unary_op + self.value.__str__()
+        else:
+            return self.value.__str__(depth)
 
 
 class Value(Expression):
@@ -130,7 +152,7 @@ class FunOperator:
         self.arguments = arguments
 
     def __str__(self, depth=0):
-        ret = "\t" * depth + "()"
+        ret = "\t" * depth + "()\n"
         for arg in self.arguments:
             ret += arg.__str__(depth + 1)
         return ret
