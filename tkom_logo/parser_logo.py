@@ -34,12 +34,16 @@ class Parser(object):
 
     def parse_program(self) -> Program:
         statements = []
+        definition_names = []
         definitions = []
         while (definition :=
                self.__parse_definition()) or (statement :=
                                               self.__parse_statement()):
             if definition:
-                definitions.append(definition)  # weryfikuje redefinicje
+                if definition.name in definition_names:
+                    raise SyntaxError("Redefinition")
+                definition_names.append(definition.name)
+                definitions.append(definition)
             else:
                 statements.append(statement)
 
