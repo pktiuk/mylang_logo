@@ -32,6 +32,19 @@ class Parser(object):
             self.__pop_token()
         return result
 
+    def _handle_exception(decorated_fun, *args, **kwargs):
+        def output_fun(*args, **kwargs):
+            try:
+                t = decorated_fun(*args, **kwargs)
+            except (SyntaxError) as err:
+                if err.location is None:
+                    err.location = args[0].__get_token().location
+                raise err
+            return t
+
+        return output_fun
+
+    @_handle_exception
     def parse_program(self) -> Program:
         statements = []
         definition_names = []
@@ -51,6 +64,7 @@ class Parser(object):
                                    "EOF expected at the end of file")
         return Program(definitions, statements)
 
+    @_handle_exception
     def parse(self) -> Statement:
         try:
             result = self.__parse_definition()
