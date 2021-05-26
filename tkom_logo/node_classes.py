@@ -157,7 +157,10 @@ class Relation(BaseLogicalExpression):
         self.comp_sign = comp_sign
 
     def __str__(self, depth=0):
-        return ""
+        res = "\t" * depth + self.comp_sign + "\n"
+        res += self.left.__str__(depth + 1)
+        res += self.right.__str__(depth + 1)
+        return res
 
 
 class AndCondition(BaseLogicalExpression):
@@ -179,7 +182,10 @@ class OrCondition(BaseLogicalExpression):
         self.right = right
 
     def __str__(self, depth=0):
-        return ""
+        res = "\t" * depth + "||\n"
+        for cond in self.relations:
+            res += cond.__str__(depth + 1)
+        return res
 
 
 class FieldOperator:
