@@ -50,9 +50,29 @@ class AddExpression(Expression):
             depth += 1
             res += self.factors[iter_nr].__str__(depth)
             iter_nr += 1
-        res += "\t" * depth + self.factors.__str__()
+        res += "\t" * depth + self.factors[-1].__str__()
 
         return res
+
+    def evaluate(self, context: Context):
+        result = self.factors[0].evaluate(context)
+        iter_nr = 1
+        while iter_nr <= len(self.operators):
+            operator = self.operators[iter_nr - 1]
+            mult_el = self.factors[iter_nr].evaluate(context)
+            if operator == "*":
+                result *= mult_el
+            elif operator == "/":
+                if mult_el == 0:
+                    raise ZeroDivisionError(
+                        f"Dividing by zero at {self.factors[iter_nr].location}"
+                    )
+                result /= mult_el
+            else:
+                raise RuntimeError(f"Unexpected add operator: {operator}",
+                                   self)
+            iter_nr += 1
+        return result
 
 
 class MathExpression(Expression):
@@ -74,6 +94,22 @@ class MathExpression(Expression):
         res += "\t" * depth + self.add_expressions[-1].__str__() + "\n"
 
         return res
+
+    def evaluate(self, context: Context):
+        result = self.add_expressions[0].evaluate(context)
+        iter_nr = 1
+        while iter_nr <= len(self.operators):
+            operator = self.operators[iter_nr - 1]
+            add_el = self.add_expressions[iter_nr].evaluate(context)
+            if operator == "+":
+                result += add_el
+            elif operator == "-":
+                result -= add_el
+            else:
+                raise RuntimeError(f"Unexpected add operator: {operator}",
+                                   self)
+            iter_nr += 1
+        return result
 
 
 class Factor(Expression):

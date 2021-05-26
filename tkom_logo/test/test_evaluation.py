@@ -14,10 +14,7 @@ from .test_parser import generate_lexer
 
 
 def test_basic_program():
-    TEST_STRINGS = [
-        "x=6234",
-        "x=12 y=34 z=x",
-    ]
+    TEST_STRINGS = ["x=6234", "x=12 y=34 z=x", "x=21+9", "x=43/32 y=3*2"]
     for string in TEST_STRINGS:
         print(f'Generating program: {string}')
         q = generate_lexer(string)
