@@ -1,9 +1,14 @@
 from .shared import Location
+from .context import Context
+from .language_errors import RuntimeError
 
 
 class Statement:
     def __init__(self, loc: Location):
         self.location = loc
+
+    def evaluate(self, context: Context):
+        raise NotImplementedError
 
 
 class Expression(Statement):
@@ -23,6 +28,10 @@ class ValueAssignment(Statement):
     def __str__(self, depth=0):
         return depth * "\t" + self.name + "=\n" + self.expression.__str__(
             depth + 1)
+
+    def evaluate(self, context: Context):
+        result = self.expression.evaluate(context)
+        context.define_element(self.name, result)
 
 
 class AddExpression(Expression):
@@ -180,6 +189,13 @@ class IdValue(Value):
         res += "\t" * depth + self.name + "\n"
         return res
 
+    def evaluate(self, context: Context):
+        result = context.get_element(self.name)
+        if not result:
+            raise RuntimeError("Trying to access undefined variable", self)
+
+        return result  # TODO: unary operators
+
 
 class ConstValue(Value):
     def __init__(self, loc: Location, value, unary_op=None):
@@ -195,6 +211,12 @@ class ConstValue(Value):
             return self.value
         else:
             raise NotImplementedError
+
+    def evaluate(self, context: Context):
+        if self.unary_op:
+            raise NotImplementedError  # TODO: unary operators
+        else:
+            return self.value
 
 
 class Block(object):

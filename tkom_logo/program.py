@@ -23,4 +23,4 @@ class Program(object):
 
     def execute(self):
         for statement in self.statements:
-            statement.evaluate(self.context)
+            statement.evaluate(self.root_context)

@@ -11,3 +11,11 @@ class ParseError(BaseException):
 
 class SyntaxError(BaseException):
     location: Location
+
+
+class RuntimeError(BaseException):
+    def __init__(self, message, element=None):
+        self.location = None
+        if element:
+            self.location = element.location
+        super().__init__(message, self.location)

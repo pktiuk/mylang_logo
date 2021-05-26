@@ -25,3 +25,4 @@ def test_basic_program():
         print(result)
         print("Executing:")
         result.execute()
+        print("Executed")
