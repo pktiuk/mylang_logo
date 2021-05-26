@@ -26,3 +26,4 @@ def test_basic_program():
         print("Executing:")
         result.execute()
         print("Executed")
+        print(result.root_context)

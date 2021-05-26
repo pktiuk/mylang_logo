@@ -19,10 +19,19 @@ class Context:
             raise RuntimeError("Redefinition of element")
 
         self.elements[name] = value
-        #TODO check parent
+        # TODO check parent
 
     def get_element(self, name):
         if name in self.definitions.get(name):
             return self.definitions.get(name)
         else:
             return self.elements.get(name)
+
+    def __str__(self):
+        ret = "CONTEXT:\nDefinitions:\n"
+        for defn in self.definitions:
+            ret += defn.__str__(depth=1)
+        ret += "\nElements:\n"
+        for name, value in self.elements.items():
+            ret += "\t" + name + " = " + str(value) + "\n"
+        return ret
