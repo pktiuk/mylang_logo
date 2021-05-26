@@ -193,19 +193,6 @@ class AndCondition(BaseLogicalExpression):
         return all([x.evaluate(context) for x in self.relations])
 
 
-class OrCondition(BaseLogicalExpression):
-    def __init__(self, left: AndCondition, right: 'OrCondition'):
-        super().__init__(left.location)
-        self.left = left
-        self.right = right
-
-    def __str__(self, depth=0):
-        res = "\t" * depth + "||\n"
-        for cond in self.relations:
-            res += cond.__str__(depth + 1)
-        return res
-
-
 class FieldOperator:
     def __init__(self, loc: Location, name):
         self.location = loc
