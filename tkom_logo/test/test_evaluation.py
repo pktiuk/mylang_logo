@@ -16,6 +16,7 @@ from .test_parser import generate_lexer
 def test_basic_program():
     TEST_STRINGS = [
         "x=6234",
+        "x=12 y=34 z=x",
     ]
     for string in TEST_STRINGS:
         print(f'Generating program: {string}')

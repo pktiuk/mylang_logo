@@ -3,11 +3,11 @@ from .language_errors import RuntimeError
 
 
 class Context:
-    def __init__(self, definitions=[], parent_context=None):
+    def __init__(self, definition_list=[], parent_context=None):
         self.parent = parent_context
         self.definitions = {}
         self.elements = {}
-        for el in definitions:
+        for el in definition_list:
             self.definitions[el.name] = el
 
         self.log = ConsoleLogger()
@@ -22,7 +22,7 @@ class Context:
         # TODO check parent
 
     def get_element(self, name):
-        if name in self.definitions.get(name):
+        if self.definitions and name in self.definitions.get(name):
             return self.definitions.get(name)
         else:
             return self.elements.get(name)
