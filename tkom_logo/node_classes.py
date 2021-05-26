@@ -148,6 +148,9 @@ class LogicalExpression(BaseLogicalExpression):
             res += cond.__str__(depth + 1)
         return res
 
+    def evaluate(self, context: Context):
+        return not all([not x.evaluate(context) for x in self.and_conditions])
+
 
 class Relation(BaseLogicalExpression):
     def __init__(self, left: MathExpression, right: MathExpression, comp_sign):
@@ -162,6 +165,18 @@ class Relation(BaseLogicalExpression):
         res += self.right.__str__(depth + 1)
         return res
 
+    def evaluate(self, context: Context):
+        COMP_OPERATIONS = {
+            "==": lambda l, r: l == r,
+            ">=": lambda l, r: l >= r,
+            "<=": lambda l, r: l <= r,
+            ">": lambda l, r: l > r,
+            "<": lambda l, r: l < r,
+        }
+        left = self.left.evaluate(context)
+        right = self.right.evaluate(context)
+        return COMP_OPERATIONS[self.comp_sign](left, right)
+
 
 class AndCondition(BaseLogicalExpression):
     def __init__(self, relations: list):
@@ -173,6 +188,9 @@ class AndCondition(BaseLogicalExpression):
         for cond in self.relations:
             res += cond.__str__(depth + 1)
         return res
+
+    def evaluate(self, context: Context):
+        return all([x.evaluate(context) for x in self.relations])
 
 
 class OrCondition(BaseLogicalExpression):
