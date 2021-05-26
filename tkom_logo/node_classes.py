@@ -272,18 +272,3 @@ class FunctionDefinition(Definition):
         ret += "\n"
         ret += self.block.__str__(depth + 1)
         return ret
-
-
-class Program(object):
-    def __init__(self, definitions=[], statements=[]):
-        self.definitions = definitions
-        self.statements = statements
-
-    def __str__(self):
-        ret = "Definitions:\n"
-        for d in self.definitions:
-            ret += d.__str__(1)
-        ret += "Statements:\n"
-        for d in self.statements:
-            ret += d.__str__(1)
-        return ret
