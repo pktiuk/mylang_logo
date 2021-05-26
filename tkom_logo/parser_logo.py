@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, Relation, AndCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, LogicalExpression, AddExpression
+from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, LogicalExpression, AddExpression
 from .program import Program
 
 
@@ -354,7 +354,7 @@ class Parser(object):
                               expected_type: TokenType,
                               err_msg: str,
                               pop: bool = True):
-        """loads token and checks whether it token matches 
+        """loads token and checks whether it token matches
            expected one and raises SyntaxError if not
         """
         if not self._check_token_type(expected_type):
