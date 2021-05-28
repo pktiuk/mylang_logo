@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, IdValue, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, LogicalExpression, AddExpression
+from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, Identifier, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, LogicalExpression, AddExpression, BaseValue
 from .program import Program
 
 
@@ -91,9 +91,9 @@ class Parser(object):
             result = assignment if assignment else result
         return result
 
-    def __parse_assignment(self, target: IdValue):
+    def __parse_assignment(self, target: Identifier):
         if target:
-            if type(target) == IdValue and self.__get_token(
+            if type(target) == Identifier and self.__get_token(
             ).symbol_type == TokenType.ASSIGNMENT_OPERATOR:
                 self.__pop_token()
                 return ValueAssignment(target.location, target.name,
@@ -207,12 +207,13 @@ class Parser(object):
                 result = Factor(result, unary_token)
         return result
 
-    def __parse_value(self) -> Value:
+    def __parse_value(self) -> BaseValue:
         if self._check_token_type(TokenType.CONST):
             token = self.__pop_token()
             return ConstValue(token.location, token.value)
         elif self._check_token_type(TokenType.IDENTIFIER):
             id_token = self.__pop_token()
+            id_value = Identifier(id_token.location, id_token.value)
             operators = []
 
             operator = True
@@ -222,9 +223,10 @@ class Parser(object):
                     operator = self.__parse_field_operator()
                 if operator:
                     operators.append(operator)
-            return IdValue(id_token.location,
-                           id_token.value,
-                           operators=operators)
+            if operators:
+                return Value(id_value, operators=operators)
+            else:
+                return id_value
 
         return None
 

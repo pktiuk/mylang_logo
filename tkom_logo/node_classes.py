@@ -126,7 +126,7 @@ class Factor(Expression):
             return self.value.__str__(depth)
 
 
-class Value(Expression):
+class BaseValue(Expression):
     def __init__(self, loc: Location):
         super().__init__(loc)
 
@@ -201,6 +201,9 @@ class FieldOperator:
     def __str__(self, depth=0):
         return "\t" * depth + f". {self.name}"
 
+    def evaluate(self, context: Context, source_element):
+        pass  # TODO Dodaj typ obiektu, czy dozwolone sprawdzanie typów?
+
 
 class FunOperator:
     def __init__(self, loc: Location, arguments):
@@ -213,16 +216,29 @@ class FunOperator:
             ret += arg.__str__(depth + 1)
         return ret
 
+    def evaluate(self, context: Context, source_element):
+        pass  # TODO
 
-class IdValue(Value):
-    def __init__(self,
-                 loc: Location,
-                 name: str,
-                 unary_op=None,
-                 operators=None):
+
+class Identifier(BaseValue):
+    def __init__(self, loc: Location, name: str):
         super().__init__(loc)
         self.name = name
-        self.unary_op = unary_op
+
+    def __str__(self, depth=0):
+        return "\t" * depth + self.name + "\n"
+
+    def evaluate(self, context: Context):
+        result = context.get_element(self.name)
+        if not result:
+            raise RuntimeError("Trying to access undefined variable", self)
+        return result
+
+
+class Value(BaseValue):
+    def __init__(self, id_value: Identifier, operators=None):
+        super().__init__(id_value.location)
+        self.id_value = id_value
         if operators:
             self.operators = operators
         else:
@@ -233,18 +249,19 @@ class IdValue(Value):
         for op in reversed(self.operators):
             res += op.__str__(depth)
             depth = depth + 1
-        res += "\t" * depth + self.name + "\n"
+        res += "\t" * depth + self.id_value.name + "\n"
         return res
 
     def evaluate(self, context: Context):
-        result = context.get_element(self.name)
-        if not result:
-            raise RuntimeError("Trying to access undefined variable", self)
+        result = self.id_value.evaluate(context)
 
-        return result  # TODO: unary operators
+        for operator in self.operators:
+            result = operator.evaluate(context, result)
+
+        return result
 
 
-class ConstValue(Value):
+class ConstValue(BaseValue):
     def __init__(self, loc: Location, value, unary_op=None):
         super().__init__(loc)
         self.value = value
@@ -276,6 +293,9 @@ class Block(object):
             res += statement.__str__(depth + 1)
         return res
 
+    def evaluate(self, context: Context):
+        pass  # TODO?
+
 
 class IfStatement(Statement):
     def __init__(self,
@@ -298,6 +318,9 @@ class IfStatement(Statement):
             ret += "None else"
         return ret
 
+    def evaluate(self, context: Context):
+        pass  # TODO
+
 
 class WhileStatement(Statement):
     def __init__(self, loc: Location, condition: BaseLogicalExpression,
@@ -311,6 +334,9 @@ class WhileStatement(Statement):
         ret += self.condition.__str__(depth + 1)
         ret += self.block.__str__(depth + 1)
         return ret
+
+    def evaluate(self, context: Context):
+        pass  # TODO
 
 
 class Definition(object):
