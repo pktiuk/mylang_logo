@@ -106,7 +106,7 @@ class Parser(object):
     def __parse_expression(self) -> Expression:
         return self.__parse_logical_expression()
 
-    def __parse_logical_expression(self, unary_op=None):
+    def __parse_logical_expression(self):
         first_exp = self.__parse_and_condition()
         if not first_exp:
             return None
@@ -117,7 +117,7 @@ class Parser(object):
 
         if other_exp:
             other_exp.insert(0, first_exp)
-            return LogicalExpression(other_exp, unary_op)
+            return LogicalExpression(other_exp)
         else:
             return first_exp
 
@@ -195,16 +195,15 @@ class Parser(object):
             unary_token = self.__pop_token().value
 
         if self._check_token_type(TokenType.OPEN_PAREN, True):
-            result = self.__check_none(
-                self.__parse_logical_expression(unary_token),
-                "No expression in paren")
+            result = self.__check_none(self.__parse_logical_expression(),
+                                       "No expression in paren")
             self.__validate_next_token(TokenType.CLOSE_PAREN,
                                        "No ending parenthesis.")
-
         else:
             result = self.__parse_value()
-            if result and unary_token:
-                result = Factor(result, unary_token)
+
+        if result and unary_token:
+            result = Factor(result, unary_token)
         return result
 
     def __parse_value(self) -> BaseValue:

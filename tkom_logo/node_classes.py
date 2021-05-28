@@ -125,6 +125,14 @@ class Factor(Expression):
         else:
             return self.value.__str__(depth)
 
+    def evaluate(self, context: Context):
+        result = self.value.evaluate(context)
+        if self.unary_op == '-':
+            result = -result
+        elif self.unary_op == '!':
+            result = not result
+        return result
+
 
 class BaseValue(Expression):
     def __init__(self, loc: Location):
@@ -137,10 +145,9 @@ class BaseLogicalExpression(Expression):
 
 
 class LogicalExpression(BaseLogicalExpression):
-    def __init__(self, and_conditions: list, unary_op=None):
+    def __init__(self, and_conditions: list):
         super().__init__(and_conditions[0].location)
         self.and_conditions = and_conditions
-        self.unary_op = unary_op
 
     def __str__(self, depth=0):
         res = "\t" * depth + "||\n"
@@ -202,7 +209,7 @@ class FieldOperator:
         return "\t" * depth + f". {self.name}"
 
     def evaluate(self, context: Context, source_element):
-        pass  # TODO Dodaj typ obiektu, czy dozwolone sprawdzanie typów?
+        pass  # TODO Dodaj typ obiektu
 
 
 class FunOperator:
@@ -262,25 +269,15 @@ class Value(BaseValue):
 
 
 class ConstValue(BaseValue):
-    def __init__(self, loc: Location, value, unary_op=None):
+    def __init__(self, loc: Location, value):
         super().__init__(loc)
         self.value = value
-        self.unary_op = unary_op
 
     def __str__(self, depth=0):
         return "\t" * depth + str(self.value) + "\n"
 
-    def get_value(self):
-        if not self.unary_op:
-            return self.value
-        else:
-            raise NotImplementedError
-
     def evaluate(self, context: Context):
-        if self.unary_op:
-            raise NotImplementedError  # TODO: unary operators
-        else:
-            return self.value
+        return self.value
 
 
 class Block(object):
