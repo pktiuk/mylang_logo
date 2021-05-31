@@ -1,5 +1,5 @@
 from .shared import ConsoleLogger
-from .context import Context
+from .context import Context, RootContext
 
 
 class Program(object):
@@ -7,9 +7,8 @@ class Program(object):
         self.definitions = definitions
         self.statements = statements
 
-        self.root_context = Context(self.definitions)
+        self.root_context = RootContext(self.definitions)
         self.log = ConsoleLogger()
-        self.program = None
         self.canvas = None  # TODO
 
     def __str__(self):

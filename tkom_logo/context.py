@@ -3,10 +3,10 @@ from .language_errors import RuntimeError
 
 
 class Context:
-    def __init__(self, definition_list=[], parent_context=None):
+    def __init__(self, definition_list=[], elements={}, parent_context=None):
         self.parent = parent_context
         self.definitions = {}
-        self.elements = {}
+        self.elements = elements
         for el in definition_list:
             self.definitions[el.name] = el
 
@@ -18,14 +18,24 @@ class Context:
         if name in self.definitions.keys():
             raise RuntimeError("Redefinition of element")
 
+        existing_element = self.elements.get(name)
+        if not existing_element and self.parent:
+            existing_element = self.parent.get_element(name)
+            if existing_element:
+                self.parent.define_element(name, value)
+                return
         self.elements[name] = value
-        # TODO check parent
 
     def get_element(self, name):
-        if self.definitions and name in self.definitions.get(name):
-            return self.definitions.get(name)
+        result = self.elements.get(name)
+
+        if not result and self.parent:
+            return self.parent.get_element(name)
         else:
-            return self.elements.get(name)
+            return result
+
+    def get_definition(self, name):
+        return self.parent.get_definition(name)
 
     def __str__(self):
         ret = "CONTEXT:\nDefinitions:\n"
@@ -35,3 +45,15 @@ class Context:
         for name, value in self.elements.items():
             ret += "\t" + name + " = " + str(value) + "\n"
         return ret
+
+
+class RootContext(Context):
+    def __init__(self, definition_list=[]):
+        super().__init__(definition_list)
+        self.__init_default_definitions()
+
+    def __init_default_definitions(self):
+        pass
+
+    def get_definition(self, name):
+        return self.definitions.get(name)
