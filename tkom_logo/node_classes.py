@@ -1,5 +1,5 @@
 from .shared import Location
-from .context import Context
+from .context import Context, RootContext
 from .language_errors import RuntimeError
 
 
@@ -223,8 +223,10 @@ class FunOperator:
             ret += arg.__str__(depth + 1)
         return ret
 
-    def evaluate(self, context: Context, source_element):
-        pass  # TODO
+    def evaluate(self, context: Context, source_element: 'FunctionDefinition'):
+        values = [x.evaluate(context) for x in self.arguments]
+        result = source_element.execute(values, context.get_root_context())
+        return result
 
 
 class Identifier(BaseValue):
@@ -364,3 +366,14 @@ class FunctionDefinition(Definition):
         ret += "\n"
         ret += self.block.__str__(depth + 1)
         return ret
+
+    def execute(self, values, root_context=RootContext()):
+        elements = {}
+        if len(values) != len(self.arguments):
+            raise RuntimeError("Numbers of arguments don't match")
+        for name, value in zip(self.arguments, values):
+            elements[name] = value
+
+        new_context = Context(elements=elements, parent_context=root_context)
+        result = self.block.evaluate(new_context)
+        return result

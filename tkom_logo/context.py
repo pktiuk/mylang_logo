@@ -37,6 +37,10 @@ class Context:
     def get_definition(self, name):
         return self.parent.get_definition(name)
 
+    def get_root_context(self):
+        if self.parent:
+            return self.parent.get_root_context()
+
     def __str__(self):
         ret = "CONTEXT:\nDefinitions:\n"
         for defn in self.definitions:
@@ -57,3 +61,6 @@ class RootContext(Context):
 
     def get_definition(self, name):
         return self.definitions.get(name)
+
+    def get_root_context(self):
+        return self
