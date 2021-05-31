@@ -293,6 +293,10 @@ class Block(object):
         return res
 
     def evaluate(self, context: Context):
+        # add return keyword to context declarations
+        # Where should I create new object for this
+        # Czy tworzenie dodatkowej klasy dziedziczącej po funkcji
+        # i dodawanie jej do kontekstu to dobre podejście?
         pass  # TODO?
 
 
@@ -336,44 +340,3 @@ class WhileStatement(Statement):
 
     def evaluate(self, context: Context):
         pass  # TODO
-
-
-class Definition(object):
-    def __init__(self, loc: Location, name: str):
-        self.location = loc
-        self.name = name
-
-
-class FunctionDefinition(Definition):
-    def __init__(
-        self,
-        loc: Location,
-        name: str,
-        block: Block,
-        arguments: list = None,
-    ):
-        super().__init__(loc, name)
-        if arguments:
-            self.arguments = arguments
-        else:
-            self.arguments = []
-        self.block = block
-
-    def __str__(self, depth=0):
-        ret = "\t" * depth + f"FUN: {self.name}\n" + "\t" * depth
-        for x in self.arguments:
-            ret += x
-        ret += "\n"
-        ret += self.block.__str__(depth + 1)
-        return ret
-
-    def execute(self, values, root_context=RootContext()):
-        elements = {}
-        if len(values) != len(self.arguments):
-            raise RuntimeError("Numbers of arguments don't match")
-        for name, value in zip(self.arguments, values):
-            elements[name] = value
-
-        new_context = Context(elements=elements, parent_context=root_context)
-        result = self.block.evaluate(new_context)
-        return result

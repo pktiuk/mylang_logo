@@ -1,7 +1,8 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
 from .language_errors import SyntaxError
-from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, Identifier, ConstValue, Block, IfStatement, WhileStatement, FunctionDefinition, Definition, LogicalExpression, AddExpression, BaseValue
+from .definition_classes import FunctionDefinition, Definition
+from .node_classes import Relation, Statement, Expression, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, Identifier, ConstValue, Block, IfStatement, WhileStatement, LogicalExpression, AddExpression, BaseValue
 from .program import Program
 
 
