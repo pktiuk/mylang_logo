@@ -9,8 +9,14 @@ sys.path.append(module_path)
 
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
+from ..context import Context
 from .test_lexer import TextBuffer
 from .test_parser import generate_lexer
+
+
+def check_context(context: Context, expected_values: dict):
+    for key, value in expected_values.items():
+        assert context.get_element(key) == value
 
 
 def test_basic_program():
@@ -18,7 +24,24 @@ def test_basic_program():
         "x=6234", "x=12 y=34 z=x", "x=21+9", "x=43/32 y=3*2", "x=43>32",
         "x=43<4 && 33<2", "x=32>43-32||3"
     ]
-    for string in TEST_STRINGS:
+    TEST_VALUES = [{
+        "x": 6234
+    }, {
+        "x": 12,
+        "y": 34,
+        "z": 12
+    }, {
+        "x": 30
+    }, {
+        "x": 43 / 32
+    }, {
+        "y": 6
+    }, {
+        "x": False
+    }, {
+        "x": True
+    }]
+    for string, values in zip(TEST_STRINGS, TEST_VALUES):
         print(f'Generating program: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
@@ -28,3 +51,4 @@ def test_basic_program():
         result.execute()
         print("Executed")
         print(result.root_context)
+        check_context(result.root_context, values)
