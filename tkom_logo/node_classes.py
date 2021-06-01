@@ -18,6 +18,9 @@ class Expression(Statement):
     def get_value(self):
         raise NotImplementedError
 
+    def evaluate(self, context: Context):
+        raise NotImplementedError
+
 
 class ValueAssignment(Statement):
     def __init__(self, loc, name, expression: Expression):
