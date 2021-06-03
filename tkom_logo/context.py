@@ -3,12 +3,21 @@ from .language_errors import RuntimeError
 
 
 class Context:
-    def __init__(self, definition_list=[], elements={}, parent_context=None):
+    def __init__(self,
+                 definitions: dict = None,
+                 elements: dict = None,
+                 parent_context=None):
         self.parent = parent_context
-        self.definitions = {}
-        self.elements = elements
-        for el in definition_list:
-            self.definitions[el.name] = el
+
+        if definitions:
+            self.definitions = definitions
+        else:
+            self.definitions = {}
+
+        if elements:
+            self.elements = elements
+        else:
+            self.elements = {}
 
         self.log = ConsoleLogger()
 
@@ -52,7 +61,7 @@ class Context:
 
 
 class RootContext(Context):
-    def __init__(self, definition_list=[]):
+    def __init__(self, definition_list: dict = None):
         super().__init__(definition_list)
         self.__init_default_definitions()
 

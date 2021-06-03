@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .shared import Location
 from .context import Context, RootContext
 from .language_errors import RuntimeError

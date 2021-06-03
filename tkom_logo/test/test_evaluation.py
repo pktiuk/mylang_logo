@@ -33,9 +33,10 @@ def test_basic_program_with_context():
     }, {
         "x": 30
     }, {
-        "x": 43 / 32
-    }, {
+        "x": 43 / 32,
         "y": 6
+    }, {
+        "x": True
     }, {
         "x": False
     }, {

@@ -1,13 +1,17 @@
 from .shared import ConsoleLogger
-from .context import Context, RootContext
+from .context import RootContext
 
 
 class Program(object):
-    def __init__(self, definitions=[], statements=[]):
+    def __init__(self, definitions: list = None, statements: list = None):
         self.definitions = definitions
         self.statements = statements
 
-        self.root_context = RootContext(self.definitions)
+        def_dict = {}
+        for el in self.definitions:
+            def_dict[el.name] = el
+        self.root_context = RootContext(def_dict)
+
         self.log = ConsoleLogger()
         self.canvas = None  # TODO
 
