@@ -28,3 +28,7 @@ class Program(object):
             statement.evaluate(self.root_context)
         if render:
             self.root_context.render()
+
+    def get_canvas(self):
+        return self.root_context.canvas
+
