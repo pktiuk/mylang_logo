@@ -13,6 +13,8 @@ class LogoRootContext(RootContext):
     def __init_default_definitions(self):
         self.definitions["print"] = PrintFunctionDef()
         self.definitions["Turtle"] = TurtleConstructor(self)
+        self.definitions["False"] = False
+        self.definitions["True"] = True
 
     def get_definition(self, name):
         return self.definitions.get(name)
