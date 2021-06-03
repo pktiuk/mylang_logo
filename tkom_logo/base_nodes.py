@@ -10,11 +10,11 @@ class Definition(ABC):
         self.name = name
 
     def __str__(self, depth=0):
-        return depth * "\t" + self.name
+        return depth * "\t" + self.name + "\n"
 
 
 class BaseFunctionDefinition(Definition):
-    def __init__(self, loc: Location, name: str):
+    def __init__(self, loc: Location = Location(0, 0), name: str = ""):
         super().__init__(loc, name)
 
     @abstractmethod
@@ -42,4 +42,8 @@ class Expression(Statement):
 class BaseObject(ABC):
     @abstractmethod
     def get_field(self, name: str):
+        pass
+
+    @abstractmethod
+    def evaluate(self, context: Context):
         pass

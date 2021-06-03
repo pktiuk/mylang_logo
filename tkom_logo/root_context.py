@@ -1,5 +1,6 @@
 from .context import RootContext
 from .standard_library.library_functions import PrintFunctionDef
+from .standard_library.turtle_object import TurtleConstructor
 
 
 class LogoRootContext(RootContext):
@@ -9,7 +10,7 @@ class LogoRootContext(RootContext):
 
     def __init_default_definitions(self):
         self.definitions["print"] = PrintFunctionDef()
-        pass
+        self.definitions["Turtle"] = TurtleConstructor()
 
     def get_definition(self, name):
         return self.definitions.get(name)

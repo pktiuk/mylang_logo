@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from .base_nodes import BaseFunctionDefinition, Statement, Expression
+from .base_nodes import BaseFunctionDefinition, Statement, Expression, BaseObject
 from .shared import Location
-from .context import Context, RootContext
+from .context import Context
 from .language_errors import RuntimeError
 
 
@@ -195,8 +195,10 @@ class FieldOperator:
     def __str__(self, depth=0):
         return "\t" * depth + f". {self.name}"
 
-    def evaluate(self, context: Context, source_element):
-        pass  # TODO Dodaj typ obiektu
+    def evaluate(self, context: Context, source_element: BaseObject):
+        if isinstance(source_element, BaseObject):
+            return source_element.get_field(self.name)
+        raise RuntimeError("Trying to access field of non-object element")
 
 
 class FunOperator:
