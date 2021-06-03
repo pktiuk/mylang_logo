@@ -63,7 +63,7 @@ class Context:
     def __str__(self):
         ret = "CONTEXT:\nDefinitions:\n"
         for defn in self.definitions.values():
-            ret += defn.__str__(depth=1)
+            ret += defn.__str__()
         ret += "\nElements:\n"
         for name, value in self.elements.items():
             ret += "\t" + name + " = " + str(value) + "\n"

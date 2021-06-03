@@ -1,6 +1,6 @@
 from ..shared import ConsoleLogger, Location
 
-from ..base_nodes import BaseFunctionDefinition
+from ..base_nodes import BaseFunctionDefinition, BaseValue
 
 
 class PrintFunctionDef(BaseFunctionDefinition):

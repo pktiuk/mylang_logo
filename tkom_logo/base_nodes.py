@@ -39,6 +39,19 @@ class Expression(Statement):
         raise NotImplementedError
 
 
+class BaseValue(Expression):
+    def __init__(self, loc: Location):
+        super().__init__(loc)
+
+    @abstractmethod
+    def __str__(self, depth=0):
+        pass
+
+    @abstractmethod
+    def evaluate(self, context: Context):
+        pass
+
+
 class BaseObject(ABC):
     @abstractmethod
     def get_field(self, name: str):

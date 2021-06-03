@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .base_nodes import BaseFunctionDefinition, Statement, Expression, BaseObject
+from .base_nodes import BaseFunctionDefinition, Statement, Expression, BaseObject, BaseValue
 from .shared import Location
 from .context import Context
 from .language_errors import RuntimeError
@@ -119,11 +119,6 @@ class Factor(Expression):
         elif self.unary_op == '!':
             result = not result
         return result
-
-
-class BaseValue(Expression):
-    def __init__(self, loc: Location):
-        super().__init__(loc)
 
 
 class BaseLogicalExpression(Expression):

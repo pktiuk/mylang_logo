@@ -129,8 +129,9 @@ def test_context():
 
 
 def test_standard_libraries():
-    TEST_TUPLES = [('print(312) print(4+2) print("slowo")', {}),
-                   ("t=Turtle() x=t.get_x() t.move(10)", {
-                       "x": 0
-                   })]
+    TEST_TUPLES = [('print(312) print(4+2) print("slowo") x=True', {
+        "x": True
+    }), ("t=Turtle() x=t.get_x() t.move(10)", {
+        "x": 0
+    })]
     check_execution_with_context_validation(TEST_TUPLES)
