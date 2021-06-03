@@ -27,10 +27,10 @@ class Context:
         if name in self.definitions.keys():
             raise RuntimeError("Redefinition of element")
 
-        existing_element = self.elements.get(name)
-        if not existing_element and self.parent:
-            existing_element = self.parent.get_element(name)
-            if existing_element:
+        local_element = self.elements.get(name)
+        if local_element is None and self.parent:
+            parent_element = self.parent.get_element(name)
+            if parent_element is not None:
                 self.parent.define_element(name, value)
                 return
         self.elements[name] = value
@@ -38,7 +38,7 @@ class Context:
     def get_element(self, name):
         result = self.elements.get(name)
 
-        if not result and self.parent:
+        if result is None and self.parent:
             return self.parent.get_element(name)
         else:
             return result

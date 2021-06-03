@@ -85,5 +85,6 @@ def test_context():
     root.define_element("x", 0)
     child = Context(parent_context=root)
     child.define_element("x", 1)
+    print(root)
+    print(child)
     assert child.get_element("x") == root.get_element("x")
-    
