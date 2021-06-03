@@ -51,7 +51,10 @@ class Context:
             return self.get_definition(name)
 
     def get_definition(self, name):
-        return self.parent.get_definition(name)
+        if definition := self.definitions.get(name):
+            return definition
+        else:
+            return self.parent.get_definition(name)
 
     def get_root_context(self):
         if self.parent:

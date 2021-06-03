@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .base_nodes import Statement, Expression
+from .base_nodes import BaseFunctionDefinition, Statement, Expression
 from .shared import Location
 from .context import Context, RootContext
 from .language_errors import RuntimeError
@@ -210,7 +210,8 @@ class FunOperator:
             ret += arg.__str__(depth + 1)
         return ret
 
-    def evaluate(self, context: Context, source_element: 'FunctionDefinition'):
+    def evaluate(self, context: Context,
+                 source_element: BaseFunctionDefinition):
         values = [x.evaluate(context) for x in self.arguments]
         result = source_element.execute(values, context.get_root_context())
         return result

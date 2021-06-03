@@ -6,6 +6,23 @@ from .node_classes import Block
 
 
 class FunctionDefinition(BaseFunctionDefinition):
+    class ReturnValue(Exception):
+        pass
+
+    class ReturnFunction(BaseFunctionDefinition):
+        def __init__(self):
+            super().__init__(Location(0, 0), "return")
+
+        def execute(self, values, root_context: Context):
+            arg_num = len(values)
+            if arg_num > 1:
+                raise RuntimeError(
+                    f"Wrong number of valuse passed to return: {arg_num}")
+            if arg_num:
+                raise FunctionDefinition.ReturnValue(values[0])
+            else:
+                raise FunctionDefinition.ReturnValue(None)
+
     def __init__(
         self,
         loc: Location,
@@ -28,14 +45,21 @@ class FunctionDefinition(BaseFunctionDefinition):
         ret += self.block.__str__(depth + 1)
         return ret
 
-    def execute(self, values, root_context=RootContext()):
+    def execute(self, values, root_context: RootContext):
         passed_arguments = {}
         if len(values) != len(self.arguments):
             raise RuntimeError("Numbers of arguments don't match")
         for name, value in zip(self.arguments, values):
             passed_arguments[name] = value
 
+        definitions = {"return": FunctionDefinition.ReturnFunction()}
         new_context = Context(elements=passed_arguments,
+                              definitions=definitions,
                               parent_context=root_context)
-        result = self.block.evaluate(new_context)
+
+        result = None
+        try:
+            self.block.evaluate(new_context)
+        except FunctionDefinition.ReturnValue as ret:
+            result = ret.args[0]
         return result
