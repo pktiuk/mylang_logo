@@ -21,6 +21,17 @@ class BaseFunctionDefinition(Definition):
     def execute(self, values: list, root_context: RootContext):
         pass
 
+    def validate_arguments(self, values: list, min=0, max=None, msg=None):
+        if max is None:
+            max = min
+        val_len = len(values)
+        if msg is None:
+            msg = f"wrong number of arguments passed to function {self.name} {val_len}"
+            if max == min:
+                msg += f" instead of expected {min}"
+        if not (max >= val_len >= min):
+            raise RuntimeError(msg)
+
 
 class Statement(ABC):
     def __init__(self, loc: Location):
