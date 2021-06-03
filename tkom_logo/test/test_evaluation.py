@@ -19,7 +19,7 @@ def check_context(context: Context, expected_values: dict):
         assert context.get_element(key) == value
 
 
-def test_basic_program():
+def test_basic_program_with_context():
     TEST_STRINGS = [
         "x=6234", "x=12 y=34 z=x", "x=21+9", "x=43/32 y=3*2", "x=43>32",
         "x=43<4 && 33<2", "x=32>43-32||3"
@@ -52,3 +52,25 @@ def test_basic_program():
         print("Executed")
         print(result.root_context)
         check_context(result.root_context, values)
+
+
+def test_block_constructions():
+    TEST_STRINGS = [
+        """x = 0 
+        y=0
+        while(x==0)
+        {
+            y=y+1
+            x=1
+        }"""
+    ]
+    for string in TEST_STRINGS:
+        print(f'Generating program: {string}')
+        q = generate_lexer(string)
+        p = Parser(token_source=q)
+        result = p.parse_program()
+        print(result)
+        print("Executing:")
+        result.execute()
+        print("Executed")
+        print(result.root_context)

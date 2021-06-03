@@ -242,8 +242,10 @@ class Identifier(BaseValue):
 
     def evaluate(self, context: Context):
         result = context.get_element(self.name)
-        if not result:
-            raise RuntimeError("Trying to access undefined variable", self)
+        if result is None:
+            raise RuntimeError(
+                f"Trying to access undefined variable (named {self.name})",
+                self)
         return result
 
 
@@ -296,11 +298,8 @@ class Block(object):
         return res
 
     def evaluate(self, context: Context):
-        # add return keyword to context declarations
-        # Where should I create new object for this
-        # Czy tworzenie dodatkowej klasy dziedziczącej po funkcji
-        # i dodawanie jej do kontekstu to dobre podejście?
-        pass  # TODO?
+        for statement in self.statements:
+            statement.evaluate(context)
 
 
 class IfStatement(Statement):
@@ -342,4 +341,8 @@ class WhileStatement(Statement):
         return ret
 
     def evaluate(self, context: Context):
-        pass  # TODO
+        cond_value = self.condition.evaluate(context)
+        while_context = Context(parent_context=context)
+        while cond_value:
+            self.block.evaluate(while_context)
+            cond_value = self.condition.evaluate(while_context)
