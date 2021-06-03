@@ -8,6 +8,5 @@ class PrintFunctionDef(BaseFunctionDefinition):
         super().__init__(Location(0, 0), "print")
 
     def execute(self, values: list, root_context):
-        if len(values) != 1:
-            raise RuntimeError("Print function requires one argument")
+        self.validate_arguments(values, 1)
         ConsoleLogger().log(str(values[0]))
