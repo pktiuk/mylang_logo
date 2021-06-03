@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from .shared import Location
-from .context import Context, BaseRootContext
+from .context import Context, RootContext
 
 
 class Definition(ABC):
@@ -18,7 +18,7 @@ class BaseFunctionDefinition(Definition):
         super().__init__(loc, name)
 
     @abstractmethod
-    def execute(self, values: list, root_context: BaseRootContext):
+    def execute(self, values: list, root_context: RootContext):
         pass
 
 

@@ -1,5 +1,5 @@
 from .shared import ConsoleLogger
-from .root_context import RootContext
+from .root_context import LogoRootContext
 
 
 class Program(object):
@@ -10,7 +10,7 @@ class Program(object):
         def_dict = {}
         for el in self.definitions:
             def_dict[el.name] = el
-        self.root_context = RootContext(def_dict)
+        self.root_context = LogoRootContext(def_dict)
 
         self.log = ConsoleLogger()
         self.canvas = None  # TODO

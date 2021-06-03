@@ -70,5 +70,5 @@ class Context:
         return ret
 
 
-class BaseRootContext(Context):
+class RootContext(Context):
     pass

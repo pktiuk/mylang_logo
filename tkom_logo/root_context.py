@@ -1,8 +1,8 @@
-from .context import BaseRootContext
+from .context import RootContext
 from .standard_library.library_functions import PrintFunctionDef
 
 
-class RootContext(BaseRootContext):
+class LogoRootContext(RootContext):
     def __init__(self, definition_dict: dict = None):
         super().__init__(definitions=definition_dict)
         self.__init_default_definitions()

@@ -10,8 +10,7 @@ sys.path.append(module_path)
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
 from ..context import Context
-from ..root_context import RootContext
-from .test_lexer import TextBuffer
+from ..root_context import LogoRootContext
 from .test_parser import generate_lexer
 
 
@@ -101,7 +100,7 @@ def test_functions():
                     }
                     return(fib(num-1)+fib(num-2))
                    \n}
-                   
+
                    x0=fib(0)
                    x1=fib(1)
                    x2=fib(2)
@@ -120,7 +119,7 @@ def test_functions():
 
 
 def test_context():
-    root = RootContext()
+    root = LogoRootContext()
     root.define_element("x", 0)
     child = Context(parent_context=root)
     child.define_element("x", 1)
