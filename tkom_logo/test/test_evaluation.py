@@ -9,7 +9,7 @@ sys.path.append(module_path)
 
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
-from ..context import Context
+from ..context import Context, RootContext
 from .test_lexer import TextBuffer
 from .test_parser import generate_lexer
 
@@ -56,16 +56,18 @@ def test_basic_program_with_context():
 
 
 def test_block_constructions():
-    TEST_STRINGS = [
-        """x = 0 
+    TEST_TUPLES = [("""x = 0
         y=0
         while(x==0)
         {
             y=y+1
             x=1
-        }"""
-    ]
-    for string in TEST_STRINGS:
+        }""", {
+        "x": 1,
+        "y": 1
+    })]
+
+    for string, values in TEST_TUPLES:
         print(f'Generating program: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
@@ -75,6 +77,8 @@ def test_block_constructions():
         result.execute()
         print("Executed")
         print(result.root_context)
+        check_context(result.root_context, values)
+
 
 def test_context():
     root = RootContext()
