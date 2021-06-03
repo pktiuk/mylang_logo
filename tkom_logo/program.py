@@ -13,7 +13,6 @@ class Program(object):
         self.root_context = LogoRootContext(def_dict)
 
         self.log = ConsoleLogger()
-        self.canvas = None  # TODO
 
     def __str__(self):
         ret = "Definitions:\n"
@@ -24,6 +23,8 @@ class Program(object):
             ret += d.__str__(1)
         return ret
 
-    def execute(self):
+    def execute(self, render=False):
         for statement in self.statements:
             statement.evaluate(self.root_context)
+        if render:
+            self.root_context.render()
