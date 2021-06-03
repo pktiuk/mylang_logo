@@ -243,7 +243,7 @@ class Identifier(BaseValue):
         return "\t" * depth + self.name + "\n"
 
     def evaluate(self, context: Context):
-        result = context.get_element(self.name)
+        result = context.get(self.name)
         if result is None:
             raise RuntimeError(
                 f"Trying to access undefined variable (named {self.name})",

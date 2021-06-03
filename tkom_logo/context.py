@@ -43,6 +43,13 @@ class Context:
         else:
             return result
 
+    def get(self, name):
+        "returns element or definition"
+        if (result := self.get_element(name)) is not None:
+            return result
+        else:
+            return self.get_definition(name)
+
     def get_definition(self, name):
         return self.parent.get_definition(name)
 
