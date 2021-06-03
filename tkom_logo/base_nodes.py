@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
 from .shared import Location
-from .context import Context
+from .context import Context, BaseRootContext
 
 
-class Definition:
+class Definition(ABC):
     def __init__(self, loc: Location, name: str):
         self.location = loc
         self.name = name
@@ -13,6 +13,10 @@ class Definition:
 class BaseFunctionDefinition(Definition):
     def __init__(self, loc: Location, name: str):
         super().__init__(loc, name)
+
+    @abstractmethod
+    def execute(self, values: list, root_context: BaseRootContext):
+        pass
 
 
 class Statement(ABC):

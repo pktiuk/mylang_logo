@@ -9,7 +9,8 @@ sys.path.append(module_path)
 
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
-from ..context import Context, RootContext
+from ..context import Context
+from ..root_context import RootContext
 from .test_lexer import TextBuffer
 from .test_parser import generate_lexer
 

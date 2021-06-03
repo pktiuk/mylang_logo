@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .base_nodes import BaseFunctionDefinition, Statement, Expression
 from .shared import Location
-from .context import Context, RootContext
+from .context import Context, BaseRootContext
 from .language_errors import RuntimeError
 
 

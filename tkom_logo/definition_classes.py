@@ -1,6 +1,6 @@
 from .base_nodes import BaseFunctionDefinition
 from .shared import Location
-from .context import Context, RootContext
+from .context import Context, BaseRootContext
 from .language_errors import RuntimeError
 from .node_classes import Block
 
@@ -45,7 +45,7 @@ class FunctionDefinition(BaseFunctionDefinition):
         ret += self.block.__str__(depth + 1)
         return ret
 
-    def execute(self, values, root_context: RootContext):
+    def execute(self, values, root_context: BaseRootContext):
         passed_arguments = {}
         if len(values) != len(self.arguments):
             raise RuntimeError("Numbers of arguments don't match")
