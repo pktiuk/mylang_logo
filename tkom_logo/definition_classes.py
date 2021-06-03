@@ -34,12 +34,13 @@ class FunctionDefinition(Definition):
         return ret
 
     def execute(self, values, root_context=RootContext()):
-        elements = {}
+        passed_arguments = {}
         if len(values) != len(self.arguments):
             raise RuntimeError("Numbers of arguments don't match")
         for name, value in zip(self.arguments, values):
-            elements[name] = value
+            passed_arguments[name] = value
 
-        new_context = Context(elements=elements, parent_context=root_context)
+        new_context = Context(elements=passed_arguments,
+                              parent_context=root_context)
         result = self.block.evaluate(new_context)
         return result
