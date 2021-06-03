@@ -326,7 +326,12 @@ class IfStatement(Statement):
         return ret
 
     def evaluate(self, context: Context):
-        pass  # TODO
+        cond_value = self.condition.evaluate(context)
+        if_context = Context(parent_context=context)
+        if (cond_value):
+            self.true_block.evaluate(if_context)
+        elif self.false_block:
+            self.false_block.evaluate(if_context)
 
 
 class WhileStatement(Statement):
