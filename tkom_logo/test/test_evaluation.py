@@ -75,3 +75,11 @@ def test_block_constructions():
         result.execute()
         print("Executed")
         print(result.root_context)
+
+def test_context():
+    root = RootContext()
+    root.define_element("x", 0)
+    child = Context(parent_context=root)
+    child.define_element("x", 1)
+    assert child.get_element("x") == root.get_element("x")
+    
