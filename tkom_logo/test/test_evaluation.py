@@ -89,7 +89,32 @@ def test_functions():
     """, {
                         "glob": 11 + 3,
                         "x": -3
-                    })]
+                    }), ("fun foo(){\nreturn()\n}\nfoo()", {}),
+                   ("fun foo(){\nreturn(1)\n}\nx=foo()", {
+                       "x": 1
+                   }),
+                   ("""fun fib(num)\n
+                   {\n
+                   if(num<=1){
+                     return(1)
+                    }
+                    return(fib(num-1)+fib(num-2))
+                   \n}
+                   
+                   x0=fib(0)
+                   x1=fib(1)
+                   x2=fib(2)
+                   x3=fib(3)
+                   x4=fib(4)
+                   x5=fib(5)
+                   """, {
+                       "x0": 1,
+                       "x1": 1,
+                       "x2": 2,
+                       "x3": 3,
+                       "x4": 5,
+                       "x5": 8
+                   })]
     check_execution_with_context_validation(TEST_TUPLES)
 
 
