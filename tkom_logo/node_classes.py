@@ -197,7 +197,12 @@ class FieldOperator:
 
     def evaluate(self, context: Context, source_element: BaseObject):
         if isinstance(source_element, BaseObject):
-            return source_element.get_field(self.name)
+            try:
+                return source_element.get_field(self.name)
+            except KeyError:
+                raise RuntimeError(
+                    f"Tried to access non-existing field ({self.name}) from {source_element.name}"
+                )
         raise RuntimeError("Trying to access field of non-object element")
 
 
