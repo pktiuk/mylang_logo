@@ -1,16 +1,11 @@
+from .base_nodes import BaseFunctionDefinition
 from .shared import Location
 from .context import Context, RootContext
 from .language_errors import RuntimeError
 from .node_classes import Block
 
 
-class Definition(object):
-    def __init__(self, loc: Location, name: str):
-        self.location = loc
-        self.name = name
-
-
-class FunctionDefinition(Definition):
+class FunctionDefinition(BaseFunctionDefinition):
     def __init__(
         self,
         loc: Location,

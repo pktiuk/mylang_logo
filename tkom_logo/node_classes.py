@@ -1,27 +1,9 @@
 from __future__ import annotations
 
+from .base_nodes import Statement, Expression
 from .shared import Location
 from .context import Context, RootContext
 from .language_errors import RuntimeError
-
-
-class Statement:
-    def __init__(self, loc: Location):
-        self.location = loc
-
-    def evaluate(self, context: Context):
-        raise NotImplementedError
-
-
-class Expression(Statement):
-    def __init__(self, loc: Location):
-        super().__init__(loc)
-
-    def get_value(self):
-        raise NotImplementedError
-
-    def evaluate(self, context: Context):
-        raise NotImplementedError
 
 
 class ValueAssignment(Statement):
