@@ -7,7 +7,7 @@ class TurtlePaths():
     def add_turtle(self, x1: int = 0, y1: int = 0) -> int:
         "returns turtle ID"
         self.turtle_lines[self.next_id] = [(x1, y1)]
-        self.turtle_angles[self.next_id] = [0]
+        self.turtle_angles[self.next_id] = 0
         self.next_id += 1
         return self.next_id - 1
 

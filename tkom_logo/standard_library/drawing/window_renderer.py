@@ -3,8 +3,8 @@ import sys
 from .canvas import TurtlePaths
 from .renderer import Renderer
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPen, QBrush, QResizeEvent
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QPen, QBrush, QPainterPath
 from PyQt5.QtWidgets import QGraphicsScene, QWidget, QGraphicsView, QVBoxLayout
 
 from PyQt5.QtWidgets import QApplication
@@ -41,13 +41,12 @@ class WindowRenderer(Renderer):
         w.setLayout(layout)
 
         self.draw_lines(scene)
-        self.draw_turtles(scene)
 
         w.show()
         sys.exit(app.exec_())
 
     def draw_lines(self, scene: CanvasWidget):
-        for turtle_lines in self.paths.turtle_lines.values():
+        for id, turtle_lines in self.paths.turtle_lines.items():
             start_x = None
             start_y = None
             for x, y in turtle_lines:
@@ -55,6 +54,14 @@ class WindowRenderer(Renderer):
                     scene.draw_line(start_x, start_y, x, y)
                 start_x = x
                 start_y = y
+            self.draw_turtle(scene, id, start_x, start_y)
 
-    def draw_turtles(self, scene: CanvasWidget):
-        pass  #TODO
+    def draw_turtle(self, scene: CanvasWidget, id, x, y):
+        path = QPainterPath(QPointF(0, 0))
+        path.lineTo(QPointF(5, -5))
+        path.lineTo(QPointF(0, 5))
+        path.lineTo(QPointF(-5, -5))
+        path.lineTo(QPointF(0, 0))
+        turtle = scene.addPath(path, QPen(Qt.blue), QBrush(Qt.red))
+        turtle.moveBy(x, y)
+        turtle.setRotation(self.paths.turtle_angles[id])
