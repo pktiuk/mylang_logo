@@ -127,3 +127,8 @@ def test_context():
     print(root)
     print(child)
     assert child.get_element("x") == root.get_element("x")
+
+
+def test_standard_libraries():
+    TEST_TUPLES = [('print(312) print(4+2) print("slowo")', {})]
+    check_execution_with_context_validation(TEST_TUPLES)

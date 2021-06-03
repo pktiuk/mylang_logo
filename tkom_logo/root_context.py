@@ -1,4 +1,5 @@
 from .context import BaseRootContext
+from .standard_library.library_functions import PrintFunctionDef
 
 
 class RootContext(BaseRootContext):
@@ -7,7 +8,7 @@ class RootContext(BaseRootContext):
         self.__init_default_definitions()
 
     def __init_default_definitions(self):
-        #self.definitions["print"] = PrintFunctionDef()
+        self.definitions["print"] = PrintFunctionDef()
         pass
 
     def get_definition(self, name):

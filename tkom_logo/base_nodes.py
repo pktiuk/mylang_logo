@@ -9,6 +9,9 @@ class Definition(ABC):
         self.location = loc
         self.name = name
 
+    def __str__(self, depth=0):
+        return depth * "\t" + self.name
+
 
 class BaseFunctionDefinition(Definition):
     def __init__(self, loc: Location, name: str):
@@ -34,3 +37,9 @@ class Expression(Statement):
 
     def evaluate(self, context: Context):
         raise NotImplementedError
+
+
+class BaseObject(ABC):
+    @abstractmethod
+    def get_field(self, name: str):
+        pass
