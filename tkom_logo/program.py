@@ -13,6 +13,7 @@ class Program(object):
         self.root_context = LogoRootContext(def_dict)
 
         self.log = ConsoleLogger()
+        self.current_statement = None
 
     def __str__(self):
         ret = "Definitions:\n"
@@ -23,8 +24,22 @@ class Program(object):
             ret += d.__str__(1)
         return ret
 
+    def _add_exception_loc(decorated_fun, *args, **kwargs):
+        def output_fun(*args, **kwargs):
+            try:
+                t = decorated_fun(*args, **kwargs)
+            except (RuntimeError, ) as err:
+                if err.location is None:
+                    err.location = args[0].current_statement.location
+                raise err
+            return t
+
+        return output_fun
+
+    @_add_exception_loc
     def execute(self):
         for statement in self.statements:
+            self.current_statement = statement
             statement.evaluate(self.root_context)
 
     def get_canvas(self):
