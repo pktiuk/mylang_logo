@@ -55,6 +55,7 @@ def main():
     except BaseLanguageException as exc:
         logger.error(f"Error: {exc.args[0]}")
         logger.error(f"At: {exc.location}")
+        logger.log(reader.get_loc_region(exc.location))
 
 
 if __name__ == "__main__":

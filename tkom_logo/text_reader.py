@@ -26,6 +26,11 @@ class TextReader(ABC):
     def get_location(self) -> Location:
         raise NotImplementedError
 
+    def print_loc_region(self, loc: Location) -> str:
+        """Used after error
+        """
+        raise NotImplementedError
+
 
 class StringReader(TextReader):
     def __init__(self, msg: str):
@@ -34,6 +39,7 @@ class StringReader(TextReader):
         self.lineno = 0
         self.charnr = -1
         self.newline = False
+        self.lines = self.msg.split('\n')
 
     def get_char(self):
         self.counter += 1
@@ -52,6 +58,15 @@ class StringReader(TextReader):
 
     def get_location(self) -> Location:
         return Location(self.lineno, self.charnr)
+
+    def get_loc_region(self, loc: Location) -> str:
+        lineno = loc.line
+        startline = lineno - 5 if lineno >= 5 else 0
+        ret = ""
+        for nr in range(startline, lineno + 1):
+            ret += self.lines[nr] + "\n"
+        ret += " " * loc.char_number + "^"
+        return ret
 
 
 class FileReader(StringReader):
