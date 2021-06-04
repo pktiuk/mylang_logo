@@ -57,6 +57,6 @@ class StringReader(TextReader):
 class FileReader(StringReader):
     def __init__(self, filename: str):
         file = open(filename)
-        msg = self.file.read()
+        msg = file.read()
         file.close()
         super().__init__(msg)
