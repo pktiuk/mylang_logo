@@ -2,22 +2,15 @@
 
 import sys
 import os
-import pytest
 
 module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
-from ..text_reader import StringReader
-from ..lexer import Lexer
+from ..shared import Location
 
-
-def generate_lexer(text) -> Lexer:
-    buf = StringReader(text)
-    lexer = Lexer(buf)
-
-    return lexer
+from .testing_utils import check_parse_exception, generate_lexer
 
 
 def test_parser_stability():
@@ -98,18 +91,16 @@ def test_field_operators():
 
 
 def test_exceptions():
-    q = generate_lexer("while True")
-    p = Parser(token_source=q)
-    with pytest.raises(SyntaxError, match="opening paren"):
-        p.parse()
-    q = generate_lexer("if value")
-    p = Parser(token_source=q)
-    with pytest.raises(SyntaxError, match="opening paren"):
-        p.parse()
-    q = generate_lexer("thh.field.()")
-    p = Parser(token_source=q)
-    with pytest.raises(SyntaxError, match="after dot"):
-        p.parse()
+    EXCEPTIONS = [
+        ("while True", SyntaxError, "opening paren", Location(0, 6)),
+        ("if value", SyntaxError, "opening paren", Location(0, 3)),
+        ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
+        ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
+        ("fun f(){" + "} fun f(){" + "}", SyntaxError, "definition",
+         Location(0, 10)),
+    ]
+    for string, type, msg, loc in EXCEPTIONS:
+        check_parse_exception(string, type, msg, loc)
 
 
 def test_program_parsing():
