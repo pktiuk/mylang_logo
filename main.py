@@ -43,10 +43,10 @@ def main():
         return
     logger.info("Parsing program")
     reader = FileReader(args.file)
-    lexer = Lexer(reader)
-    program = Parser(lexer).parse_program()
-    logger.info("Executing program")
     try:
+        lexer = Lexer(reader)
+        program = Parser(lexer).parse_program()
+        logger.info("Executing program")
         program.execute()
         if args.render:
             render(program)

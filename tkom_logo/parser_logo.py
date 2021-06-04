@@ -1,6 +1,6 @@
 from .lexer import Lexer
 from .shared import Token, TokenType, ConsoleLogger, Logger
-from .language_errors import SyntaxError
+from .language_errors import LogoSyntaxError
 from .base_nodes import Definition, Expression
 from .definition_classes import FunctionDefinition
 from .node_classes import Relation, Statement, ValueAssignment, MathExpression, Factor, Value, AndCondition, FieldOperator, FunOperator, Identifier, ConstValue, Block, IfStatement, WhileStatement, LogicalExpression, AddExpression, BaseValue
@@ -39,7 +39,7 @@ class Parser(object):
         def output_fun(*args, **kwargs):
             try:
                 t = decorated_fun(*args, **kwargs)
-            except (SyntaxError) as err:
+            except (LogoSyntaxError) as err:
                 if err.location is None:
                     err.location = args[0].__get_token().location
                 raise err
@@ -57,7 +57,7 @@ class Parser(object):
                                               self.__parse_statement()):
             if definition:
                 if definition.name in definition_names:
-                    raise SyntaxError("Redefinition")
+                    raise LogoSyntaxError("Redefinition")
                 definition_names.append(definition.name)
                 definitions.append(definition)
             else:
@@ -237,7 +237,7 @@ class Parser(object):
                 if argument:
                     arguments.append(argument)
                 else:
-                    raise SyntaxError("Problem with parsing arguments")
+                    raise LogoSyntaxError("Problem with parsing arguments")
             self.__validate_next_token(TokenType.CLOSE_PAREN,
                                        "Missing close paren", False)
         self.__pop_token()
@@ -347,14 +347,14 @@ class Parser(object):
                               err_msg: str,
                               pop: bool = True):
         """loads token and checks whether it token matches
-           expected one and raises SyntaxError if not
+           expected one and raises LogoSyntaxError if not
         """
         if not self._check_token_type(expected_type):
-            raise SyntaxError(err_msg)
+            raise LogoSyntaxError(err_msg)
         if pop:
             self.__pop_token()
 
     def __check_none(self, element, err_msg):
         if not element:
-            raise SyntaxError(err_msg)
+            raise LogoSyntaxError(err_msg)
         return element

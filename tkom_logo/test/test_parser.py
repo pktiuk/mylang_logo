@@ -7,7 +7,7 @@ module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
 from ..parser_logo import Parser
-from ..language_errors import ParseError, SyntaxError
+from ..language_errors import ParseError, LogoSyntaxError
 from ..shared import Location
 
 from .testing_utils import check_parse_exception, generate_lexer
@@ -92,13 +92,13 @@ def test_field_operators():
 
 def test_exceptions():
     EXCEPTIONS = [
-        ("while True", SyntaxError, "opening paren", Location(0, 6)),
-        ("if value", SyntaxError, "opening paren", Location(0, 3)),
-        ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
-        ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
-        ("fun f(){" + "} fun f(){" + "}", SyntaxError, "definition",
+        ("while True", LogoSyntaxError, "opening paren", Location(0, 6)),
+        ("if value", LogoSyntaxError, "opening paren", Location(0, 3)),
+        ("thh.field.()", LogoSyntaxError, "after dot", Location(0, 10)),
+        ("thh.field.()", LogoSyntaxError, "after dot", Location(0, 10)),
+        ("fun f(){" + "} fun f(){" + "}", LogoSyntaxError, "definition",
          Location(0, 18)),
-        ("thh(1,)", SyntaxError, "argument", Location(0, 6)),
+        ("thh(1,)", LogoSyntaxError, "argument", Location(0, 6)),
     ]
     for string, type, msg, loc in EXCEPTIONS:
         check_parse_exception(string, type, msg, loc)

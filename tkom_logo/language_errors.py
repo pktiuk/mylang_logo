@@ -17,7 +17,7 @@ class ParseError(BaseLanguageException):
         super().__init__(message, location)
 
 
-class SyntaxError(BaseLanguageException):
+class LogoSyntaxError(BaseLanguageException):
     def __init__(self, message, location: Location = None):
         super().__init__(message, location)
 
