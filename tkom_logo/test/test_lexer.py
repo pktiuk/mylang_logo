@@ -25,8 +25,7 @@ def test_lexer():
                                       Location(0, 0))
     assert lexer.get_token() == Token(TokenType.OPEN_PAREN, "(",
                                       Location(0, 2))
-    assert lexer.get_token() == Token(TokenType.CONST, '"word"',
-                                      Location(0, 3))
+    assert lexer.get_token() == Token(TokenType.CONST, 'word', Location(0, 3))
     assert lexer.get_token() == Token(TokenType.ADD_OPERATOR, "+",
                                       Location(0, 9))
     assert lexer.get_token() == Token(TokenType.CONST, 312.543,

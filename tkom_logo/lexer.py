@@ -126,7 +126,7 @@ class Lexer():
         token_string += self.buffered_char
         self.buffered_char = None
 
-        return Token(TokenType.CONST, token_string)
+        return Token(TokenType.CONST, token_string[1:-1])
 
     def _parse_identifier(self):
         token_string = ""
