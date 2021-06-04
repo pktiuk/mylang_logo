@@ -67,17 +67,6 @@ class Parser(object):
                                    "EOF expected at the end of file")
         return Program(definitions, statements)
 
-    @_handle_exception
-    def parse(self) -> Statement:
-        try:
-            result = self.__parse_definition()
-            if result:
-                return result
-            return self.__parse_statement()
-        except SyntaxError as err:
-            err.location = self.__get_token().location
-            raise err
-
     def __parse_statement(self) -> Statement:
 
         result = self.__parse_while()

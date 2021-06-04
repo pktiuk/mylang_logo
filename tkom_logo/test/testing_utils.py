@@ -31,4 +31,4 @@ def check_parse_exception(program_str: str,
                           loc: Location = None):
     q = generate_lexer(program_str)
     p = Parser(token_source=q)
-    check_exception(p.parse, ex_type, match, loc)
+    check_exception(p.parse_program, ex_type, match, loc)

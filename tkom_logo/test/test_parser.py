@@ -22,14 +22,14 @@ def test_parser_stability():
         print(f'parsing string: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
-        result = p.parse()
+        result = p.parse_program()
         print(result)
 
 
 def test_multiplications():
     q = generate_lexer("22*4/3*1")
     p = Parser(token_source=q)
-    result = p.parse()
+    result = p.parse_program()
     print(result)
 
 
@@ -47,7 +47,7 @@ def test_functions():
         print(f'parsing string: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
-        result = p.parse()
+        result = p.parse_program()
         print(result)
 
 
@@ -60,7 +60,7 @@ def test_loops():
         print(f'parsing string: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
-        result = p.parse()
+        result = p.parse_program()
         print(result)
 
 
@@ -74,7 +74,7 @@ def test_ifs():
         print(f'parsing string: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
-        result = p.parse()
+        result = p.parse_program()
         print(result)
 
 
@@ -86,7 +86,7 @@ def test_field_operators():
         print(f'parsing string: {string}')
         q = generate_lexer(string)
         p = Parser(token_source=q)
-        result = p.parse()
+        result = p.parse_program()
         print(result)
 
 
@@ -97,7 +97,7 @@ def test_exceptions():
         ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
         ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
         ("fun f(){" + "} fun f(){" + "}", SyntaxError, "definition",
-         Location(0, 10)),
+         Location(0, 18)),
     ]
     for string, type, msg, loc in EXCEPTIONS:
         check_parse_exception(string, type, msg, loc)
