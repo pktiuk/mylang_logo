@@ -25,7 +25,7 @@ class Program(object):
             ret += d.__str__(1)
         return ret
 
-    def _add_exception_loc(decorated_fun, *args, **kwargs):
+    def _decorate_exception(decorated_fun, *args, **kwargs):
         def output_fun(*args, **kwargs):
             try:
                 t = decorated_fun(*args, **kwargs)
@@ -33,11 +33,24 @@ class Program(object):
                 if err.location is None:
                     err.location = args[0].current_statement.location
                 raise err
+            except TypeError as err:
+                TYPES = ["str", "bool", "Turtle", "float"]
+                # default message format:
+                # TypeError: unsupported operand type(s) for +=: 'bool' and 'str'
+                msg = err.args[0].split("'")
+                type1 = msg[-2]
+                type2 = msg[-4]
+                if type1 in TYPES and type2 in TYPES:
+                    raise LogoRuntimeError(
+                        f"Unsupported operation for types {type1} and {type2}",
+                        args[0].current_statement.location)
+                else:
+                    raise err
             return t
 
         return output_fun
 
-    @_add_exception_loc
+    @_decorate_exception
     def execute(self):
         for statement in self.statements:
             self.current_statement = statement

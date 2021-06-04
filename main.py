@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-import os
-import sys
 import argparse
 
 import pathlib
@@ -9,6 +7,7 @@ from tkom_logo.parser_logo import Parser
 from tkom_logo.lexer import Lexer
 from tkom_logo.shared import ConsoleLogger
 from tkom_logo.text_reader import FileReader
+from tkom_logo.language_errors import BaseLanguageException
 
 from tkom_logo.standard_library.drawing.window_renderer import WindowRenderer
 
@@ -47,11 +46,15 @@ def main():
     lexer = Lexer(reader)
     program = Parser(lexer).parse_program()
     logger.info("Executing program")
-    program.execute()
-    if args.render:
-        render(program)
-    else:
-        logger.info("Pass rendering")
+    try:
+        program.execute()
+        if args.render:
+            render(program)
+        else:
+            logger.info("Pass rendering")
+    except BaseLanguageException as exc:
+        logger.error(f"Error: {exc.args[0]}")
+        logger.error(f"At: {exc.location}")
 
 
 if __name__ == "__main__":

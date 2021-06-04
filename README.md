@@ -17,7 +17,6 @@ Cechy samego języka:
   - string
   - turtle - jest to obiekt reprezentujący wskaźnik (domyślnie będący żółwiem), którym kierować może użytkownik
   - bool
-  - None
 - dynamiczne typowanie zmiennych
 - Wykonywanie wyrażeń arytmetycznych działający zgodnie z ogólnie przyjętą dot. konwencją kolejności operatorów.
 - Wykonywanie wyrażeń logicznych działający zgodnie z ogólnie przyjętą dot. konwencją kolejności operatorów.

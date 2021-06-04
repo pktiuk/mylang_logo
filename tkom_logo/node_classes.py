@@ -18,6 +18,9 @@ class ValueAssignment(Statement):
 
     def evaluate(self, context: Context):
         result = self.expression.evaluate(context)
+        if result is None:
+            raise LogoRuntimeError(
+                f"Trying to assign None value to {self.name}")
         context.define_element(self.name, result)
 
 
@@ -198,7 +201,8 @@ class FieldOperator:
                 raise LogoRuntimeError(
                     f"Tried to access non-existing field ({self.name}) from {source_element.name}"
                 )
-        raise LogoRuntimeError("Trying to access field of non-object element")
+        raise LogoRuntimeError(
+            f"Trying to access field ({self.name}) of non-object element")
 
 
 class FunOperator:
