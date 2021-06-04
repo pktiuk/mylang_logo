@@ -139,6 +139,10 @@ def test_standard_libraries():
 
 
 def test_exceptions():
-    EXCEPTIONS = [("t = 4 t.f()", LogoRuntimeError, "field", Location(0, 6))]
+    EXCEPTIONS = [
+        ("t = 4 t.f()", LogoRuntimeError, "field", Location(0, 6)),
+        ("100/0", ZeroDivisionError, "zero", None),
+        ("t=Turtle() t.non", LogoRuntimeError, "field", None),
+    ]
     for string, type, msg, loc in EXCEPTIONS:
         check_execution_exception(string, type, msg, loc)

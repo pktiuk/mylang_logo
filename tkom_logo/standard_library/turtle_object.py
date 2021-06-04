@@ -16,6 +16,7 @@ class Turtle(BaseObject):
         self.angle = 0
         self.canvas = canvas
         self.turtle_id = self.canvas.add_turtle()
+        self.name = "Turtle"
 
     def get_field(self, name: str):
         FIELDS = {
