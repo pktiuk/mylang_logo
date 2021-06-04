@@ -18,12 +18,16 @@ class Turtle(BaseObject):
         self.turtle_id = self.canvas.add_turtle()
         self.name = "Turtle"
 
+    def __del__(self):
+        self.angle = None
+        self.canvas.rotate_turtle(self.turtle_id, None)
+
     def get_field(self, name: str):
         FIELDS = {
             "get_x": GetterFunction(self, "x"),
             "get_y": GetterFunction(self, "y"),
             "get_angle": GetterFunction(self, "angle"),
-            "move": MovementFunction(self),
+            "fd": MovementFunction(self),
             "rotate": SetFunction(self, "rotate"),
             "set_angle": SetFunction(self, "angle"),
             "set_x": SetFunction(self, "x"),
@@ -78,15 +82,17 @@ class SetFunction(BaseFunctionDefinition):
             self.turtle.y = values[0]
         elif self.name == "angle":
             self.turtle.angle = values[0]
-            self.turtle.canvas.rotate_turtle(self.turtle.turtle_id, self.turtle.angle)
+            self.turtle.canvas.rotate_turtle(self.turtle.turtle_id,
+                                             self.turtle.angle)
         elif self.name == "rotate":
             self.turtle.angle = self.turtle.angle + values[0]
-            self.turtle.canvas.rotate_turtle(self.turtle.turtle_id, self.turtle.angle)
+            self.turtle.canvas.rotate_turtle(self.turtle.turtle_id,
+                                             self.turtle.angle)
 
 
 class MovementFunction(BaseFunctionDefinition):
     def __init__(self, turtle: Turtle):
-        super().__init__(name="move")
+        super().__init__(name="fd")
         self.turtle = turtle
 
     def execute(self, values: list, root_context: RootContext):

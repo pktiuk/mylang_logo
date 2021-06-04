@@ -6,16 +6,16 @@ class Logger(object):
     def __init__(self, *args):
         super(Logger, self).__init__(*args)
 
-    def info(self, msg):
+    def info(self, msg, end="\n"):
         raise NotImplementedError
 
-    def warn(self, msg):
+    def warn(self, msg, end="\n"):
         raise NotImplementedError
 
-    def error(self, msg):
+    def error(self, msg, end="\n"):
         raise NotImplementedError
 
-    def log(self, msg):
+    def log(self, msg, end="\n"):
         raise NotImplementedError
 
 
@@ -28,17 +28,17 @@ class ConsoleLogger(Logger):
     def __init__(self, *args):
         super(ConsoleLogger, self).__init__(*args)
 
-    def info(self, msg):
+    def info(self, msg, end="\n"):
         print(self.GREEN + msg + self.ENDC)
 
-    def warn(self, msg):
+    def warn(self, msg, end="\n"):
         print(self.WARNING + msg + self.ENDC)
 
-    def error(self, msg):
+    def error(self, msg, end="\n"):
         print(self.ERROR + msg + self.ENDC)
 
-    def log(self, msg):
-        print(msg)
+    def log(self, msg, end="\n"):
+        print(msg, end=end)
 
 
 class TokenType(Enum):

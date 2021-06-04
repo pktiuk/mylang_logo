@@ -34,7 +34,9 @@ class Program(object):
                     err.location = args[0].current_statement.location
                 raise err
             except TypeError as err:
-                TYPES = ["str", "bool", "Turtle", "float"]
+                TYPES = [
+                    "str", "bool", "Turtle", "float", "FunctionDefinition"
+                ]
                 # default message format:
                 # TypeError: unsupported operand type(s) for +=: 'bool' and 'str'
                 msg = err.args[0].split("'")

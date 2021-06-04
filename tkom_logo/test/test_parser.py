@@ -80,7 +80,7 @@ def test_ifs():
 
 def test_field_operators():
     TEST_STRINGS = [
-        "turtle.print()", "turtle.move(4231)", "something.get_elem().value"
+        "turtle.print()", "turtle.fd(4231)", "something.get_elem().value"
     ]
     for string in TEST_STRINGS:
         print(f'parsing string: {string}')

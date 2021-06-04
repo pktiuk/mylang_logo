@@ -57,11 +57,12 @@ class WindowRenderer(Renderer):
             self.draw_turtle(scene, id, start_x, start_y)
 
     def draw_turtle(self, scene: CanvasWidget, id, x, y):
-        path = QPainterPath(QPointF(0, 0))
-        path.lineTo(QPointF(5, -5))
-        path.lineTo(QPointF(0, 5))
-        path.lineTo(QPointF(-5, -5))
-        path.lineTo(QPointF(0, 0))
-        turtle = scene.addPath(path, QPen(Qt.blue), QBrush(Qt.red))
-        turtle.moveBy(x, y)
-        turtle.setRotation(self.paths.turtle_angles[id])
+        if angle := self.paths.turtle_angles[id] is not None:
+            path = QPainterPath(QPointF(0, 0))
+            path.lineTo(QPointF(5, -5))
+            path.lineTo(QPointF(0, 5))
+            path.lineTo(QPointF(-5, -5))
+            path.lineTo(QPointF(0, 0))
+            turtle = scene.addPath(path, QPen(Qt.blue), QBrush(Qt.red))
+            turtle.moveBy(x, y)
+            turtle.setRotation(angle)

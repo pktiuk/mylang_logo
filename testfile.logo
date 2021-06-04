@@ -1,25 +1,11 @@
-print("creating turtle")
-t = Turtle()
-print("Moving Turtle")
-t.move(30)
-t.set_angle(90)
-
-fun draw_triangle(turtle, len){
-    num=0
-    turtle.move(len/2)
-    while(num<2)
-    {
-        turtle.rotate(120)
-        turtle.move(len)
-        num = num + 1
-    }
-    turtle.rotate(120)
-    turtle.move(len/2)
+fun fib(num)
+{
+  if(num<=1)
+  {
+    return(1)
+  }
+  return(fib(num-1)+fib(num-2))
 }
 
-draw_triangle(t,100)
-
-t2 = Turtle()
-
-t2.rotate(90)
-t2.move(30)
+print("Result of fib(10): ")
+println(fib(10))
