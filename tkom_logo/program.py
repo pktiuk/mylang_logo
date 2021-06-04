@@ -23,12 +23,9 @@ class Program(object):
             ret += d.__str__(1)
         return ret
 
-    def execute(self, render=False):
+    def execute(self):
         for statement in self.statements:
             statement.evaluate(self.root_context)
-        if render:
-            self.root_context.render()
 
     def get_canvas(self):
         return self.root_context.canvas
-
