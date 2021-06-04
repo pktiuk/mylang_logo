@@ -1,21 +1,27 @@
 from .shared import Location
 
 
-class UnexpectedCharacterError(BaseException):
-    location: Location
+class BaseLanguageException(BaseException):
+    def __init__(self, message, location: Location):
+        self.location = location
+        super().__init__(message)
 
 
-class ParseError(BaseException):
-    location: Location
+class UnexpectedCharacterError(BaseLanguageException):
+    def __init__(self, message, location: Location = None):
+        super().__init__(message, location)
 
 
-class SyntaxError(BaseException):
-    location: Location
+class ParseError(BaseLanguageException):
+    def __init__(self, message, location: Location = None):
+        super().__init__(message, location)
 
 
-class RuntimeError(BaseException):
-    def __init__(self, message, element=None):
-        self.location = None
-        if element:
-            self.location = element.location
-        super().__init__(message, self.location)
+class SyntaxError(BaseLanguageException):
+    def __init__(self, message, location: Location = None):
+        super().__init__(message, location)
+
+
+class RuntimeError(BaseLanguageException):
+    def __init__(self, message, location: Location = None):
+        super().__init__(message, location)
