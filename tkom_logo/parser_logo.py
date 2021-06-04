@@ -10,7 +10,7 @@ from .program import Program
 class Parser(object):
     def __init__(self,
                  token_source: Lexer = None,
-                 logger: Logger = ConsoleLogger):
+                 logger: Logger = ConsoleLogger()):
         self.current_token = None
         self.token_source = token_source
 

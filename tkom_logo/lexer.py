@@ -1,27 +1,6 @@
 from .shared import ConsoleLogger, Token, TokenType, Location
 from .language_errors import UnexpectedCharacterError, ParseError
-
-
-class TextReader:
-    """Base class for queque reading letters
-    """
-    def get_char(self) -> str:
-        """if buffer empty then wait
-
-        Returns:
-            single character (or 0x00 when closing)
-        """
-        raise NotImplementedError
-
-    def close(self):
-        """Prepares Reader for closing
-        get_char will return 0x00 instead of waiting for
-        empty queue
-        """
-        raise NotImplementedError
-
-    def get_location(self) -> Location:
-        raise NotImplementedError
+from .text_reader import TextReader
 
 
 class Lexer():

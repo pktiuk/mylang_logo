@@ -9,12 +9,12 @@ sys.path.append(module_path)
 
 from ..parser_logo import Parser
 from ..language_errors import ParseError, SyntaxError
-from .test_lexer import TextBuffer
+from ..text_reader import StringReader
 from ..lexer import Lexer
 
 
 def generate_lexer(text) -> Lexer:
-    buf = TextBuffer(text)
+    buf = StringReader(text)
     lexer = Lexer(buf)
 
     return lexer

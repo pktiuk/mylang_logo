@@ -8,42 +8,16 @@ module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
 from ..shared import Token, TokenType, Location
-from ..lexer import Lexer, TextReader
+from ..lexer import Lexer
 from ..language_errors import UnexpectedCharacterError, ParseError
+from ..text_reader import StringReader
 
 
-class TextBuffer(TextReader):
-    def __init__(self, msg: str):
-        self.msg = msg
-        self.counter = 0
-        self.lineno = 0
-        self.charnr = -1
-        self.newline = False
 
-    def get_char(self):
-        self.counter += 1
-        self.charnr += 1
-        if self.counter <= len(self.msg):
-            if self.newline:
-                self.lineno += 1
-                self.charnr = 0
-                self.newline = False
-
-            if self.msg[self.counter - 1] == "\n":
-                self.newline = True
-            return self.msg[self.counter - 1]
-        else:
-            return '\0'
-
-    def get_location(self) -> Location:
-        return Location(self.lineno, self.charnr)
-
-    def close(self):
-        pass
 
 
 def test_lexer():
-    t = TextBuffer("""<=(\"word\"+         312.543/1322(
+    t = StringReader("""<=(\"word\"+         312.543/1322(
 
     ))""")
     lexer = Lexer(source=t)
@@ -69,7 +43,7 @@ def test_lexer():
 
 
 def test_lexer_assignment():
-    t = TextBuffer("""n=432+32-0+-32""")
+    t = StringReader("""n=432+32-0+-32""")
     lexer = Lexer(source=t)
     assert lexer.get_token() == Token(TokenType.IDENTIFIER, "n",
                                       Location(0, 0))
@@ -90,59 +64,59 @@ def test_lexer_assignment():
 
 
 def test_number_parsing():
-    t = TextBuffer("0")
+    t = StringReader("0")
     lexer = Lexer(source=t)
     assert lexer.get_token() == Token(TokenType.CONST, 0, Location(0, 0))
 
-    t = TextBuffer("0.12")
+    t = StringReader("0.12")
     lexer = Lexer(source=t)
     assert lexer.get_token() == Token(TokenType.CONST, 0.12, Location(0, 0))
 
-    t = TextBuffer("1312.43ls")
+    t = StringReader("1312.43ls")
     lexer = Lexer(source=t)
     with pytest.raises(UnexpectedCharacterError):
         print(lexer.get_token())
 
-    s = TextBuffer("1312.")
+    s = StringReader("1312.")
     lexer = Lexer(source=s)
     with pytest.raises(ParseError):
         print(lexer.get_token())
 
-    s = TextBuffer("032")
+    s = StringReader("032")
     lexer = Lexer(source=s)
     with pytest.raises(ParseError):
         print(lexer.get_token())
 
 
 def test_wrong_identifiers():
-    s = TextBuffer("1ls")
+    s = StringReader("1ls")
     lexer = Lexer(source=s)
     with pytest.raises(UnexpectedCharacterError):
         print(lexer.get_token())
 
 
 def test_proper_EOF():
-    s = TextBuffer("")
+    s = StringReader("")
     lexer = Lexer(source=s)
     assert lexer.get_token().symbol_type == TokenType.EOF
 
-    s = TextBuffer("    ")
+    s = StringReader("    ")
     lexer = Lexer(source=s)
     assert lexer.get_token().symbol_type == TokenType.EOF
 
-    s = TextBuffer("  \n  ")
+    s = StringReader("  \n  ")
     lexer = Lexer(source=s)
     lexer.get_token()
     assert lexer.get_token().symbol_type == TokenType.EOF
 
-    s = TextBuffer('   "beginning of string123')
+    s = StringReader('   "beginning of string123')
     lexer = Lexer(source=s)
     with pytest.raises(EOFError):
         lexer.get_token()
 
 
 def test_big_text():
-    s = TextBuffer("""fun draw_square(len,len2)
+    s = StringReader("""fun draw_square(len,len2)
 {
   i = 0
   t = Turtle()
