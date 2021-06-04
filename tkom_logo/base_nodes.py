@@ -30,7 +30,7 @@ class BaseFunctionDefinition(Definition):
             if max == min:
                 msg += f" instead of expected {min}"
         if not (max >= val_len >= min):
-            raise RuntimeError(msg)
+            raise LogoRuntimeError(msg)
 
 
 class Statement(ABC):

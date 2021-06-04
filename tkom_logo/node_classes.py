@@ -3,7 +3,7 @@ from __future__ import annotations
 from .base_nodes import BaseFunctionDefinition, Statement, Expression, BaseObject, BaseValue
 from .shared import Location
 from .context import Context
-from .language_errors import RuntimeError
+from .language_errors import LogoRuntimeError
 
 
 class ValueAssignment(Statement):
@@ -56,7 +56,7 @@ class AddExpression(Expression):
                     )
                 result /= mult_el
             else:
-                raise RuntimeError(f"Unexpected add operator: {operator}",
+                raise LogoRuntimeError(f"Unexpected add operator: {operator}",
                                    self)
             iter_nr += 1
         return result
@@ -93,7 +93,7 @@ class MathExpression(Expression):
             elif operator == "-":
                 result -= add_el
             else:
-                raise RuntimeError(f"Unexpected add operator: {operator}",
+                raise LogoRuntimeError(f"Unexpected add operator: {operator}",
                                    self)
             iter_nr += 1
         return result
@@ -195,10 +195,10 @@ class FieldOperator:
             try:
                 return source_element.get_field(self.name)
             except KeyError:
-                raise RuntimeError(
+                raise LogoRuntimeError(
                     f"Tried to access non-existing field ({self.name}) from {source_element.name}"
                 )
-        raise RuntimeError("Trying to access field of non-object element")
+        raise LogoRuntimeError("Trying to access field of non-object element")
 
 
 class FunOperator:
@@ -230,7 +230,7 @@ class Identifier(BaseValue):
     def evaluate(self, context: Context):
         result = context.get(self.name)
         if result is None:
-            raise RuntimeError(
+            raise LogoRuntimeError(
                 f"Trying to access undefined variable (named {self.name})",
                 self)
         return result

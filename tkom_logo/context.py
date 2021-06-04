@@ -1,5 +1,5 @@
 from .shared import ConsoleLogger
-from .language_errors import RuntimeError
+from .language_errors import LogoRuntimeError
 
 
 class Context:
@@ -25,7 +25,7 @@ class Context:
         """define new element or redefine old one
         """
         if name in self.definitions.keys():
-            raise RuntimeError("Redefinition of element")
+            raise LogoRuntimeError("Redefinition of element")
 
         local_element = self.elements.get(name)
         if local_element is None and self.parent:

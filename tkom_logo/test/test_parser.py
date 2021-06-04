@@ -98,6 +98,7 @@ def test_exceptions():
         ("thh.field.()", SyntaxError, "after dot", Location(0, 10)),
         ("fun f(){" + "} fun f(){" + "}", SyntaxError, "definition",
          Location(0, 18)),
+        ("thh(1,)", SyntaxError, "argument", Location(0, 6)),
     ]
     for string, type, msg, loc in EXCEPTIONS:
         check_parse_exception(string, type, msg, loc)

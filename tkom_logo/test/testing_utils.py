@@ -21,7 +21,8 @@ def check_exception(function,
             function()
         except ex_type as err:
             if loc:
-                assert loc == err.location
+                errloc = err.location
+                assert loc == errloc
             raise err
 
 
@@ -32,3 +33,13 @@ def check_parse_exception(program_str: str,
     q = generate_lexer(program_str)
     p = Parser(token_source=q)
     check_exception(p.parse_program, ex_type, match, loc)
+
+
+def check_execution_exception(program_str: str,
+                              ex_type,
+                              match: str = "",
+                              loc: Location = None):
+    q = generate_lexer(program_str)
+    p = Parser(token_source=q)
+    prog = p.parse_program()
+    check_exception(prog.execute, ex_type, match, loc)

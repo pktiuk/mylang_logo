@@ -1,7 +1,7 @@
 from .base_nodes import BaseFunctionDefinition
 from .shared import Location
 from .context import Context, RootContext
-from .language_errors import RuntimeError
+from .language_errors import LogoRuntimeError
 from .node_classes import Block
 
 
@@ -16,7 +16,7 @@ class FunctionDefinition(BaseFunctionDefinition):
         def execute(self, values, root_context: Context):
             arg_num = len(values)
             if arg_num > 1:
-                raise RuntimeError(
+                raise LogoRuntimeError(
                     f"Wrong number of valuse passed to return: {arg_num}")
             if arg_num:
                 raise FunctionDefinition.ReturnValue(values[0])
@@ -48,7 +48,7 @@ class FunctionDefinition(BaseFunctionDefinition):
     def execute(self, values, root_context: RootContext):
         passed_arguments = {}
         if len(values) != len(self.arguments):
-            raise RuntimeError("Numbers of arguments don't match")
+            raise LogoRuntimeError("Numbers of arguments don't match")
         for name, value in zip(self.arguments, values):
             passed_arguments[name] = value
 

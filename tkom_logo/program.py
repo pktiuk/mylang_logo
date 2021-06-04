@@ -1,5 +1,6 @@
 from .shared import ConsoleLogger
 from .root_context import LogoRootContext
+from .language_errors import LogoRuntimeError
 
 
 class Program(object):
@@ -28,7 +29,7 @@ class Program(object):
         def output_fun(*args, **kwargs):
             try:
                 t = decorated_fun(*args, **kwargs)
-            except (RuntimeError, ) as err:
+            except LogoRuntimeError as err:
                 if err.location is None:
                     err.location = args[0].current_statement.location
                 raise err

@@ -22,6 +22,6 @@ class SyntaxError(BaseLanguageException):
         super().__init__(message, location)
 
 
-class RuntimeError(BaseLanguageException):
+class LogoRuntimeError(BaseLanguageException):
     def __init__(self, message, location: Location = None):
         super().__init__(message, location)

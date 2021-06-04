@@ -8,10 +8,11 @@ module_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
 sys.path.append(module_path)
 
 from ..parser_logo import Parser
-from ..language_errors import ParseError, SyntaxError
+from ..language_errors import LogoRuntimeError
 from ..context import Context
 from ..root_context import LogoRootContext
-from .test_parser import generate_lexer
+from ..shared import Location
+from .testing_utils import check_execution_exception, generate_lexer
 
 
 def check_context(context: Context, expected_values: dict):
@@ -135,3 +136,9 @@ def test_standard_libraries():
         "x": 0
     })]
     check_execution_with_context_validation(TEST_TUPLES)
+
+
+def test_exceptions():
+    EXCEPTIONS = [("t = 4 t.f()", LogoRuntimeError, "field", Location(0, 6))]
+    for string, type, msg, loc in EXCEPTIONS:
+        check_execution_exception(string, type, msg, loc)
