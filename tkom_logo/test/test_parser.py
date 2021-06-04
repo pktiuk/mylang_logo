@@ -15,7 +15,7 @@ from .testing_utils import check_parse_exception, generate_lexer
 
 def test_parser_stability():
     TEST_STRINGS = [
-        "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2=3&& 5>2", "-a +3",
+        "(-33*1)/-2", "2+3*4", "23==3&& 5>2", "2==3&& 5>2", "-a +3",
         "funkcja()+32", "a > 43 && var==4 || obj.get() != 12"
     ]
     for string in TEST_STRINGS:
