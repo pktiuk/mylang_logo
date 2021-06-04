@@ -87,6 +87,17 @@ hello("Jan")
 
 Zwróci: `Witaj Jan`
 
+Do zwracania wartości z wnętrza funkcji należy użyć funkcni wbudowanej `return`.
+
+```cpp
+fun square(num)
+{
+  return(num*num)
+}
+
+square(4)
+```
+
 **Warunki**
 
 ```cpp
