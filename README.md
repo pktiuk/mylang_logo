@@ -32,6 +32,7 @@ Pozostałe wymagania dotyczące funkcjonalności:
 - wbudowany obiekt żółwia
 - stworzenie GUI wizualizującego ruchy oraz linie rysowane przez żółwia.
 
+
 ## Użycie
 
 Program jest opakowany w prostą aplikację terminalową pozwalającą na wybranie pliku, który ma zostać wykonany oraz umożliwiający opcjonalne wyświetlenie wyników rysowania.
@@ -224,7 +225,7 @@ if(pole > 10 && pole <200)
 
 W konsoli powinno zostać wypisane `Obrysowane pole jest wieksze od 10 i mniejsze od 200`.
 
-Oraz wyrenderować:
+A na ekranie powinien zostać wyrenderowany obrazek:
 
 ![square](resources/square.png)
 
@@ -284,10 +285,9 @@ constValue - token bezpośrednio przeliczany na jakąś wartość
 "{", "}", "(", ")", '"'  
 "+", "-", "*",  "/", "!"  "="  
 "||", "&&", "==",  "!=", "<", "<=", ">", ">="  
-EOF - End Of File  
-EOL - End Of Line
+EOF - End Of File
 
-Funkcje wbudowane takie jak `print` nie będą tokenami, podobnie jak nazwy typów wbudowanych, bedą one rozpoznawane jako identyfikatory.
+Funkcje wbudowane takie jak `print` nie są tokenami, podobnie jak nazwy typów wbudowanych, bedą one rozpoznawane jako identyfikatory.
 
 ### Testy
 
