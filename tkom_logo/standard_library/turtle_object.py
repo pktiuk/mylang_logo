@@ -22,6 +22,7 @@ class Turtle(BaseObject):
         FIELDS = {
             "get_x": GetterFunction(self, "x"),
             "get_y": GetterFunction(self, "y"),
+            "get_angle": GetterFunction(self, "angle"),
             "move": MovementFunction(self),
             "rotate": SetFunction(self, "rotate"),
             "set_angle": SetFunction(self, "angle"),
@@ -48,7 +49,11 @@ class TurtleConstructor(BaseFunctionDefinition):
 
 
 class GetterFunction(BaseFunctionDefinition):
-    GETTERS = {"x": lambda turtle: turtle.x, "y": lambda turtle: turtle.y}
+    GETTERS = {
+        "x": lambda turtle: turtle.x,
+        "y": lambda turtle: turtle.y,
+        "angle": lambda turtle: turtle.angle
+    }
 
     def __init__(self, turtle: Turtle, var_name: str):
         super().__init__(name=var_name)
