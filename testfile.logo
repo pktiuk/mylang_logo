@@ -1,20 +1,20 @@
-print("creating turtle")
+println("creating turtle")
 t = Turtle()
-print("Moving Turtle")
-t.move(30)
+println("Moving Turtle")
+t.fd(30)
 t.set_angle(90)
 
 fun draw_triangle(turtle, len){
     num=0
-    turtle.move(len/2)
+    turtle.fd(len/2)
     while(num<2)
     {
         turtle.rotate(120)
-        turtle.move(len)
+        turtle.fd(len)
         num = num + 1
     }
     turtle.rotate(120)
-    turtle.move(len/2)
+    turtle.fd(len/2)
 }
 
 draw_triangle(t,100)
@@ -22,4 +22,4 @@ draw_triangle(t,100)
 t2 = Turtle()
 
 t2.rotate(90)
-t2.move(30)
+t2.fd(30)
