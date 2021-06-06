@@ -35,6 +35,12 @@ class Context:
                 return
         self.elements[name] = value
 
+    def _add_and_verify_definitions(self, definitions: dict):
+        for name, value in definitions.items():
+            if self.definitions.get(name):
+                raise LogoRuntimeError("Redefinition of function: ", name)
+            self.definitions[name] = value
+
     def get_element(self, name):
         result = self.elements.get(name)
 

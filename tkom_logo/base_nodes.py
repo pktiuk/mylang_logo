@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from .shared import Location
 from .context import Context, RootContext
+from .language_errors import LogoRuntimeError
 
 
 class Definition(ABC):

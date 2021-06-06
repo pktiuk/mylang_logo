@@ -10,7 +10,7 @@ from .drawing.canvas import TurtlePaths
 
 
 class Turtle(BaseObject):
-    def __init__(self, canvas: TurtlePaths = None):  # TODO get_canvas
+    def __init__(self, canvas: TurtlePaths = None):
         self.x = 0
         self.y = 0
         self.angle = 0

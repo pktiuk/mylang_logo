@@ -36,8 +36,8 @@ def check_execution_with_context_validation(list_of_tuples):
 
 def test_basic_program_with_context():
     TEST_STRINGS = [
-        "x=6234", "x=12 y=34 z=x", "x=21+9", "x=43/32 y=3*2", "x=43>32",
-        "x=43<4 && 33<2", "x=32>43-32||3"
+        "x=6234", "x=12 y=34 z=x", "x=21+9-1+1", "x=43/32 y=3*2", "x=43>32",
+        "x=43<4 && 33<2", "x=!32>43-32||3"
     ]
     TEST_VALUES = [{
         "x": 6234
@@ -148,6 +148,7 @@ def test_exceptions():
         ("t = 4 t.f()", LogoRuntimeError, "field", Location(0, 6)),
         ("100/0", ZeroDivisionError, "zero", None),
         ("t=Turtle() t.non", LogoRuntimeError, "field", None),
+        ("print=43", LogoRuntimeError, "Redefi", None),
     ]
     for string, type, msg, loc in EXCEPTIONS:
         check_execution_exception(string, type, msg, loc)
