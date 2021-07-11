@@ -3,13 +3,13 @@ import argparse
 
 import pathlib
 
-from tkom_logo.parser_logo import Parser
-from tkom_logo.lexer import Lexer
-from tkom_logo.shared import ConsoleLogger
-from tkom_logo.text_reader import FileReader
-from tkom_logo.language_errors import BaseLanguageException
+from mylang.parser_logo import Parser
+from mylang.lexer import Lexer
+from mylang.shared import ConsoleLogger
+from mylang.text_reader import FileReader
+from mylang.language_errors import BaseLanguageException
 
-from tkom_logo.standard_library.drawing.window_renderer import WindowRenderer
+from mylang.standard_library.drawing.window_renderer import WindowRenderer
 
 logger = ConsoleLogger()
 

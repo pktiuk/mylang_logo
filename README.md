@@ -296,7 +296,7 @@ Testy poszczególnych elementów analizatora są realizowane za pomocą prostych
 Uruchomienie testów:
 
 ```bash
-pytest --pyargs tkom_logo
+pytest --pyargs mylang
 ```
 
 Testy są podzielone na 3 główne części:
