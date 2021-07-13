@@ -236,7 +236,7 @@ class Identifier(BaseValue):
         if result is None:
             raise LogoRuntimeError(
                 f"Trying to access undefined variable (named {self.name})",
-                self)
+                self.location)
         return result
 
 
