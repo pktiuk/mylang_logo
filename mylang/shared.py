@@ -41,6 +41,24 @@ class ConsoleLogger(Logger):
         print(msg, end=end)
 
 
+class StringLogger(Logger):
+    def __init__(self, *args):
+        super(StringLogger, self).__init__(*args)
+        self.out_string = ""
+
+    def info(self, msg, end="\n"):
+        self.out_string += "I: " + msg + end
+
+    def warn(self, msg, end="\n"):
+        self.out_string += "W: " + msg + end
+
+    def error(self, msg, end="\n"):
+        self.out_string += "E: " + msg + end
+
+    def log(self, msg, end="\n"):
+        self.out_string += msg + end
+
+
 class TokenType(Enum):
     ASSIGNMENT_OPERATOR = auto()
     EOF = auto()
