@@ -1,4 +1,4 @@
-from ..shared import global_logger, Location
+from ..shared import get_global_logger, Location
 
 from ..base_nodes import BaseFunctionDefinition, BaseValue
 
@@ -10,4 +10,4 @@ class PrintFunctionDef(BaseFunctionDefinition):
 
     def execute(self, values: list, root_context):
         self.validate_arguments(values, 1)
-        global_logger.log(str(values[0]), end=self.end)
+        get_global_logger().log(str(values[0]), end=self.end)

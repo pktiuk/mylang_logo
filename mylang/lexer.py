@@ -1,4 +1,4 @@
-from .shared import global_logger, Token, TokenType, Location
+from .shared import ConsoleLogger, Token, TokenType, Location
 from .language_errors import UnexpectedCharacterError, ParseError
 from .text_reader import TextReader
 
@@ -55,7 +55,7 @@ class Lexer():
         "else": lambda: Token(TokenType.ELSE, "else"),
     }
 
-    def __init__(self, source: TextReader, logger=global_logger):
+    def __init__(self, source: TextReader, logger=ConsoleLogger()):
         self.source = source
         self.logger = logger
         self.buffered_char = None

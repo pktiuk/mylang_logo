@@ -59,7 +59,17 @@ class StringLogger(Logger):
         self.out_string += msg + end
 
 
-global_logger = ConsoleLogger()
+_global_logger = ConsoleLogger()
+
+
+def get_global_logger() -> Logger:
+    global _global_logger
+    return _global_logger
+
+
+def set_global_logger(new_logger: Logger):
+    global _global_logger
+    _global_logger = new_logger
 
 
 class TokenType(Enum):
