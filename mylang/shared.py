@@ -59,6 +59,9 @@ class StringLogger(Logger):
         self.out_string += msg + end
 
 
+global_logger = ConsoleLogger()
+
+
 class TokenType(Enum):
     ASSIGNMENT_OPERATOR = auto()
     EOF = auto()

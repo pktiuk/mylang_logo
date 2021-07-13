@@ -1,4 +1,4 @@
-from .shared import ConsoleLogger
+from .shared import global_logger
 from .language_errors import LogoRuntimeError
 
 
@@ -19,7 +19,7 @@ class Context:
         else:
             self.elements = {}
 
-        self.log = ConsoleLogger()
+        self.log = global_logger
 
     def define_element(self, name, value):
         """define new element or redefine old one

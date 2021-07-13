@@ -1,5 +1,5 @@
 from .lexer import Lexer
-from .shared import Token, TokenType, ConsoleLogger, Logger
+from .shared import Token, TokenType, global_logger, Logger
 from .language_errors import LogoSyntaxError
 from .base_nodes import Definition, Expression
 from .definition_classes import FunctionDefinition
@@ -10,7 +10,7 @@ from .program import Program
 class Parser(object):
     def __init__(self,
                  token_source: Lexer = None,
-                 logger: Logger = ConsoleLogger()):
+                 logger: Logger = global_logger):
         self.current_token = None
         self.token_source = token_source
 

@@ -1,4 +1,4 @@
-from .shared import ConsoleLogger
+from .shared import global_logger
 from .root_context import LogoRootContext
 from .language_errors import LogoRuntimeError
 
@@ -13,7 +13,7 @@ class Program(object):
             def_dict[el.name] = el
         self.root_context = LogoRootContext(def_dict)
 
-        self.log = ConsoleLogger()
+        self.log = global_logger
         self.current_statement = None
 
     def __str__(self):
