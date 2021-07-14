@@ -3,7 +3,7 @@ const code_area = document.getElementById("code_area");
 const log_area = document.getElementById("log_area");
 
 btn_execute.addEventListener("click", function () {
-  console.log("Execute code");
+  console.log("Execute code: " + code_area.value);
 
   fetch("http://127.0.0.1:5000", {
     method: "post",
@@ -11,7 +11,7 @@ btn_execute.addEventListener("click", function () {
       Accept: "application/json, text/plain",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ code: code_area.textContent }),
+    body: JSON.stringify({ code: code_area.value }),
   })
     .then((res) => res.json())
     .then(function (result) {
