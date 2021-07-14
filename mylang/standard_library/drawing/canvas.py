@@ -16,4 +16,5 @@ class TurtlePaths():
         self.turtle_lines[turtle_id].append((old_x + x, old_y + y))
 
     def rotate_turtle(self, turtle_id: int, angle: float):
+        """rotates turtle, for angle=None turtle is considered as destroyed."""
         self.turtle_angles[turtle_id] = angle
