@@ -50,7 +50,10 @@ def execute_code(code: str):
         return ("", None, error_msg)
 
     canvas = program.get_canvas()
-    return (get_global_logger().out_string, None, None)  #TODO draw canvas
+    #TODO limit number of workers in flask
+    logger_sring = get_global_logger().out_string
+    get_global_logger().out_string = ""
+    return (logger_sring, None, None)  #TODO draw canvas
 
 
 @app.after_request
