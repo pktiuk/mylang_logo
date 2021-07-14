@@ -53,5 +53,13 @@ def execute_code(code: str):
     return (get_global_logger().out_string, None, None)  #TODO draw canvas
 
 
+@app.after_request
+def after_request(response):
+    response.headers['Access-Control-Allow-Origin'] = "*"
+    response.headers['Access-Control-Allow-Methods'] = 'PUT,GET,POST,DELETE'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
+
+
 if __name__ == '__main__':
     app.run()
