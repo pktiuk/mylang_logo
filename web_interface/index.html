@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mylang online</title>
+    <style>
+      #execution_block {
+        height: 50vh;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+      }
+      #code_area {
+        flex: 2;
+      }
+      #log_area {
+        flex: 1;
+      }
+      #btn_execute {
+        flex: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="execution_block">
+      <div style="display: flex; flex-direction: column">
+        <textarea id="code_area">Hello</textarea>
+        <textarea id="log_area" readonly="true"></textarea>
+        <button id="btn_execute">Execute</button>
+      </div>
+      <canvas id="mylang_canvas"> </canvas>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>

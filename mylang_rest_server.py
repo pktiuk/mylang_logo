@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 from mylang.shared import StringLogger, set_global_logger, get_global_logger
 
@@ -9,7 +9,7 @@ from mylang.lexer import Lexer
 from mylang.parser_logo import Parser
 from mylang.text_reader import StringReader
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="./web_interface")
 
 set_global_logger(StringLogger())
 
@@ -18,7 +18,7 @@ set_global_logger(StringLogger())
 def get_root():
     print("get")
     # TODO return a simple website
-    return "Hello"
+    return render_template("./index.html")
 
 
 @app.route('/', methods=["POST"])
