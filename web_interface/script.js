@@ -2,6 +2,17 @@ const btn_execute = document.getElementById("btn_execute");
 const code_area = document.getElementById("code_area");
 const log_area = document.getElementById("log_area");
 
+const handle_execution_result = function (result) {
+  if (result["error"] == null) {
+    log_area.textContent = result["log"];
+  } else {
+    log_area.innerHTML =
+      "<div style='color: red'>" +
+      result["error"].replaceAll("\n", "<br>") +
+      "</div>";
+  }
+};
+
 btn_execute.addEventListener("click", function () {
   console.log("Execute code: " + code_area.value);
 
@@ -17,6 +28,6 @@ btn_execute.addEventListener("click", function () {
     .then(function (result) {
       console.log("got result:");
       console.log(result);
-      log_area.textContent = result["log"];
+      handle_execution_result(result);
     });
 });

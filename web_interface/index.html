@@ -14,6 +14,7 @@
       }
       #log_area {
         flex: 1;
+        overflow-y: scroll;
       }
       #btn_execute {
         flex: none;
@@ -22,9 +23,9 @@
   </head>
   <body>
     <div id="execution_block">
-      <div style="display: flex; flex-direction: column">
+      <div style="display: flex; flex-direction: column; width: 50%">
         <textarea id="code_area">print("Hello, world!")</textarea>
-        <textarea id="log_area" readonly="true"></textarea>
+        <div id="log_area"></div>
         <button id="btn_execute">Execute</button>
       </div>
       <canvas id="mylang_canvas"> </canvas>
