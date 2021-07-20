@@ -1,4 +1,11 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class TurtlePaths():
+    turtle_lines: dict
+    turtle_angles: dict
+
     def __init__(self):
         self.turtle_lines = {}
         self.turtle_angles = {}

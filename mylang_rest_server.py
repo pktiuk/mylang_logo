@@ -9,6 +9,8 @@ from mylang.lexer import Lexer
 from mylang.parser_logo import Parser
 from mylang.text_reader import StringReader
 
+from dataclasses import asdict
+
 app = Flask(__name__, template_folder="./web_interface")
 
 set_global_logger(StringLogger())
@@ -32,7 +34,7 @@ def post_code():
     log, canvas, error = execute_code(code)
     response = {}
     response["log"] = log
-    response["canvas"] = None
+    response["canvas"] = canvas
     response["error"] = error
     return response
 
@@ -49,11 +51,11 @@ def execute_code(code: str):
         error_msg += reader.get_loc_region(exc.location)
         return ("", None, error_msg)
 
-    canvas = program.get_canvas()
+    canvas = asdict(program.get_canvas())
     #TODO limit number of workers in flask
-    logger_sring = get_global_logger().out_string
+    logger_string = get_global_logger().out_string
     get_global_logger().out_string = ""
-    return (logger_sring, None, None)  #TODO draw canvas
+    return (logger_string, canvas, None)
 
 
 @app.after_request
