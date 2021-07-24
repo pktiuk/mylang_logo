@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 
 from mylang.shared import StringLogger, set_global_logger, get_global_logger
 
@@ -11,7 +11,10 @@ from mylang.text_reader import StringReader
 
 from dataclasses import asdict
 
-app = Flask(__name__, template_folder="./web_interface")
+app = Flask(__name__,
+            template_folder="./web_interface",
+            static_url_path="/static",
+            static_folder="./web_interface")
 
 set_global_logger(StringLogger())
 
