@@ -23,15 +23,20 @@
         background-color: rgb(190, 190, 190);
         aspect-ratio: 1 / 1;
       }
+      .path-line {
+        stroke: black;
+      }
     </style>
   </head>
   <body>
     <div id="execution_block">
       <div style="display: flex; flex-direction: column; width: 50%">
         <textarea id="code_area">
-          print("Hello, world!")
+print("Hello, world!")
 
 t=Turtle()
+
+t.rotate(-30)
 t.fd(10)
 t.rotate(120)
 t.fd(30)
@@ -45,7 +50,7 @@ t3=0
         <div id="log_area"></div>
         <button id="btn_execute">Execute</button>
       </div>
-      <canvas id="mylang_canvas"> </canvas>
+      <svg id="mylang_canvas" viewBox="-100 -100 200 200"></svg>
     </div>
     <script src="./script.js"></script>
   </body>

@@ -7,23 +7,50 @@ const mylang_canvas = document.getElementById("mylang_canvas");
 
 class Renderer {
   constructor(canvas_element) {
-    if (!mylang_canvas.getContext) {
-      //TODO exception
-    }
-    this.canvas = canvas_element;
-    this.context = canvas_element.getContext("2d");
-    this.rescale();
-  }
-  rescale() {
-    this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
-    this.context.scale(this.canvas.width / this.canvas.height, 1);
+    this.svg = canvas_element;
   }
   draw(paths) {
-    this.context.beginPath();
-    this.context.moveTo(0, 0);
-    this.context.lineTo(30, 30);
-    this.context.closePath();
-    this.context.stroke();
+    this.svg.innerHTML = "";
+
+    for (const key in paths.turtle_angles) {
+      let iter = paths.turtle_lines[key].values();
+      let start_x = null;
+      let start_y = null;
+
+      let result = iter.next();
+      [start_x, start_y] = result.value;
+      result = iter.next();
+
+      while (!result.done) {
+        let [x, y] = result.value;
+        this.draw_line(start_x, start_y, x, y);
+        [start_x, start_y] = [x, y];
+        result = iter.next();
+      }
+      if (paths.turtle_angles[key] !== null) {
+        this.draw_turtle(start_x, start_y, paths.turtle_angles[key]);
+      }
+    }
+  }
+  draw_line(x1, y1, x2, y2) {
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("class", "path-line");
+
+    this.svg.insertAdjacentElement("beforeend", line);
+  }
+  draw_turtle(x, y, angle) {
+    const turtle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    turtle.setAttribute("cx", x);
+    turtle.setAttribute("cy", y);
+    turtle.setAttribute("r", 5);
+    this.svg.insertAdjacentElement("beforeend", turtle);
   }
 }
 
@@ -44,8 +71,8 @@ const handle_execution_result = function (result) {
 
 btn_execute.addEventListener("click", function () {
   console.log("Execute code: " + code_area.value);
-
-  fetch("http://127.0.0.1:5000", {
+  //TODO handle exception
+  fetch("http://srv08.mikr.us:40195", {
     method: "post",
     headers: {
       Accept: "application/json, text/plain",
