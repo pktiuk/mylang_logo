@@ -4,7 +4,7 @@
     <title>Mylang online</title>
     <style>
       #execution_block {
-        height: 50vh;
+        height: 60vh;
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -19,12 +19,29 @@
       #btn_execute {
         flex: none;
       }
+      #mylang_canvas {
+        background-color: rgb(190, 190, 190);
+        aspect-ratio: 1 / 1;
+      }
     </style>
   </head>
   <body>
     <div id="execution_block">
       <div style="display: flex; flex-direction: column; width: 50%">
-        <textarea id="code_area">print("Hello, world!")</textarea>
+        <textarea id="code_area">
+          print("Hello, world!")
+
+t=Turtle()
+t.fd(10)
+t.rotate(120)
+t.fd(30)
+
+t2=Turtle()
+t2.fd(-20)
+
+t3 = Turtle()
+t3=0
+        </textarea>
         <div id="log_area"></div>
         <button id="btn_execute">Execute</button>
       </div>
