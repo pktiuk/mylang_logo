@@ -67,7 +67,7 @@ const renderer = new Renderer(mylang_canvas);
 
 const handle_execution_result = function (result) {
   if (result["error"] == null) {
-    log_area.textContent = result["log"];
+    log_area.innerHTML = result["log"].replaceAll("\n", "<br>"); //TODO potential safety issue
     renderer.draw(result["canvas"]);
   } else {
     log_area.innerHTML =
@@ -80,8 +80,9 @@ const handle_execution_result = function (result) {
 
 btn_execute.addEventListener("click", function () {
   console.log("Execute code: " + code_area.value);
+  log_area.innerHTML = "";
   //TODO handle exception
-  fetch("http://srv08.mikr.us:40195", {
+  fetch("/", {
     method: "post",
     headers: {
       Accept: "application/json, text/plain",
