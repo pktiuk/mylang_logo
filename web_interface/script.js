@@ -43,13 +43,22 @@ class Renderer {
     this.svg.insertAdjacentElement("beforeend", line);
   }
   draw_turtle(x, y, angle) {
+    const size = 10;
     const turtle = document.createElementNS(
       "http://www.w3.org/2000/svg",
-      "circle"
+      "image"
     );
-    turtle.setAttribute("cx", x);
-    turtle.setAttribute("cy", y);
-    turtle.setAttribute("r", 5);
+    turtle.setAttribute("class", "turtle");
+    turtle.setAttribute("x", x - size / 2);
+    turtle.setAttribute("y", y - size / 2);
+    turtle.setAttribute(
+      "href",
+      "https://raw.githubusercontent.com/ros/ros_tutorials/noetic-devel/turtlesim/images/box-turtle.png"
+    );
+    turtle.setAttribute("width", size);
+    turtle.setAttribute("height", size);
+    turtle.style.transform = `rotate(${angle + 180}deg)`;
+
     this.svg.insertAdjacentElement("beforeend", turtle);
   }
 }
