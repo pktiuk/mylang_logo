@@ -1,6 +1,5 @@
-# TKOM - Język zbliżony do logo z elementami obiektowymi
+# Język zbliżony do logo z elementami obiektowymi
 
-**Paweł Kotiuk 292898**
 ## Opis projektu
 
 Stworzenie własnego interpretera języka koncepcyjnie zbliżonego do Logo, lecz z mechanizmami obiektowymi w kontekście żółwia. Ma on pozwalać min na tworzenie wielu instancji żółwia na ekranie.  
